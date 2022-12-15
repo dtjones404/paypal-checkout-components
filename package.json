@@ -27,7 +27,7 @@
     "release": "./scripts/publish.sh",
     "start": "npm run webpack -- --progress --watch",
     "test": "npm run jest-ssr && npm run karma && npm run jest-screenshot",
-    "test:percy": "playwright test --config=./percy/playwright-local.config.js --reporter=dot",
+    "test:percy": "percy exec -- playwright test --config=./percy/playwright-local.config.js --reporter=dot",
     "typecheck": "npm run flow-typed && npm run flow",
     "version": "./scripts/version.sh",
     "webpack": "babel-node $(npm bin)/webpack",
