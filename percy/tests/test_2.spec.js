@@ -1,5 +1,7 @@
-const { chromium } = require('playwright');
-const percySnapshot = require('@percy/playwright');
+/* @flow */
+
+import { chromium } from 'playwright';
+import percySnapshot from '@percy/playwright';
 
 (async () => {
   const browser = await chromium.launch();
