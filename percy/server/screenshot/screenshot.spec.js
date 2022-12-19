@@ -7,13 +7,20 @@ import percySnapshot from "@percy/playwright";
   const browser = await chromium.launch();
   const page = await browser.newPage();
   const buttonConfig = {};
-  throw "asdf";
+  console.log('asdf');
 
   const { x, y, width, height } = await page.evaluate(async (options) => {
     // $FlowFixMe
     // eslint-disable-next-line compat/compat
-    console.log("hi mom", options);
     document.body.innerHTML = "";
+
+    const script = window.document.createElement("script");
+    script.src = "http://localhost:8111";
+    window.document.head.appendChild(script);
+
+    throw `${JSON.stringify(window.document.head)}`
+
+    await new Promise((resolve) => setTimeout(resolve, 9000));
 
     const container = window.document.createElement("div");
     // eslint-disable-next-line compat/compat
@@ -52,7 +59,7 @@ import percySnapshot from "@percy/playwright";
       .Buttons(options.button || {})
       .render(container);
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const frame = container.querySelector("iframe");
 
@@ -73,6 +80,8 @@ import percySnapshot from "@percy/playwright";
       height: rect.height,
     };
   }, buttonConfig);
+
+  console.log('after eval')
 
   if (width === 0) {
     throw new Error(`Button width is 0`);
