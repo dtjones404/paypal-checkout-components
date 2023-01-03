@@ -27,11 +27,13 @@
     "release": "./scripts/publish.sh",
     "start": "npm run webpack -- --progress --watch",
     "test": "npm run jest-ssr && npm run karma && npm run jest-screenshot",
+    "percy-screenshot": "percy exec -- playwright test --config=./test/percy/playwright.config.js --reporter=dot --pass-with-no-tests",
     "typecheck": "npm run flow-typed && npm run flow",
     "version": "./scripts/version.sh",
     "webpack": "babel-node $(npm bin)/webpack",
     "webpack-size": "npm run webpack -- --config webpack.config.size",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "screenshot-server": "babel-node ./test/percy/server/index.js"
   },
   "files": [
     "src/",
@@ -64,7 +66,11 @@
   "devDependencies": {
     "@krakenjs/grumbler-scripts": "^8.0.7",
     "@krakenjs/sync-browser-mocks": "^3.0.0",
+    "@percy/cli": "^1.16.0",
+    "@percy/playwright": "^1.0.4",
+    "@playwright/test": "^1.28.1",
     "babel-core": "^7.0.0-bridge.0",
+    "browserstack-local": "^1.5.1",
     "bundlemon": "^1.1.0",
     "conventional-changelog-cli": "^2.0.34",
     "cross-env": "^7.0.3",
@@ -81,7 +87,9 @@
     "memory-fs": "^0.5.0",
     "mocha": "^4.1.0",
     "mocketeer": "^0.3.1",
+    "nodemon": "^2.0.20",
     "pixelmatch": "^5.2.1",
+    "playwright": "^1.29.1",
     "pngjs": "^6.0.0",
     "prettier": "^2.5.1",
     "prettier-plugin-sh": "^0.10.0",
