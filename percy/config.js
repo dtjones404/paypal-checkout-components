@@ -7,7 +7,7 @@ import {
   BUTTON_COLOR,
   BUTTON_SHAPE,
   BUTTON_LAYOUT,
-} from "../../../src/constants";
+} from "../src/constants";
 
 const SUPPORTED_FUNDING_SOURCES = [
   FUNDING.PAYPAL,

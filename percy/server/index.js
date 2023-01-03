@@ -1,20 +1,21 @@
 /* @flow */
 
+import { getTestGlobals } from "../globals";
+import { buttonConfigs } from "../config";
+import globals from "../../globals";
+
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { webpackCompile } = require("./screenshot/lib/compile");
+const { webpackCompile } = require("../lib/compile");
 import { getWebpackConfig } from "@krakenjs/webpack-config-grumbler";
-import globals from "../../globals";
-import { getTestGlobals } from "./globals";
-import { buttonConfigs } from "./screenshot/config";
 
 const hostname = "127.0.0.1";
 const port = 8111;
 
 (async () => {
   fs.writeFileSync(
-    "./percy/server/screenshot/files/buttonConfig.json",
+    "./percy/files/buttonConfig.json",
     JSON.stringify(buttonConfigs)
   );
 

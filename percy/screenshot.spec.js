@@ -1,32 +1,34 @@
 /* @flow */
 
-import { chromium } from "playwright";
-import percySnapshot from "@percy/playwright";
-import test, { expect } from "@playwright/test";
 import fs from "fs";
+
+import percySnapshot from "@percy/playwright";
+import test from "@playwright/test";
+
+import { dotifyToString } from "./lib/util";
+import { openPage } from "./lib/browser";
+
+const HEADLESS = process.env.HEADLESS !== "0";
+const DEVTOOLS = process.env.DEVTOOLS === "1";
 
 test.setTimeout("1200000");
 
 const buttonConfigs = JSON.parse(
-  fs.readFileSync("./percy/server/screenshot/files/buttonConfig.json")
+  fs.readFileSync("./percy/files/buttonConfig.json")
 );
 
-const takeScreenshot = async (config, i) => {
-  const browser = await chromium.launch();
-  const page = await browser.newPage({ ignoreHTTPSErrors: true });
-  // page.on('console', (e) => console.log(e));
-  await page.goto("http://localhost.paypal.com:8111");
+const takeScreenshot = async (buttonConfig, description) => {
+  const { page, browser } = await openPage(
+    "http://localhost.paypal.com:8111",
+    "http://localhost:8111/sdk/js",
+    {
+      headless: HEADLESS,
+      devtools: DEVTOOLS,
+    }
+  );
 
   const { x, y, width, height } = await page.evaluate(async (options) => {
-    // $FlowFixMe
-    // eslint-disable-next-line compat/compat
-    // document.body.innerHTML = "";
-
-    const script = window.document.createElement("script");
-    script.src = "http://localhost:8111/sdk/js";
-    window.document.head.appendChild(script);
-
-    await new Promise((resolve) => setTimeout(resolve, 14000));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     const container = window.document.createElement("div");
     // eslint-disable-next-line compat/compat
     window.document.body.appendChild(container);
@@ -82,9 +84,7 @@ const takeScreenshot = async (config, i) => {
       width: rect.width,
       height: rect.height,
     };
-  }, config);
-
-  console.log("after eval");
+  }, buttonConfig);
 
   if (width === 0) {
     throw new Error(`Button width is 0`);
@@ -94,20 +94,26 @@ const takeScreenshot = async (config, i) => {
     throw new Error(`Button height is 0`);
   }
 
-  await percySnapshot(page, `Example Site ${i}`);
+  await percySnapshot(page, `${description}`);
   await browser.close();
 };
 
 test.describe.configure({ mode: "parallel" });
+test.use({
+  viewport: {
+    width: 1000,
+    height: 1000,
+    deviceScaleFactor: 2,
+  },
+  userAgent:
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
+});
 
 for (let i = 0; i < buttonConfigs.length; i++) {
-  test(`${i}`, async () => {
-    // for (let i = 0; i < buttonConfigs.length; i++) {
-    //   const buttonConfig = buttonConfigs[i];
-    //   console.log(buttonConfig, i)
-    //   test(`${i}`, () => {
-    await takeScreenshot(buttonConfigs[i], i);
-    // });
-    // }
+  const buttonConfig = buttonConfigs[i];
+  const description = dotifyToString(buttonConfig) || "base";
+
+  test(`Render button with ${description}`, async () => {
+    await takeScreenshot(buttonConfig, description);
   });
 }
