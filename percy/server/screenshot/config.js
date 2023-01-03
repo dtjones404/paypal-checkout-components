@@ -42,7 +42,6 @@ const RESPONSIVE_WIDTHS = [144, 222, 465, 670];
 export const buttonConfigs = [];
 
 buttonConfigs.push({
-  // $FlowFixMe
   button: {},
 });
 
@@ -119,7 +118,6 @@ for (const fundingSource of SUPPORTED_FUNDING_SOURCES) {
       },
     },
     rememberedFunding: fundingSource === FUNDING.VENMO ? [fundingSource] : [],
-    // $FlowFixMe
     button: {},
   });
 }
@@ -129,7 +127,6 @@ for (const width of RESPONSIVE_WIDTHS) {
     container: {
       width,
     },
-    // $FlowFixMe
     button: {},
   });
 }

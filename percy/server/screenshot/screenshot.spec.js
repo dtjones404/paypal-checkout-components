@@ -3,28 +3,27 @@
 import { chromium } from "playwright";
 import percySnapshot from "@percy/playwright";
 import test, { expect } from "@playwright/test";
-import fs from 'fs';
+import fs from "fs";
 
-test.setTimeout('1200000');
+test.setTimeout("1200000");
 
-const buttonConfigs = JSON.parse(fs.readFileSync(
-  './percy/server/screenshot/files/buttonConfig.json'
-));
+const buttonConfigs = JSON.parse(
+  fs.readFileSync("./percy/server/screenshot/files/buttonConfig.json")
+);
 
 const takeScreenshot = async (config, i) => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({ignoreHTTPSErrors: true });
+  const page = await browser.newPage({ ignoreHTTPSErrors: true });
   // page.on('console', (e) => console.log(e));
-  await page.goto('http://localhost.paypal.com:8111')
-  
+  await page.goto("http://localhost.paypal.com:8111");
 
   const { x, y, width, height } = await page.evaluate(async (options) => {
     // $FlowFixMe
     // eslint-disable-next-line compat/compat
     // document.body.innerHTML = "";
 
-    const script = window.document.createElement('script');
-    script.src = "http://localhost:8111/sdk/js"
+    const script = window.document.createElement("script");
+    script.src = "http://localhost:8111/sdk/js";
     window.document.head.appendChild(script);
 
     await new Promise((resolve) => setTimeout(resolve, 14000));
@@ -65,8 +64,6 @@ const takeScreenshot = async (config, i) => {
       .Buttons(options.button || {})
       .render(container);
 
-    
-
     const frame = container.querySelector("iframe");
 
     if (!frame) {
@@ -87,7 +84,7 @@ const takeScreenshot = async (config, i) => {
     };
   }, config);
 
-  console.log('after eval')
+  console.log("after eval");
 
   if (width === 0) {
     throw new Error(`Button width is 0`);
@@ -99,24 +96,18 @@ const takeScreenshot = async (config, i) => {
 
   await percySnapshot(page, `Example Site ${i}`);
   await browser.close();
-}
+};
 
-test.describe.configure({ mode: 'parallel' });
+test.describe.configure({ mode: "parallel" });
 
 for (let i = 0; i < buttonConfigs.length; i++) {
-
-
   test(`${i}`, async () => {
-  // for (let i = 0; i < buttonConfigs.length; i++) {
-  //   const buttonConfig = buttonConfigs[i];
-  //   console.log(buttonConfig, i)
-  //   test(`${i}`, () => {
-      await takeScreenshot(buttonConfigs[i], i)
+    // for (let i = 0; i < buttonConfigs.length; i++) {
+    //   const buttonConfig = buttonConfigs[i];
+    //   console.log(buttonConfig, i)
+    //   test(`${i}`, () => {
+    await takeScreenshot(buttonConfigs[i], i);
     // });
-  // }
-  })
+    // }
+  });
 }
-
-
-  
-
