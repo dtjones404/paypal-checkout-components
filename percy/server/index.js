@@ -9,15 +9,13 @@ const fs = require("fs");
 const path = require("path");
 const { webpackCompile } = require("../lib/compile");
 import { getWebpackConfig } from "@krakenjs/webpack-config-grumbler";
+import { createConfig } from "./createConfig";
 
 const hostname = "127.0.0.1";
 const port = 8111;
 
 (async () => {
-  fs.writeFileSync(
-    "./percy/files/buttonConfig.json",
-    JSON.stringify(buttonConfigs)
-  );
+  await createConfig();
 
   const scriptPath = await webpackCompile(
     getWebpackConfig({

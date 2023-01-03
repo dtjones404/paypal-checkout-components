@@ -5,8 +5,8 @@ import fs from "fs";
 import percySnapshot from "@percy/playwright";
 import test from "@playwright/test";
 
-import { dotifyToString } from "./lib/util";
-import { openPage } from "./lib/browser";
+import { dotifyToString } from "../lib/util";
+import { openPage } from "../lib/browser";
 
 const HEADLESS = process.env.HEADLESS !== "0";
 const DEVTOOLS = process.env.DEVTOOLS === "1";
@@ -18,17 +18,13 @@ const buttonConfigs = JSON.parse(
 );
 
 const takeScreenshot = async (buttonConfig, description) => {
-  const { page, browser } = await openPage(
-    "http://localhost.paypal.com:8111",
-    "http://localhost:8111/sdk/js",
-    {
-      headless: HEADLESS,
-      devtools: DEVTOOLS,
-    }
-  );
+  const { page, browser } = await openPage("/", "/sdk/js", {
+    headless: HEADLESS,
+    devtools: DEVTOOLS,
+  });
 
   const { x, y, width, height } = await page.evaluate(async (options) => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
     const container = window.document.createElement("div");
     // eslint-disable-next-line compat/compat
     window.document.body.appendChild(container);
@@ -95,7 +91,6 @@ const takeScreenshot = async (buttonConfig, description) => {
   }
 
   await percySnapshot(page, `${description}`);
-  await browser.close();
 };
 
 test.describe.configure({ mode: "parallel" });
