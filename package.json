@@ -33,7 +33,7 @@
     "webpack": "babel-node $(npm bin)/webpack",
     "webpack-size": "npm run webpack -- --config webpack.config.size",
     "prepare": "husky install",
-    "asdf": "nodemon --exec babel-node ./percy/server/index.js"
+    "asdf": "babel-node ./percy/server/index.js"
   },
   "files": [
     "src/",
@@ -89,7 +89,7 @@
     "mocketeer": "^0.3.1",
     "nodemon": "^2.0.20",
     "pixelmatch": "^5.2.1",
-    "playwright": "^1.28.1",
+    "playwright": "^1.29.1",
     "pngjs": "^6.0.0",
     "prettier": "^2.5.1",
     "prettier-plugin-sh": "^0.10.0",

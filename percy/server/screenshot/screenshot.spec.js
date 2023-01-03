@@ -2,26 +2,32 @@
 
 import { chromium } from "playwright";
 import percySnapshot from "@percy/playwright";
+import test, { expect } from "@playwright/test";
+import fs from 'fs';
 
-(async () => {
+test.setTimeout('1200000');
+
+const buttonConfigs = JSON.parse(fs.readFileSync(
+  './percy/server/screenshot/files/buttonConfig.json'
+));
+
+const takeScreenshot = async (config, i) => {
   const browser = await chromium.launch();
-  const page = await browser.newPage();
-  const buttonConfig = {};
-  console.log('asdf');
+  const page = await browser.newPage({ignoreHTTPSErrors: true });
+  // page.on('console', (e) => console.log(e));
+  await page.goto('http://localhost.paypal.com:8111')
+  
 
   const { x, y, width, height } = await page.evaluate(async (options) => {
     // $FlowFixMe
     // eslint-disable-next-line compat/compat
-    document.body.innerHTML = "";
+    // document.body.innerHTML = "";
 
-    const script = window.document.createElement("script");
-    script.src = "http://localhost:8111";
+    const script = window.document.createElement('script');
+    script.src = "http://localhost:8111/sdk/js"
     window.document.head.appendChild(script);
 
-    throw `${JSON.stringify(window.document.head)}`
-
-    await new Promise((resolve) => setTimeout(resolve, 9000));
-
+    await new Promise((resolve) => setTimeout(resolve, 14000));
     const container = window.document.createElement("div");
     // eslint-disable-next-line compat/compat
     window.document.body.appendChild(container);
@@ -55,11 +61,11 @@ import percySnapshot from "@percy/playwright";
       };
     }
 
-    const renderPromise = window.paypal
+    const renderPromise = paypal
       .Buttons(options.button || {})
       .render(container);
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    
 
     const frame = container.querySelector("iframe");
 
@@ -79,7 +85,7 @@ import percySnapshot from "@percy/playwright";
       width: rect.width,
       height: rect.height,
     };
-  }, buttonConfig);
+  }, config);
 
   console.log('after eval')
 
@@ -91,28 +97,26 @@ import percySnapshot from "@percy/playwright";
     throw new Error(`Button height is 0`);
   }
 
-  // const existingExists = await fs.exists(filepath);
-
-  // const [screenshot, existing] = await Promise.all([
-  //   takeScreenshot(page, { x, y, width, height }),
-  //   existingExists ? readPNG(filepath) : null,
-  // ]);
-
-  // if (existing) {
-  //   let delta;
-
-  //   try {
-  //     delta = await diffPNG(screenshot, existing);
-  //   } catch (err) {
-  //     await existing.write(diffpath);
-  //     await screenshot.write(filepath);
-  //     throw err;
-  //   }
-
-  // } else {
-  //   await screenshot.write(filepath);
-  // }
-
-  await percySnapshot(page, "Example Site");
+  await percySnapshot(page, `Example Site ${i}`);
   await browser.close();
-})();
+}
+
+test.describe.configure({ mode: 'parallel' });
+
+for (let i = 0; i < buttonConfigs.length; i++) {
+
+
+  test(`${i}`, async () => {
+  // for (let i = 0; i < buttonConfigs.length; i++) {
+  //   const buttonConfig = buttonConfigs[i];
+  //   console.log(buttonConfig, i)
+  //   test(`${i}`, () => {
+      await takeScreenshot(buttonConfigs[i], i)
+    // });
+  // }
+  })
+}
+
+
+  
+
