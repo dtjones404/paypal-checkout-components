@@ -1,5 +1,4 @@
-/* @flow */
-
+// eslint-disable-next-line import/no-nodejs-modules
 import fs from "fs";
 
 import percySnapshot from "@percy/playwright";
@@ -8,22 +7,25 @@ import test from "@playwright/test";
 import { dotifyToString } from "../lib/util";
 import { openPage } from "../lib/browser";
 
+// eslint-disable-next-line no-process-env
 const HEADLESS = process.env.HEADLESS !== "0";
+// eslint-disable-next-line no-process-env
 const DEVTOOLS = process.env.DEVTOOLS === "1";
 
 test.setTimeout("1200000");
 
 const buttonConfigs = JSON.parse(
+  // eslint-disable-next-line no-sync
   fs.readFileSync("./percy/files/buttonConfig.json")
 );
 
 const takeScreenshot = async (buttonConfig, description) => {
-  const { page, browser } = await openPage("/", "/sdk/js", {
+  const { page } = await openPage("/", "/sdk/js", {
     headless: HEADLESS,
     devtools: DEVTOOLS,
   });
 
-  const { x, y, width, height } = await page.evaluate(async (options) => {
+  const { width, height } = await page.evaluate(async (options) => {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
     const container = window.document.createElement("div");
     // eslint-disable-next-line compat/compat
@@ -58,6 +60,7 @@ const takeScreenshot = async (buttonConfig, description) => {
       };
     }
 
+    // eslint-disable-next-line no-undef
     const renderPromise = paypal
       .Buttons(options.button || {})
       .render(container);

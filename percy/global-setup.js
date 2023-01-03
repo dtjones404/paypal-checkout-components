@@ -1,4 +1,4 @@
-// /* @flow */
+/* @flow */
 
 // const { bsLocal, BS_LOCAL_ARGS } = require("./fixtures");
 // const { promisify } = require("util");

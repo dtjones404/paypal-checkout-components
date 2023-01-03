@@ -1,5 +1,3 @@
-/* @flow */
-
 import { FUNDING } from "@paypal/sdk-constants";
 
 import {

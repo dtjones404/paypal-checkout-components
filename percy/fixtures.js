@@ -1,4 +1,4 @@
-// /* @flow */
+/* @flow */
 
 // const base = require("@playwright/test");
 // const cp = require("child_process");

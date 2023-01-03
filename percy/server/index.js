@@ -1,14 +1,17 @@
 /* @flow */
 
-import { getTestGlobals } from "../globals";
-import { buttonConfigs } from "../config";
-import globals from "../../globals";
+/* eslint-disable import/no-nodejs-modules */
+import http from "http";
+import fs from "fs";
+import path from "path";
+/* eslint-enable import/no-nodejs-modules */
 
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
-const { webpackCompile } = require("../lib/compile");
 import { getWebpackConfig } from "@krakenjs/webpack-config-grumbler";
+
+import globals from "../../globals";
+import { getTestGlobals } from "../globals";
+import { webpackCompile } from "../lib/compile";
+
 import { createConfig } from "./createConfig";
 
 const hostname = "127.0.0.1";
@@ -44,6 +47,7 @@ const port = 8111;
   });
 
   server.listen(port, hostname, () => {
+    // eslint-disable-next-line no-console
     console.log(`Server running at http://${hostname}:${port}/`);
   });
 })();
