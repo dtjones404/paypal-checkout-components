@@ -86,7 +86,7 @@ const config = {
   // },
   // ],
   webServer: {
-    command: "npm run asdf",
+    command: "npm run screenshot-server",
     url: "http://localhost:8111/",
     timeout: 1200 * 1000,
     reuseExistingServer: !process.env.CI,

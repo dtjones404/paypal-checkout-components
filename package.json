@@ -33,7 +33,7 @@
     "webpack": "babel-node $(npm bin)/webpack",
     "webpack-size": "npm run webpack -- --config webpack.config.size",
     "prepare": "husky install",
-    "asdf": "babel-node ./percy/server/index.js"
+    "screenshot-server": "babel-node ./percy/server/index.js"
   },
   "files": [
     "src/",
