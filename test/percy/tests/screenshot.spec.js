@@ -28,7 +28,6 @@ const takeScreenshot = async (buttonConfig, description) => {
   const { width, height } = await page.evaluate(async (options) => {
     // await new Promise((resolve) => setTimeout(resolve, 3000));
     const container = window.document.createElement("div");
-    // eslint-disable-next-line compat/compat
     window.document.body.appendChild(container);
 
     if (options.fundingEligibility) {

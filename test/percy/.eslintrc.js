@@ -5,6 +5,7 @@ module.exports = {
   rules: {
     "no-restricted-globals": ["error"],
     "promise/no-native": "off",
-    "flowtype/*": "off",
+    "flowtype/require-valid-file-annotation": "off",
+    "flowtype/require-return-type": "off",
   },
 };
