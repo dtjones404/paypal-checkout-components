@@ -1,4 +1,4 @@
-## PayPal Checkout
+## PayPal Checkouta
 
 [![build status][build-badge]][build]
 [![code coverage][coverage-badge]][coverage]
