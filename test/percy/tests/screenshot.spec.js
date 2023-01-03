@@ -16,7 +16,7 @@ test.setTimeout("1200000");
 
 const buttonConfigs = JSON.parse(
   // eslint-disable-next-line no-sync
-  fs.readFileSync("./percy/files/buttonConfig.json")
+  fs.readFileSync("./test/percy/files/buttonConfig.json")
 );
 
 const takeScreenshot = async (buttonConfig, description) => {

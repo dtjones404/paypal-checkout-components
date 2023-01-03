@@ -8,7 +8,7 @@ import path from "path";
 
 import { getWebpackConfig } from "@krakenjs/webpack-config-grumbler";
 
-import globals from "../../globals";
+import globals from "../../../globals";
 import { getTestGlobals } from "../globals";
 import { webpackCompile } from "../lib/compile";
 

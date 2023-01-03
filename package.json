@@ -27,13 +27,13 @@
     "release": "./scripts/publish.sh",
     "start": "npm run webpack -- --progress --watch",
     "test": "npm run jest-ssr && npm run karma && npm run jest-screenshot",
-    "test:percy": "percy exec -- playwright test --config=./percy/playwright.config.js --reporter=dot --pass-with-no-tests",
+    "percy-screenshot": "percy exec -- playwright test --config=./test/percy/playwright.config.js --reporter=dot --pass-with-no-tests",
     "typecheck": "npm run flow-typed && npm run flow",
     "version": "./scripts/version.sh",
     "webpack": "babel-node $(npm bin)/webpack",
     "webpack-size": "npm run webpack -- --config webpack.config.size",
     "prepare": "husky install",
-    "screenshot-server": "babel-node ./percy/server/index.js"
+    "screenshot-server": "babel-node ./test/percy/server/index.js"
   },
   "files": [
     "src/",
