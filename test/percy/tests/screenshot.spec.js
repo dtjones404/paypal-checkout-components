@@ -13,14 +13,14 @@ const HEADLESS = process.env.HEADLESS !== "0";
 // eslint-disable-next-line no-process-env
 const DEVTOOLS = process.env.DEVTOOLS === "1";
 
-test.setTimeout("1200000");
+test.setTimeout("600000");
 
 const buttonConfigs = JSON.parse(
   // eslint-disable-next-line no-sync
-  fs.readFileSync("./test/percy/files/buttonConfig.json")
+  fs.readFileSync("./test/percy/files/buttonConfigs.json")
 );
 
-const takeScreenshot = async (buttonConfig, description) => {
+const testPromise = async (buttonConfig, description) => {
   const { page } = await openPage("/", "/sdk/js", {
     headless: HEADLESS,
     devtools: DEVTOOLS,
@@ -68,7 +68,6 @@ const takeScreenshot = async (buttonConfig, description) => {
       .render(container);
 
     const frame = container.querySelector("iframe");
-    frame.id = "paypal-buttons";
 
     if (!frame) {
       await renderPromise.timeout(500);
@@ -81,8 +80,6 @@ const takeScreenshot = async (buttonConfig, description) => {
     delete window.__TEST_REMEMBERED_FUNDING__;
 
     return {
-      x: rect.left,
-      y: rect.top,
       width: rect.width,
       height: rect.height,
     };
@@ -96,7 +93,9 @@ const takeScreenshot = async (buttonConfig, description) => {
     throw new Error(`Button height is 0`);
   }
 
-  await percySnapshot(page, `${description}`, { scope: "#paypal-buttons" });
+  await percySnapshot(page, `${description}`, {
+    scope: ".paypal-buttons",
+  });
 };
 
 test.describe.configure({ mode: "parallel" });
@@ -115,6 +114,6 @@ for (let i = 0; i < buttonConfigs.length; i++) {
   const description = dotifyToString(buttonConfig) || "base";
 
   test(`Render button with ${description}`, async () => {
-    await takeScreenshot(buttonConfig, description);
+    await testPromise(buttonConfig, description);
   });
 }

@@ -12,13 +12,13 @@ import globals from "../../../globals";
 import { getTestGlobals } from "../globals";
 import { webpackCompile } from "../lib/compile";
 
-import { createConfig } from "./createConfig";
+import { createButtonConfigs } from "./createButtonConfigs";
 
 const hostname = "127.0.0.1";
 const port = 8111;
 
 (async () => {
-  await createConfig();
+  createButtonConfigs();
 
   const scriptPath = await webpackCompile(
     getWebpackConfig({

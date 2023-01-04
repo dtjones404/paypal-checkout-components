@@ -38,16 +38,3 @@ export async function openPage(
     open,
   };
 }
-
-// export async function takeScreenshot(page, { x, y, width, height }) {
-//   const path = `${os.tmpdir()}/${Math.random().toString()}.png`;
-
-//   await page.screenshot({
-//     path,
-//     clip: { x, y, width, height },
-//   });
-
-//   const png = await readPNG(path);
-
-//   return png;
-// }
