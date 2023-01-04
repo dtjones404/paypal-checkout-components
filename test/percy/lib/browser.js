@@ -4,19 +4,7 @@
 /* eslint unicorn/no-process-exit: 0 */
 /* eslint import/no-nodejs-modules: 0 */
 
-import { chromium } from "playwright";
-
-export async function openPage(
-  pageURL,
-  scriptURL,
-  { headless = true, devtools = false }
-) {
-  const browser = await chromium.launch({
-    headless,
-    devtools,
-    args: ["--no-sandbox"],
-  });
-
+export async function openPage(browser, pageURL, scriptURL) {
   const open = async () => {
     const page = await browser.newPage({ ignoreHTTPSErrors: true });
 

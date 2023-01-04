@@ -2,7 +2,7 @@
 import fs from "fs";
 
 import percySnapshot from "@percy/playwright";
-import test from "@playwright/test";
+import test, { chromium } from "@playwright/test";
 
 import { dotifyToString } from "../lib/util";
 import { openPage } from "../lib/browser";
@@ -20,11 +20,8 @@ const buttonConfigs = JSON.parse(
   fs.readFileSync("./test/percy/files/buttonConfigs.json")
 );
 
-const testPromise = async (buttonConfig, description) => {
-  const { page } = await openPage("/", "/sdk/js", {
-    headless: HEADLESS,
-    devtools: DEVTOOLS,
-  });
+const testPromise = async (browser, buttonConfig, description) => {
+  const { page } = await openPage(browser, "/", "/sdk/js");
 
   buttonConfig.button = buttonConfig.button || {};
   buttonConfig.button.content = testContent;
@@ -109,11 +106,25 @@ test.use({
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
 });
 
+let browser;
+
+test.beforeAll(async () => {
+  browser = await chromium.launch({
+    HEADLESS,
+    DEVTOOLS,
+    args: ["--no-sandbox"],
+  });
+});
+
+test.afterAll(async () => {
+  await browser?.close();
+});
+
 for (let i = 0; i < buttonConfigs.length; i++) {
   const buttonConfig = buttonConfigs[i];
   const description = dotifyToString(buttonConfig) || "base";
 
   test(`Render button with ${description}`, async () => {
-    await testPromise(buttonConfig, description);
+    await testPromise(browser, buttonConfig, description);
   });
 }
