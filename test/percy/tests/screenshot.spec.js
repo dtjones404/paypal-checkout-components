@@ -2,7 +2,7 @@
 import fs from "fs";
 
 import percySnapshot from "@percy/playwright";
-import test from "@playwright/test";
+import test, { chromium } from "@playwright/test";
 
 import { dotifyToString } from "../lib/util";
 import { openPage } from "../lib/browser";
@@ -13,18 +13,15 @@ const HEADLESS = process.env.HEADLESS !== "0";
 // eslint-disable-next-line no-process-env
 const DEVTOOLS = process.env.DEVTOOLS === "1";
 
-test.setTimeout("1200000");
+test.setTimeout("600000");
 
 const buttonConfigs = JSON.parse(
   // eslint-disable-next-line no-sync
-  fs.readFileSync("./test/percy/files/buttonConfig.json")
+  fs.readFileSync("./test/percy/files/buttonConfigs.json")
 );
 
-const takeScreenshot = async (buttonConfig, description) => {
-  const { page } = await openPage("/", "/sdk/js", {
-    headless: HEADLESS,
-    devtools: DEVTOOLS,
-  });
+const testPromise = async (browser, buttonConfig, description) => {
+  const { page } = await openPage(browser, "/", "/sdk/js");
 
   buttonConfig.button = buttonConfig.button || {};
   buttonConfig.button.content = testContent;
@@ -68,7 +65,6 @@ const takeScreenshot = async (buttonConfig, description) => {
       .render(container);
 
     const frame = container.querySelector("iframe");
-    frame.id = "paypal-buttons";
 
     if (!frame) {
       await renderPromise.timeout(500);
@@ -81,8 +77,6 @@ const takeScreenshot = async (buttonConfig, description) => {
     delete window.__TEST_REMEMBERED_FUNDING__;
 
     return {
-      x: rect.left,
-      y: rect.top,
       width: rect.width,
       height: rect.height,
     };
@@ -96,7 +90,9 @@ const takeScreenshot = async (buttonConfig, description) => {
     throw new Error(`Button height is 0`);
   }
 
-  await percySnapshot(page, `${description}`, { scope: "#paypal-buttons" });
+  await percySnapshot(page, `${description}`, {
+    scope: ".paypal-buttons",
+  });
 };
 
 test.describe.configure({ mode: "parallel" });
@@ -110,11 +106,25 @@ test.use({
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",
 });
 
+let browser;
+
+test.beforeAll(async () => {
+  browser = await chromium.launch({
+    HEADLESS,
+    DEVTOOLS,
+    args: ["--no-sandbox"],
+  });
+});
+
+test.afterAll(async () => {
+  await browser?.close();
+});
+
 for (let i = 0; i < buttonConfigs.length; i++) {
   const buttonConfig = buttonConfigs[i];
   const description = dotifyToString(buttonConfig) || "base";
 
   test(`Render button with ${description}`, async () => {
-    await takeScreenshot(buttonConfig, description);
+    await testPromise(browser, buttonConfig, description);
   });
 }

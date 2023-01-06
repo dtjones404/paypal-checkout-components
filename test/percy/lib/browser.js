@@ -4,19 +4,7 @@
 /* eslint unicorn/no-process-exit: 0 */
 /* eslint import/no-nodejs-modules: 0 */
 
-import { chromium } from "playwright";
-
-export async function openPage(
-  pageURL,
-  scriptURL,
-  { headless = true, devtools = false }
-) {
-  const browser = await chromium.launch({
-    headless,
-    devtools,
-    args: ["--no-sandbox"],
-  });
-
+export async function openPage(browser, pageURL, scriptURL) {
   const open = async () => {
     const page = await browser.newPage({ ignoreHTTPSErrors: true });
 
@@ -38,16 +26,3 @@ export async function openPage(
     open,
   };
 }
-
-// export async function takeScreenshot(page, { x, y, width, height }) {
-//   const path = `${os.tmpdir()}/${Math.random().toString()}.png`;
-
-//   await page.screenshot({
-//     path,
-//     clip: { x, y, width, height },
-//   });
-
-//   const png = await readPNG(path);
-
-//   return png;
-// }

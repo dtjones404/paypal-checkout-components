@@ -1,17 +1,6 @@
 /* eslint no-restricted-globals: 0 */
 /* eslint import/no-nodejs-modules: 0 */
 
-import os from "os";
-import { createHash } from "crypto";
-
-import fs from "fs-extra";
-
-export async function createTempFile(filename, text = "") {
-  const path = `${os.tmpdir()}/${filename}`;
-  await fs.writeFile(path, text);
-  return path;
-}
-
 export function dotify(obj, prefix = "", newobj = {}) {
   prefix = prefix ? `${prefix}.` : prefix;
   for (const key in obj) {
@@ -46,11 +35,4 @@ export function dotifyToString(obj) {
       return `${key}=${dotified[key]}`;
     })
     .join("&");
-}
-
-export function sha256(str) {
-  return createHash("sha256")
-    .update(str)
-    .digest("base64")
-    .replace(/[^a-zA-Z0-9_-]/g, "");
 }
