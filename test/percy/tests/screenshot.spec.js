@@ -13,13 +13,6 @@ const HEADLESS = process.env.HEADLESS !== "0";
 // eslint-disable-next-line no-process-env
 const DEVTOOLS = process.env.DEVTOOLS === "1";
 
-test.setTimeout("600000");
-
-const buttonConfigs = JSON.parse(
-  // eslint-disable-next-line no-sync
-  fs.readFileSync("./test/percy/files/buttonConfigs.json")
-);
-
 const testPromise = async (browser, buttonConfig, description) => {
   const { page } = await openPage(browser, "/", "/sdk/js");
 
@@ -90,11 +83,17 @@ const testPromise = async (browser, buttonConfig, description) => {
     throw new Error(`Button height is 0`);
   }
 
-  await percySnapshot(page, `${description}`, {
+  await percySnapshot(page, description, {
     scope: ".paypal-buttons",
   });
 };
 
+const buttonConfigs = JSON.parse(
+  // eslint-disable-next-line no-sync
+  fs.readFileSync("./test/percy/files/buttonConfigs.json")
+);
+
+test.setTimeout("600000");
 test.describe.configure({ mode: "parallel" });
 test.use({
   viewport: {
@@ -120,8 +119,7 @@ test.afterAll(async () => {
   await browser?.close();
 });
 
-for (let i = 0; i < buttonConfigs.length; i++) {
-  const buttonConfig = buttonConfigs[i];
+for (const buttonConfig of buttonConfigs) {
   const description = dotifyToString(buttonConfig) || "base";
 
   test(`Render button with ${description}`, async () => {
