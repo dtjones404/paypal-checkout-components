@@ -4,10 +4,12 @@ import fs from "fs";
 
 import { buttonConfigs } from "../config";
 
-export const createButtonConfigs = () => {
+const createButtonConfigs = () => {
   // eslint-disable-next-line no-sync
   fs.writeFileSync(
     "./test/percy/files/buttonConfigs.json",
     JSON.stringify(buttonConfigs)
   );
 };
+
+createButtonConfigs();

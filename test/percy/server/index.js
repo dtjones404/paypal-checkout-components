@@ -12,14 +12,10 @@ import globals from "../../../globals";
 import { getTestGlobals } from "../globals";
 import { webpackCompile } from "../lib/compile";
 
-import { createButtonConfigs } from "./createButtonConfigs";
-
 const hostname = "127.0.0.1";
 const port = 8111;
 
 (async () => {
-  createButtonConfigs();
-
   const scriptPath = await webpackCompile(
     getWebpackConfig({
       entry: "./test/paypal.js",
