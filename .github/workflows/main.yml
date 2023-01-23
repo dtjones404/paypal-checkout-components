@@ -30,7 +30,6 @@ jobs:
           useLockFile: false
 
       - name: ▶️ Run Lint
-        if: ${{ github.actor != 'renovate[bot]' }}
         run: npm run lint
 
       - name: ▶️ Run Typecheck
