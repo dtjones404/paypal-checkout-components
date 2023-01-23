@@ -30,6 +30,7 @@ jobs:
           useLockFile: false
 
       - name: ▶️ Run Lint
+        if: ${{ github.event.actor.login != "renovate[bot]" }}
         run: npm run lint
 
       - name: ▶️ Run Typecheck
@@ -45,7 +46,7 @@ jobs:
         run: npm run jest-screenshot
 
       - name: ▶️ Run Percy Screenshot
-        if: ${{ (github.event.actor.login != 'renovate[bot]') }}
+        if: ${{ github.event.actor.login != "renovate[bot]" }}
         run: npm run percy-screenshot
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
