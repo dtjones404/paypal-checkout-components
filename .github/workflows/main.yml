@@ -45,7 +45,7 @@ jobs:
         run: npm run jest-screenshot
 
       - name: ▶️ Run Percy Screenshot
-      if: "!equal(github.event.head_commit.actor.login, '[dtjones]')"
+        if: "!equal(github.event.head_commit.actor.login, '[dtjones]')"
         run: npm run percy-screenshot
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
