@@ -10,13 +10,6 @@ import { Text, Space } from '../../ui/text';
 import { getLogoCDNExperiment } from '../../lib/getLogoCDNExperiment';
 
 export function getIdealConfig() : FundingSourceConfig {
-    let logoCDNExperiment;
-
-    if (__WEB__) {
-        logoCDNExperiment = getLogoCDNExperiment()
-        console.log('asdf', logoCDNExperiment.isEnabled());
-    }
-
     return {
         ...DEFAULT_APM_FUNDING_CONFIG,
 
@@ -26,7 +19,16 @@ export function getIdealConfig() : FundingSourceConfig {
             BUTTON_LAYOUT.VERTICAL
         ],
 
-        Logo: ({ logoColor, optional }) => IdealLogo({ logoColor, optional, logoCDNExperiment }),
+        Logo: ({ logoColor, optional }) => {
+          if (__WEB__) {
+            const logoCDNExperiment = getLogoCDNExperiment();
+            const logoCDNExperimentIsEnabled = logoCDNExperiment.isEnabled()
+
+            return IdealLogo({ logoColor, optional, logoCDNExperimentIsEnabled })
+          } else {
+            return IdealLogo({ logoColor, optional })
+          }
+        },
 
         Label: ({ logo, ...opts }) => {
             if (__WEB__) {
