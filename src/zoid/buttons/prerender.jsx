@@ -13,6 +13,7 @@ import { DEFAULT_POPUP_SIZE } from '../checkout';
 import { EXPERIENCE } from '../../constants';
 import { Buttons } from '../../ui';
 import { type ButtonProps } from '../../ui/buttons/props';
+import { getPrefetchCDNExperiment } from '../../lib/getLogoCDNExperiment';
 
 type PrerenderedButtonsProps = {|
     nonce : ?string,
@@ -24,8 +25,22 @@ type PrerenderedButtonsProps = {|
     |}) => void
 |};
 
+function prefetchImage(src: string): void {
+  const link = document.createElement("link");
+  link.rel = "prefetch";
+  link.as = "image";
+  link.href = src;
+  document.head?.append(link);
+}
+
 export function PrerenderedButtons({ nonce, onRenderCheckout, props } : PrerenderedButtonsProps) : ChildType {
     let win;
+
+    if (getPrefetchCDNExperiment().isEnabled()) {
+      prefetchImage('https://www.paypalobjects.com/js-sdk-logos/2.1.1/ideal-default.svg'
+      )
+    }
+    
     const handleClick = (
         // eslint-disable-next-line no-undef
         event : SyntheticInputEvent<HTMLInputElement>,
