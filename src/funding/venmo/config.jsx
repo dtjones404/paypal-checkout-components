@@ -6,10 +6,8 @@ import { PLATFORM } from '@paypal/sdk-constants/src';
 
 import { BUTTON_COLOR, BUTTON_LAYOUT } from '../../constants';
 import { DEFAULT_FUNDING_CONFIG, type FundingSourceConfig } from '../common';
-import { enableLogoCDNExperiment } from '../../lib/getLogoCDNExperiment';
 
 import { WalletLabel, Label, AppLabel } from './template';
-
 
 export function getVenmoConfig() : FundingSourceConfig {
     return {
@@ -41,7 +39,7 @@ export function getVenmoConfig() : FundingSourceConfig {
             return {};
         },
 
-        Logo:  ({ logoColor, optional }) => enableLogoCDNExperiment(VenmoLogo, { logoColor, optional }),
+        Logo:  ({ logoColor, optional }) => VenmoLogo({ logoColor, optional }),
         
         Label: ({ ...props }) => {
             if (props.experiment && props.experiment.enableVenmoAppLabel) {

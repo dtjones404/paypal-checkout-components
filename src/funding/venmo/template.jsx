@@ -9,7 +9,6 @@ import {
     BasicLabel
 } from '../common';
 import { Text, Space } from '../../ui/text';
-import { enableLogoCDNExperiment } from '../../lib/getLogoCDNExperiment';
 
 import css from './style.scoped.scss';
  
@@ -18,7 +17,7 @@ export function AppLabel(opts : LabelOptions) : ChildType {
 
     const AppLogo : ChildType = (
         <Style css={ css }>
-            {enableLogoCDNExperiment(VenmoLogo, { logoColor })}
+            <VenmoLogo logoColor={ logoColor } />
             <Text className={ [ 'app-label' ] }>
                 App
             </Text>
@@ -39,7 +38,7 @@ export function Label(opts : LabelOptions) : ChildType {
 export function  WalletLabel({ ...props } : WalletLabelOptions) : ChildType {
     const { instrument, logoColor } = props;
     let label;
-    const logo =  enableLogoCDNExperiment(VenmoLogo, { logoColor });
+    const logo =  <VenmoLogo logoColor={ logoColor } />;
 
     if (instrument && instrument.label) {
         label = instrument.label;
