@@ -56,7 +56,7 @@
         return {}.hasOwnProperty.call(object, property);
     };
     __webpack_require__.p = "";
-    __webpack_require__(__webpack_require__.s = 35);
+    __webpack_require__(__webpack_require__.s = 37);
 }([ function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.d(__webpack_exports__, "m", (function() {
@@ -958,8 +958,9 @@
                         }
                     }
                     if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
-                        _result2.resolved ? promise.resolve(_result2.value) : promise.reject(_result2.error);
-                        _result2.errorHandled = !0;
+                        var promiseResult = _result2;
+                        promiseResult.resolved ? promise.resolve(promiseResult.value) : promise.reject(promiseResult.error);
+                        promiseResult.errorHandled = !0;
                     } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? promise.resolve(_result2.value) : promise.reject(_result2.error) : chain(_result2, promise) : promise.resolve(_result2);
                 }
                 handlers.length = 0;
@@ -1010,6 +1011,10 @@
             if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
             return Promise.resolve(this);
         };
+        _proto.lazy = function() {
+            this.errorHandled = !0;
+            return this;
+        };
         ZalgoPromise.resolve = function(value) {
             return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise((function(resolve, reject) {
                 return value.then(resolve, reject);
@@ -1024,7 +1029,7 @@
         ZalgoPromise.all = function(promises) {
             var promise = new ZalgoPromise;
             var count = promises.length;
-            var results = [];
+            var results = [].slice();
             if (!count) {
                 promise.resolve(results);
                 return promise;
@@ -1273,7 +1278,7 @@
     var src = __webpack_require__(5);
     var zalgo_promise_src = __webpack_require__(1);
     var cross_domain_safe_weakmap_src = __webpack_require__(14);
-    var error = __webpack_require__(20);
+    var error = __webpack_require__(21);
     function urlEncode(str) {
         return str.replace(/\?/g, "%3F").replace(/&/g, "%26").replace(/#/g, "%23").replace(/\+/g, "%2B");
     }
@@ -1305,83 +1310,74 @@
     function replaceObject(item, replacers, fullKey) {
         void 0 === fullKey && (fullKey = "");
         if (Array.isArray(item)) {
-            var _ret = function() {
-                var length = item.length;
-                var result = [];
-                var _loop = function(i) {
-                    Object.defineProperty(result, i, {
-                        configurable: !0,
-                        enumerable: !0,
-                        get: function() {
-                            var itemKey = fullKey ? fullKey + "." + i : "" + i;
-                            var child = item[i];
-                            var replacer = replacers[typeof child];
-                            if (replacer) {
-                                var replaced = replacer(child, i, itemKey);
-                                if (void 0 !== replaced) {
-                                    result[i] = replaced;
-                                    return result[i];
-                                }
-                            }
-                            if ("object" == typeof child && null !== child) {
-                                result[i] = replaceObject(child, replacers, itemKey);
+            var length = item.length;
+            var result = [];
+            var _loop = function(i) {
+                Object.defineProperty(result, i, {
+                    configurable: !0,
+                    enumerable: !0,
+                    get: function() {
+                        var itemKey = fullKey ? fullKey + "." + i : "" + i;
+                        var child = item[i];
+                        var replacer = replacers[typeof child];
+                        if (replacer) {
+                            var replaced = replacer(child, i, itemKey);
+                            if (void 0 !== replaced) {
+                                result[i] = replaced;
                                 return result[i];
                             }
-                            result[i] = child;
+                        }
+                        if ("object" == typeof child && null !== child) {
+                            result[i] = replaceObject(child, replacers, itemKey);
                             return result[i];
-                        },
-                        set: function(value) {
-                            delete result[i];
-                            result[i] = value;
                         }
-                    });
-                };
-                for (var i = 0; i < length; i++) _loop(i);
-                return {
-                    v: result
-                };
-            }();
-            if ("object" == typeof _ret) return _ret.v;
-        } else {
-            if ("object" != typeof item || null === item) throw new Error("Pass an object or array");
-            var _ret2 = function() {
-                var result = {};
-                var _loop2 = function(key) {
-                    if (!item.hasOwnProperty(key)) return "continue";
-                    Object.defineProperty(result, key, {
-                        configurable: !0,
-                        enumerable: !0,
-                        get: function() {
-                            var itemKey = fullKey ? fullKey + "." + key : "" + key;
-                            var child = item[key];
-                            var replacer = replacers[typeof child];
-                            if (replacer) {
-                                var replaced = replacer(child, key, itemKey);
-                                if (void 0 !== replaced) {
-                                    result[key] = replaced;
-                                    return result[key];
-                                }
-                            }
-                            if ("object" == typeof child && null !== child) {
-                                result[key] = replaceObject(child, replacers, itemKey);
-                                return result[key];
-                            }
-                            result[key] = child;
-                            return result[key];
-                        },
-                        set: function(value) {
-                            delete result[key];
-                            result[key] = value;
-                        }
-                    });
-                };
-                for (var key in item) _loop2(key);
-                return {
-                    v: result
-                };
-            }();
-            if ("object" == typeof _ret2) return _ret2.v;
+                        result[i] = child;
+                        return result[i];
+                    },
+                    set: function(value) {
+                        delete result[i];
+                        result[i] = value;
+                    }
+                });
+            };
+            for (var i = 0; i < length; i++) _loop(i);
+            return result;
         }
+        if ("object" == typeof item && null !== item) {
+            var _result = {};
+            var _loop2 = function(key) {
+                if (!item.hasOwnProperty(key)) return "continue";
+                Object.defineProperty(_result, key, {
+                    configurable: !0,
+                    enumerable: !0,
+                    get: function() {
+                        var itemKey = fullKey ? fullKey + "." + key : "" + key;
+                        var child = item[key];
+                        var replacer = replacers[typeof child];
+                        if (replacer) {
+                            var replaced = replacer(child, key, itemKey);
+                            if (void 0 !== replaced) {
+                                _result[key] = replaced;
+                                return _result[key];
+                            }
+                        }
+                        if ("object" == typeof child && null !== child) {
+                            _result[key] = replaceObject(child, replacers, itemKey);
+                            return _result[key];
+                        }
+                        _result[key] = child;
+                        return _result[key];
+                    },
+                    set: function(value) {
+                        delete _result[key];
+                        _result[key] = value;
+                    }
+                });
+            };
+            for (var key in item) _loop2(key);
+            return _result;
+        }
+        throw new Error("Pass an object or array");
     }
     function copyProp(source, target, name, def) {
         if (source.hasOwnProperty(name)) {
@@ -3397,9 +3393,21 @@
         ABOUT: "about:"
     };
     var IE_WIN_ACCESS_ERROR = "Call was rejected by callee.\r\n";
+    function getActualProtocol(win) {
+        void 0 === win && (win = window);
+        return win.location.protocol;
+    }
+    function getProtocol(win) {
+        void 0 === win && (win = window);
+        if (win.mockDomain) {
+            var protocol = win.mockDomain.split("//")[0];
+            if (protocol) return protocol;
+        }
+        return getActualProtocol(win);
+    }
     function isAboutProtocol(win) {
         void 0 === win && (win = window);
-        return win.location.protocol === PROTOCOL.ABOUT;
+        return getProtocol(win) === PROTOCOL.ABOUT;
     }
     function getParent(win) {
         void 0 === win && (win = window);
@@ -3423,7 +3431,7 @@
         void 0 === win && (win = window);
         var location = win.location;
         if (!location) throw new Error("Can not read window location");
-        var protocol = location.protocol;
+        var protocol = getActualProtocol(win);
         if (!protocol) throw new Error("Can not read window protocol");
         if (protocol === PROTOCOL.FILE) return PROTOCOL.FILE + "//";
         if (protocol === PROTOCOL.ABOUT) {
@@ -3449,6 +3457,12 @@
         } catch (err) {}
         try {
             if (isAboutProtocol(win) && canReadFromWindow()) return !0;
+        } catch (err) {}
+        try {
+            if (function(win) {
+                void 0 === win && (win = window);
+                return getProtocol(win) === PROTOCOL.MOCK;
+            }(win) && canReadFromWindow()) return !0;
         } catch (err) {}
         try {
             if (getActualDomain(win) === getActualDomain(window)) return !0;
@@ -3642,8 +3656,7 @@
         } catch (err) {}
     }
     function findFrameByName(win, name) {
-        var frame;
-        return (frame = getFrameByName(win, name)) ? frame : function findChildFrameByName(win, name) {
+        return getFrameByName(win, name) || function findChildFrameByName(win, name) {
             var frame = getFrameByName(win, name);
             if (frame) return frame;
             for (var _i11 = 0, _getFrames4 = getFrames(win); _i11 < _getFrames4.length; _i11++) {
@@ -3726,7 +3739,7 @@
         })));
     }
     function stringifyDomainPattern(pattern) {
-        return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() : pattern.toString();
+        return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() + ")" : pattern.toString();
     }
     function getDomainFromUrl(url) {
         return url.match(/^(https?|mock|file):\/\//) ? url.split("/").slice(0, 3).join("/") : getDomain();
@@ -4071,18 +4084,18 @@
         return regexMap;
     }));
     var zalgo_promise_src__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-    var belter_src__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(12);
+    var belter_src__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
     __webpack_require__.d(__webpack_exports__, "j", (function() {
-        return belter_src__WEBPACK_IMPORTED_MODULE_1__.g;
+        return belter_src__WEBPACK_IMPORTED_MODULE_1__.d;
     }));
     __webpack_require__.d(__webpack_exports__, "k", (function() {
-        return belter_src__WEBPACK_IMPORTED_MODULE_1__.i;
+        return belter_src__WEBPACK_IMPORTED_MODULE_1__.e;
     }));
     __webpack_require__.d(__webpack_exports__, "r", (function() {
-        return belter_src__WEBPACK_IMPORTED_MODULE_1__.k;
+        return belter_src__WEBPACK_IMPORTED_MODULE_1__.g;
     }));
     __webpack_require__.d(__webpack_exports__, "f", (function() {
-        return belter_src__WEBPACK_IMPORTED_MODULE_1__.e;
+        return belter_src__WEBPACK_IMPORTED_MODULE_1__.c;
     }));
     var moduleGlobal = {};
     function getGlobal() {
@@ -4329,7 +4342,7 @@
     __webpack_require__.d(interface_namespaceObject, "init", (function() {
         return init;
     }));
-    var lib = __webpack_require__(13);
+    var lib = __webpack_require__(12);
     var src = __webpack_require__(5);
     var conf = __webpack_require__(8);
     var global = __webpack_require__(7);
@@ -4338,7 +4351,7 @@
     var SEND_MESSAGE_STRATEGIES = {};
     SEND_MESSAGE_STRATEGIES[conf.b.SEND_STRATEGIES.POST_MESSAGE] = function(win, serializedMessage, domain) {
         try {
-            __webpack_require__(34).emulateIERestrictions(window, win);
+            __webpack_require__(36).emulateIERestrictions(window, win);
         } catch (err) {
             return;
         }
@@ -4559,7 +4572,7 @@
             data: event.data
         };
         try {
-            __webpack_require__(34).emulateIERestrictions(messageEvent.source, window);
+            __webpack_require__(36).emulateIERestrictions(messageEvent.source, window);
         } catch (err) {
             return;
         }
@@ -4842,7 +4855,7 @@
         global.a.methods.delete(win);
         global.a.readyPromises.delete(win);
     }
-    var bridge = __webpack_require__(36);
+    var bridge = __webpack_require__(38);
     function init() {
         if (!global.a.initialized) {
             Object(lib.a)(window, "message", messageListener);
@@ -4857,302 +4870,6 @@
     }
     init();
     __webpack_exports__.default = interface_namespaceObject;
-}, function(module, __webpack_exports__, __webpack_require__) {
-    "use strict";
-    __webpack_require__.d(__webpack_exports__, "j", (function() {
-        return supportsPopups;
-    }));
-    __webpack_require__.d(__webpack_exports__, "e", (function() {
-        return isLocalStorageEnabled;
-    }));
-    __webpack_require__.d(__webpack_exports__, "b", (function() {
-        return getElementSafe;
-    }));
-    __webpack_require__.d(__webpack_exports__, "h", (function() {
-        return onResize;
-    }));
-    __webpack_require__.d(__webpack_exports__, "f", (function() {
-        return isShadowElement;
-    }));
-    __webpack_require__.d(__webpack_exports__, "d", (function() {
-        return insertShadowSlot;
-    }));
-    __webpack_require__.d(__webpack_exports__, "a", (function() {
-        return base64encode;
-    }));
-    __webpack_require__.d(__webpack_exports__, "k", (function() {
-        return uniqueID;
-    }));
-    __webpack_require__.d(__webpack_exports__, "g", (function() {
-        return noop;
-    }));
-    __webpack_require__.d(__webpack_exports__, "i", (function() {
-        return once;
-    }));
-    __webpack_require__.d(__webpack_exports__, "l", (function() {
-        return values;
-    }));
-    __webpack_require__.d(__webpack_exports__, "c", (function() {
-        return identity;
-    }));
-    function getUserAgent() {
-        return window.navigator.mockUserAgent || window.navigator.userAgent;
-    }
-    function isOperaMini(ua) {
-        void 0 === ua && (ua = getUserAgent());
-        return ua.indexOf("Opera Mini") > -1;
-    }
-    function supportsPopups(ua) {
-        void 0 === ua && (ua = getUserAgent());
-        return !(function(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return !!function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return /iPhone|iPod|iPad/.test(ua);
-            }(ua) && (!!function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return /\bGSA\b/.test(ua);
-            }(ua) || /.+AppleWebKit(?!.*Safari)/.test(ua));
-        }(ua) || function(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return !!function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return /Android/.test(ua);
-            }(ua) && /Version\/[\d.]+/.test(ua) && !isOperaMini(ua);
-        }(ua) || isOperaMini(ua) || function(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return /FxiOS/i.test(ua);
-        }(ua) || function(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return /EdgiOS/i.test(ua);
-        }(ua) || function(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return -1 !== ua.indexOf("FBAN") || -1 !== ua.indexOf("FBAV");
-        }(ua) || function(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return /QQBrowser/.test(ua);
-        }(ua) || "undefined" != typeof process && process.versions && process.versions.electron || (userAgent = getUserAgent(), 
-        /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent)) || !0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches);
-        var userAgent;
-    }
-    __webpack_require__(9);
-    var src = __webpack_require__(1);
-    __webpack_require__(5);
-    var cross_domain_safe_weakmap_src = __webpack_require__(14);
-    function getFunctionName(fn) {
-        return fn.name || fn.__name__ || fn.displayName || "anonymous";
-    }
-    function setFunctionName(fn, name) {
-        try {
-            delete fn.name;
-            fn.name = name;
-        } catch (err) {}
-        fn.__name__ = fn.displayName = name;
-        return fn;
-    }
-    function base64encode(str) {
-        if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
-            return String.fromCharCode(parseInt(p1, 16));
-        })));
-        if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
-        throw new Error("Can not find window.btoa or Buffer");
-    }
-    function uniqueID() {
-        var chars = "0123456789abcdef";
-        return "xxxxxxxxxx".replace(/./g, (function() {
-            return chars.charAt(Math.floor(Math.random() * chars.length));
-        })) + "_" + base64encode((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-    }
-    var objectIDs;
-    function serializeArgs(args) {
-        try {
-            return JSON.stringify([].slice.call(args), (function(subkey, val) {
-                return "function" == typeof val ? "memoize[" + function(obj) {
-                    objectIDs = objectIDs || new cross_domain_safe_weakmap_src.a;
-                    if (null == obj || "object" != typeof obj && "function" != typeof obj) throw new Error("Invalid object");
-                    var uid = objectIDs.get(obj);
-                    if (!uid) {
-                        uid = typeof obj + ":" + uniqueID();
-                        objectIDs.set(obj, uid);
-                    }
-                    return uid;
-                }(val) + "]" : val;
-            }));
-        } catch (err) {
-            throw new Error("Arguments not serializable -- can not be used to memoize");
-        }
-    }
-    var memoizedFunctions = [];
-    function memoize(method, options) {
-        var _this = this;
-        void 0 === options && (options = {});
-        var cacheMap = new cross_domain_safe_weakmap_src.a;
-        var memoizedFunction = function() {
-            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
-            var cache = cacheMap.getOrSet(options.thisNamespace ? this : method, (function() {
-                return {};
-            }));
-            var key = serializeArgs(args);
-            var cacheTime = options.time;
-            cache[key] && cacheTime && Date.now() - cache[key].time < cacheTime && delete cache[key];
-            if (cache[key]) return cache[key].value;
-            var time = Date.now();
-            var value = method.apply(this, arguments);
-            cache[key] = {
-                time: time,
-                value: value
-            };
-            return cache[key].value;
-        };
-        memoizedFunction.reset = function() {
-            cacheMap.delete(options.thisNamespace ? _this : method);
-        };
-        memoizedFunctions.push(memoizedFunction);
-        return setFunctionName(memoizedFunction, (options.name || getFunctionName(method)) + "::memoized");
-    }
-    memoize.clear = function() {
-        for (var _i2 = 0; _i2 < memoizedFunctions.length; _i2++) memoizedFunctions[_i2].reset();
-    };
-    function noop() {}
-    function once(method) {
-        var called = !1;
-        return setFunctionName((function() {
-            if (!called) {
-                called = !0;
-                return method.apply(this, arguments);
-            }
-        }), getFunctionName(method) + "::once");
-    }
-    function values(obj) {
-        var result = [];
-        for (var key in obj) obj.hasOwnProperty(key) && result.push(obj[key]);
-        return result;
-    }
-    function identity(item) {
-        return item;
-    }
-    function safeInterval(method, time) {
-        var timeout;
-        !function loop() {
-            timeout = setTimeout((function() {
-                method();
-                loop();
-            }), time);
-        }();
-        return {
-            cancel: function() {
-                clearTimeout(timeout);
-            }
-        };
-    }
-    memoize(values);
-    function isDocumentReady() {
-        return Boolean(document.body) && "complete" === document.readyState;
-    }
-    function isDocumentInteractive() {
-        return Boolean(document.body) && "interactive" === document.readyState;
-    }
-    memoize((function() {
-        return new src.a((function(resolve) {
-            if (isDocumentReady() || isDocumentInteractive()) return resolve();
-            var interval = setInterval((function() {
-                if (isDocumentReady() || isDocumentInteractive()) {
-                    clearInterval(interval);
-                    return resolve();
-                }
-            }), 10);
-        }));
-    }));
-    function isLocalStorageEnabled() {
-        return function(method, logic, args) {
-            void 0 === args && (args = []);
-            var cache = method.__inline_memoize_cache__ = method.__inline_memoize_cache__ || {};
-            var key = serializeArgs(args);
-            return cache.hasOwnProperty(key) ? cache[key] : cache[key] = function() {
-                try {
-                    if ("undefined" == typeof window) return !1;
-                    if (window.localStorage) {
-                        var value = Math.random().toString();
-                        window.localStorage.setItem("__test__localStorage__", value);
-                        var result = window.localStorage.getItem("__test__localStorage__");
-                        window.localStorage.removeItem("__test__localStorage__");
-                        if (value === result) return !0;
-                    }
-                } catch (err) {}
-                return !1;
-            }.apply(void 0, args);
-        }(isLocalStorageEnabled);
-    }
-    function getElementSafe(id, doc) {
-        void 0 === doc && (doc = document);
-        return (element = id) instanceof window.Element || null !== element && "object" == typeof element && 1 === element.nodeType && "object" == typeof element.style && "object" == typeof element.ownerDocument ? id : "string" == typeof id ? doc.querySelector(id) : void 0;
-        var element;
-    }
-    Object.create(Error.prototype);
-    function onResize(el, handler, _temp) {
-        var _ref2 = void 0 === _temp ? {} : _temp, _ref2$width = _ref2.width, width = void 0 === _ref2$width || _ref2$width, _ref2$height = _ref2.height, height = void 0 === _ref2$height || _ref2$height, _ref2$interval = _ref2.interval, interval = void 0 === _ref2$interval ? 100 : _ref2$interval, _ref2$win = _ref2.win, win = void 0 === _ref2$win ? window : _ref2$win;
-        var currentWidth = el.offsetWidth;
-        var currentHeight = el.offsetHeight;
-        handler({
-            width: currentWidth,
-            height: currentHeight
-        });
-        var check = function() {
-            var newWidth = el.offsetWidth;
-            var newHeight = el.offsetHeight;
-            (width && newWidth !== currentWidth || height && newHeight !== currentHeight) && handler({
-                width: newWidth,
-                height: newHeight
-            });
-            currentWidth = newWidth;
-            currentHeight = newHeight;
-        };
-        var observer;
-        var timeout;
-        win.addEventListener("resize", check);
-        if (void 0 !== win.ResizeObserver) {
-            (observer = new win.ResizeObserver(check)).observe(el);
-            timeout = safeInterval(check, 10 * interval);
-        } else if (void 0 !== win.MutationObserver) {
-            (observer = new win.MutationObserver(check)).observe(el, {
-                attributes: !0,
-                childList: !0,
-                subtree: !0,
-                characterData: !1
-            });
-            timeout = safeInterval(check, 10 * interval);
-        } else timeout = safeInterval(check, interval);
-        return {
-            cancel: function() {
-                observer.disconnect();
-                window.removeEventListener("resize", check);
-                timeout.cancel();
-            }
-        };
-    }
-    function isShadowElement(element) {
-        for (;element.parentNode; ) element = element.parentNode;
-        return "[object ShadowRoot]" === element.toString();
-    }
-    function insertShadowSlot(element) {
-        var shadowHost = function(element) {
-            var shadowRoot = function(element) {
-                for (;element.parentNode; ) element = element.parentNode;
-                if (isShadowElement(element)) return element;
-            }(element);
-            if (shadowRoot.host) return shadowRoot.host;
-        }(element);
-        if (!shadowHost) throw new Error("Element is not in shadow dom");
-        if (isShadowElement(shadowHost)) throw new Error("Host element is also in shadow dom");
-        var slotName = "shadow-slot-" + uniqueID();
-        var slot = document.createElement("slot");
-        slot.setAttribute("name", slotName);
-        element.appendChild(slot);
-        var slotProvider = document.createElement("div");
-        slotProvider.setAttribute("slot", slotName);
-        shadowHost.appendChild(slotProvider);
-        return slotProvider;
-    }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.d(__webpack_exports__, "p", (function() {
@@ -5497,6 +5214,278 @@
     }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
+    __webpack_require__.d(__webpack_exports__, "f", (function() {
+        return supportsPopups;
+    }));
+    __webpack_require__.d(__webpack_exports__, "c", (function() {
+        return isLocalStorageEnabled;
+    }));
+    __webpack_require__.d(__webpack_exports__, "a", (function() {
+        return base64encode;
+    }));
+    __webpack_require__.d(__webpack_exports__, "g", (function() {
+        return uniqueID;
+    }));
+    __webpack_require__.d(__webpack_exports__, "d", (function() {
+        return noop;
+    }));
+    __webpack_require__.d(__webpack_exports__, "e", (function() {
+        return once;
+    }));
+    __webpack_require__.d(__webpack_exports__, "h", (function() {
+        return values;
+    }));
+    __webpack_require__.d(__webpack_exports__, "b", (function() {
+        return identity;
+    }));
+    function getUserAgent() {
+        return window.navigator.mockUserAgent || window.navigator.userAgent;
+    }
+    function isOperaMini(ua) {
+        void 0 === ua && (ua = getUserAgent());
+        return /Opera Mini/i.test(ua);
+    }
+    function supportsPopups(ua) {
+        void 0 === ua && (ua = getUserAgent());
+        return !(function(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return !!function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /iPhone|iPod|iPad/.test(ua);
+            }(ua) && (!!function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /\bGSA\b/.test(ua);
+            }(ua) || /.+AppleWebKit(?!.*Safari)|.*WKWebView/.test(ua));
+        }(ua) || function(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return !!function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /Android/.test(ua);
+            }(ua) && /Version\/[\d.]+/.test(ua) && !isOperaMini(ua);
+        }(ua) || isOperaMini(ua) || function(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return /FxiOS/i.test(ua);
+        }(ua) || function(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return /EdgiOS/i.test(ua);
+        }(ua) || function(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return /FBAN/.test(ua) || /FBAV/.test(ua);
+        }(ua) || function(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return /QQBrowser/.test(ua);
+        }(ua) || "undefined" != typeof process && process.versions && process.versions.electron || (userAgent = getUserAgent(), 
+        /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent)) || !0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches);
+        var userAgent;
+    }
+    __webpack_require__(16);
+    __webpack_require__(9);
+    var zalgo_promise_src = __webpack_require__(1);
+    __webpack_require__(5);
+    var cross_domain_safe_weakmap_src = __webpack_require__(14);
+    __webpack_require__(19);
+    __webpack_require__(25);
+    function getFunctionName(fn) {
+        return fn.name || fn.__name__ || fn.displayName || "anonymous";
+    }
+    function setFunctionName(fn, name) {
+        try {
+            delete fn.name;
+            fn.name = name;
+        } catch (err) {}
+        fn.__name__ = fn.displayName = name;
+        return fn;
+    }
+    function base64encode(str) {
+        if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
+            return String.fromCharCode(parseInt(p1, 16));
+        }))).replace(/[=]/g, "");
+        if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64").replace(/[=]/g, "");
+        throw new Error("Can not find window.btoa or Buffer");
+    }
+    function uniqueID() {
+        var chars = "0123456789abcdef";
+        return "uid_" + "xxxxxxxxxx".replace(/./g, (function() {
+            return chars.charAt(Math.floor(Math.random() * chars.length));
+        })) + "_" + base64encode((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+    }
+    var objectIDs;
+    function serializeArgs(args) {
+        try {
+            return JSON.stringify([].slice.call(args), (function(subkey, val) {
+                return "function" == typeof val ? "memoize[" + function(obj) {
+                    objectIDs = objectIDs || new cross_domain_safe_weakmap_src.a;
+                    if (null == obj || "object" != typeof obj && "function" != typeof obj) throw new Error("Invalid object");
+                    var uid = objectIDs.get(obj);
+                    if (!uid) {
+                        uid = typeof obj + ":" + uniqueID();
+                        objectIDs.set(obj, uid);
+                    }
+                    return uid;
+                }(val) + "]" : val;
+            }));
+        } catch (err) {
+            throw new Error("Arguments not serializable -- can not be used to memoize");
+        }
+    }
+    function getEmptyObject() {
+        return {};
+    }
+    var memoizeGlobalIndex = 0;
+    var memoizeGlobalIndexValidFrom = 0;
+    function memoize(method, options) {
+        void 0 === options && (options = {});
+        var _options$thisNamespac = options.thisNamespace, thisNamespace = void 0 !== _options$thisNamespac && _options$thisNamespac, cacheTime = options.time;
+        var simpleCache;
+        var thisCache;
+        var memoizeIndex = memoizeGlobalIndex;
+        memoizeGlobalIndex += 1;
+        var memoizedFunction = function() {
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
+            if (memoizeIndex < memoizeGlobalIndexValidFrom) {
+                simpleCache = null;
+                thisCache = null;
+                memoizeIndex = memoizeGlobalIndex;
+                memoizeGlobalIndex += 1;
+            }
+            var cache;
+            cache = thisNamespace ? (thisCache = thisCache || new cross_domain_safe_weakmap_src.a).getOrSet(this, getEmptyObject) : simpleCache = simpleCache || {};
+            var cacheKey = serializeArgs(args);
+            var cacheResult = cache[cacheKey];
+            if (cacheResult && cacheTime && Date.now() - cacheResult.time < cacheTime) {
+                delete cache[cacheKey];
+                cacheResult = null;
+            }
+            if (cacheResult) return cacheResult.value;
+            var time = Date.now();
+            var value = method.apply(this, arguments);
+            cache[cacheKey] = {
+                time: time,
+                value: value
+            };
+            return value;
+        };
+        memoizedFunction.reset = function() {
+            simpleCache = null;
+            thisCache = null;
+        };
+        return setFunctionName(memoizedFunction, (options.name || getFunctionName(method)) + "::memoized");
+    }
+    memoize.clear = function() {
+        memoizeGlobalIndexValidFrom = memoizeGlobalIndex;
+    };
+    function noop() {}
+    function once(method) {
+        var called = !1;
+        return setFunctionName((function() {
+            if (!called) {
+                called = !0;
+                return method.apply(this, arguments);
+            }
+        }), getFunctionName(method) + "::once");
+    }
+    function values(obj) {
+        if (Object.values) return Object.values(obj);
+        var result = [];
+        for (var key in obj) obj.hasOwnProperty(key) && result.push(obj[key]);
+        return result;
+    }
+    memoize(values);
+    function identity(item) {
+        return item;
+    }
+    Error;
+    function isDocumentReady() {
+        return Boolean(document.body) && "complete" === document.readyState;
+    }
+    function isDocumentInteractive() {
+        return Boolean(document.body) && "interactive" === document.readyState;
+    }
+    memoize((function() {
+        return new zalgo_promise_src.a((function(resolve) {
+            if (isDocumentReady() || isDocumentInteractive()) return resolve();
+            var interval = setInterval((function() {
+                if (isDocumentReady() || isDocumentInteractive()) {
+                    clearInterval(interval);
+                    return resolve();
+                }
+            }), 10);
+        }));
+    }));
+    function isLocalStorageEnabled() {
+        return function(method, logic, args) {
+            void 0 === args && (args = []);
+            var cache = method.__inline_memoize_cache__ = method.__inline_memoize_cache__ || {};
+            var key = serializeArgs(args);
+            return cache.hasOwnProperty(key) ? cache[key] : cache[key] = function() {
+                try {
+                    if ("undefined" == typeof window) return !1;
+                    if (window.localStorage) {
+                        var value = Math.random().toString();
+                        window.localStorage.setItem("__test__localStorage__", value);
+                        var result = window.localStorage.getItem("__test__localStorage__");
+                        window.localStorage.removeItem("__test__localStorage__");
+                        if (value === result) return !0;
+                    }
+                } catch (err) {}
+                return !1;
+            }.apply(void 0, args);
+        }(isLocalStorageEnabled);
+    }
+    var currentScript = "undefined" != typeof document ? document.currentScript : null;
+    var getCurrentScript = memoize((function() {
+        if (currentScript) return currentScript;
+        if (currentScript = function() {
+            try {
+                var stack = function() {
+                    try {
+                        throw new Error("_");
+                    } catch (err) {
+                        return err.stack || "";
+                    }
+                }();
+                var stackDetails = /.*at [^(]*\((.*):(.+):(.+)\)$/gi.exec(stack);
+                var scriptLocation = stackDetails && stackDetails[1];
+                if (!scriptLocation) return;
+                for (var _i22 = 0, _Array$prototype$slic2 = [].slice.call(document.getElementsByTagName("script")).reverse(); _i22 < _Array$prototype$slic2.length; _i22++) {
+                    var script = _Array$prototype$slic2[_i22];
+                    if (script.src && script.src === scriptLocation) return script;
+                }
+            } catch (err) {}
+        }()) return currentScript;
+        throw new Error("Can not determine current script");
+    }));
+    var currentUID = uniqueID();
+    memoize((function() {
+        var script;
+        try {
+            script = getCurrentScript();
+        } catch (err) {
+            return currentUID;
+        }
+        var uid = script.getAttribute("data-uid");
+        if (uid && "string" == typeof uid) return uid;
+        if ((uid = script.getAttribute("data-uid-auto")) && "string" == typeof uid) return uid;
+        if (script.src) {
+            var hashedString = function(str) {
+                var hash = "";
+                for (var i = 0; i < str.length; i++) {
+                    var total = str[i].charCodeAt(0) * i;
+                    str[i + 1] && (total += str[i + 1].charCodeAt(0) * (i - 1));
+                    hash += String.fromCharCode(97 + Math.abs(total) % 26);
+                }
+                return hash;
+            }(JSON.stringify({
+                src: script.src,
+                dataset: script.dataset
+            }));
+            uid = "uid_" + hashedString.slice(hashedString.length - 30);
+        } else uid = uniqueID();
+        script.setAttribute("data-uid-auto", uid);
+        return uid;
+    }));
+}, function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
     __webpack_require__.d(__webpack_exports__, "a", (function() {
         return weakmap_CrossDomainSafeWeakMap;
     }));
@@ -5658,8 +5647,8 @@
     }));
     var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
     var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
-    var _dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
-    var _security__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(21);
+    var _dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(20);
+    var _security__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(22);
     var accessedStorage;
     function getStorageState(handler) {
         var localStorageEnabled = Object(_util__WEBPACK_IMPORTED_MODULE_1__.f)();
@@ -5720,6 +5709,17 @@
     function getGlobalState(handler) {
         window.__paypal_global__ = window.__paypal_global__ || {};
         return handler(window.__paypal_global__);
+    }
+}, function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
+    __webpack_require__.d(__webpack_exports__, "a", (function() {
+        return _inheritsLoose;
+    }));
+    var _babel_runtime_helpers_esm_setPrototypeOf__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
+    function _inheritsLoose(subClass, superClass) {
+        subClass.prototype = Object.create(superClass.prototype);
+        subClass.prototype.constructor = subClass;
+        Object(_babel_runtime_helpers_esm_setPrototypeOf__WEBPACK_IMPORTED_MODULE_0__.a)(subClass, superClass);
     }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
@@ -5823,16 +5823,6 @@
     }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
-    __webpack_require__.d(__webpack_exports__, "a", (function() {
-        return _inheritsLoose;
-    }));
-    function _inheritsLoose(subClass, superClass) {
-        subClass.prototype = Object.create(superClass.prototype);
-        subClass.prototype.constructor = subClass;
-        subClass.__proto__ = superClass;
-    }
-}, function(module, __webpack_exports__, __webpack_require__) {
-    "use strict";
     __webpack_require__.r(__webpack_exports__);
     __webpack_require__.d(__webpack_exports__, "openTunnelToOpener", (function() {
         return openTunnelToOpener;
@@ -5887,7 +5877,7 @@
     }));
     var src = __webpack_require__(5);
     var conf = __webpack_require__(8);
-    var lib = __webpack_require__(13);
+    var lib = __webpack_require__(12);
     var global = __webpack_require__(7);
     global.a.tunnelWindows = global.a.tunnelWindows || {};
     global.a.tunnelWindowId = 0;
@@ -6218,6 +6208,15 @@
     }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
+    __webpack_require__.d(__webpack_exports__, "a", (function() {
+        return _assertThisInitialized;
+    }));
+    function _assertThisInitialized(self) {
+        if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        return self;
+    }
+}, function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
     __webpack_require__.d(__webpack_exports__, "g", (function() {
         return loadScript;
     }));
@@ -6247,7 +6246,7 @@
     var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(0);
     var _config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
     var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(10);
-    __webpack_require__(16);
+    __webpack_require__(17);
     function isDocumentReady() {
         return Boolean(document.body) && "complete" === document.readyState;
     }
@@ -6443,7 +6442,7 @@
     }));
     var cross_domain_utils_src__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
     var _config__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-    var _device__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(16);
+    var _device__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(17);
     function allowIframe() {
         if (!Object(_device__WEBPACK_IMPORTED_MODULE_2__.g)()) return !0;
         var parentWindow = Object(cross_domain_utils_src__WEBPACK_IMPORTED_MODULE_0__.n)(window);
@@ -6456,34 +6455,34 @@
     }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
-    var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
+    var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(28);
     __webpack_require__.d(__webpack_exports__, "script", (function() {
         return _script__WEBPACK_IMPORTED_MODULE_0__.a;
     }));
-    var _react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(27);
+    var _react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(29);
     __webpack_require__.d(__webpack_exports__, "react", (function() {
         return _react__WEBPACK_IMPORTED_MODULE_1__.a;
     }));
-    var _vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(28);
+    var _vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(30);
     __webpack_require__.d(__webpack_exports__, "vue", (function() {
         return _vue__WEBPACK_IMPORTED_MODULE_2__.a;
     }));
-    var _angular__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(29);
+    var _angular__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(31);
     __webpack_require__.d(__webpack_exports__, "angular", (function() {
         return _angular__WEBPACK_IMPORTED_MODULE_3__.a;
     }));
-    var _ember__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(30);
+    var _ember__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(32);
     __webpack_require__.o(_ember__WEBPACK_IMPORTED_MODULE_4__, "angular2") && __webpack_require__.d(__webpack_exports__, "angular2", (function() {
         return _ember__WEBPACK_IMPORTED_MODULE_4__.angular2;
     }));
     __webpack_require__.o(_ember__WEBPACK_IMPORTED_MODULE_4__, "glimmer") && __webpack_require__.d(__webpack_exports__, "glimmer", (function() {
         return _ember__WEBPACK_IMPORTED_MODULE_4__.glimmer;
     }));
-    var _glimmer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(31);
+    var _glimmer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(33);
     __webpack_require__.d(__webpack_exports__, "glimmer", (function() {
         return _glimmer__WEBPACK_IMPORTED_MODULE_5__.a;
     }));
-    var _angular2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(32);
+    var _angular2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(34);
     __webpack_require__.d(__webpack_exports__, "angular2", (function() {
         return _angular2__WEBPACK_IMPORTED_MODULE_6__.a;
     }));
@@ -6517,6 +6516,17 @@
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.d(__webpack_exports__, "a", (function() {
+        return _setPrototypeOf;
+    }));
+    function _setPrototypeOf(o, p) {
+        return (_setPrototypeOf = Object.setPrototypeOf || function(o, p) {
+            o.__proto__ = p;
+            return o;
+        })(o, p);
+    }
+}, function(module, __webpack_exports__, __webpack_require__) {
+    "use strict";
+    __webpack_require__.d(__webpack_exports__, "a", (function() {
         return extendNamespace;
     }));
     var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
@@ -6544,7 +6554,7 @@
         var root = "object" == typeof window ? window : {};
         !root.HI_BASE32_NO_NODE_JS && "object" == typeof process && process.versions && process.versions.node && (root = window);
         var COMMON_JS = !root.HI_BASE32_NO_COMMON_JS && "object" == typeof module && module.exports;
-        var AMD = __webpack_require__(37);
+        var AMD = __webpack_require__(39);
         var BASE32_ENCODE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".split("");
         var BASE32_DECODE_CHAR = {
             A: 0,
@@ -6588,6 +6598,7 @@
             throw err;
         };
         var decodeAsBytes = function(base32Str) {
+            if ("" === base32Str) return [];
             if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
             var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length;
             for (var i = 0, count = length >> 3 << 3; i < count; ) {
@@ -6670,6 +6681,7 @@
                 }
                 return str;
             }(decodeAsBytes(base32Str));
+            if ("" === base32Str) return "";
             if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
             var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
             -1 === length && (length = base32Str.length);
@@ -6776,6 +6788,7 @@
                     return base32Str;
                 }(input) : function(str) {
                     var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                    if ("" === str) return base32Str;
                     do {
                         blocks[0] = blocks[5];
                         blocks[1] = blocks[6];
@@ -6822,17 +6835,13 @@
         global: function() {
             return window.document;
         },
-        register: function register(component, document) {
+        register: function(component, document) {
             function render(element) {
                 if (element && element.tagName && "script" === element.tagName.toLowerCase() && element.attributes.type && "application/x-component" === element.attributes.type.value && element.parentNode) {
                     var tag = element.getAttribute("data-component");
                     if (tag && tag === component.tag) {
-                        component.log("instantiate_script_component");
-                        var props = element.innerText ? eval("(" + element.innerText + ")") : {};
-                        var container = document.createElement("div");
-                        if (!element.parentNode) throw new Error("Element has no parent");
-                        element.parentNode.replaceChild(container, element);
-                        component.render(props, container);
+                        component.log("instantiate_script_component_error");
+                        throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                     }
                 }
             }
@@ -6853,7 +6862,7 @@
     __webpack_require__.d(__webpack_exports__, "a", (function() {
         return react;
     }));
-    var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(17);
+    var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(16);
     var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
     var react = {
         global: function() {
@@ -6999,7 +7008,7 @@
         return glimmer;
     }));
     var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
-    var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(17);
+    var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(16);
     var glimmer = {
         global: function() {},
         register: function(component, GlimmerComponent) {
@@ -7068,7 +7077,7 @@
     };
 }, function(module, exports, __webpack_require__) {
     !function(e, t, n) {
-        module.exports ? module.exports = n() : __webpack_require__(38)("bowser", n);
+        module.exports ? module.exports = n() : __webpack_require__(40)("bowser", n);
     }(0, 0, (function() {
         function t(t) {
             function n(e) {
@@ -7338,10 +7347,10 @@
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.r(__webpack_exports__);
-    var _lib_beacon__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(23);
-    var _lib_namespace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(24);
+    var _lib_beacon__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
+    var _lib_namespace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
     var _lib_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(10);
-    __webpack_require__(21);
+    __webpack_require__(22);
     if (window.paypal && "4.0.318" === window.paypal.version) {
         Object(_lib_beacon__WEBPACK_IMPORTED_MODULE_0__.a)("bootstrap_already_loaded_same_version", {
             version: "4.0.318"
@@ -7356,7 +7365,7 @@
         throw new Error("PayPal Checkout Integration Script with different version (" + window.paypal.version + ") already loaded on page, current version: 4.0.318");
     }
     try {
-        var _interface = __webpack_require__(39);
+        var _interface = __webpack_require__(41);
         Object(_lib_namespace__WEBPACK_IMPORTED_MODULE_1__.a)(_interface, [ "paypal", "PAYPAL", "ppxo" ], [ "apps" ]);
     } catch (err) {
         Object(_lib_beacon__WEBPACK_IMPORTED_MODULE_0__.a)("bootstrap_error", {
@@ -7450,7 +7459,7 @@
         return src_constants.o;
     }));
     __webpack_require__.d(__webpack_exports__, "request", (function() {
-        return request;
+        return http_request;
     }));
     __webpack_require__.d(__webpack_exports__, "isEligible", (function() {
         return isEligible;
@@ -7573,7 +7582,7 @@
         return src_constants.o;
     }));
     __webpack_require__.d(src_interface_namespaceObject, "request", (function() {
-        return request;
+        return http_request;
     }));
     __webpack_require__.d(src_interface_namespaceObject, "isEligible", (function() {
         return isEligible;
@@ -7627,11 +7636,8 @@
     }));
     var beaver_logger_client = __webpack_require__(3);
     var src = __webpack_require__(11);
-    function _assertThisInitialized(self) {
-        if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-        return self;
-    }
-    var inheritsLoose = __webpack_require__(17);
+    var assertThisInitialized = __webpack_require__(19);
+    var inheritsLoose = __webpack_require__(16);
     function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
         var desc = {};
         Object.keys(descriptor).forEach((function(key) {
@@ -7729,7 +7735,7 @@
             if (!domain) throw new Error("Must pass domain to listen to");
             if (this.listeners) {
                 var listeners = this.listeners();
-                var _loop = function(_i4, _Object$keys2) {
+                var _loop = function() {
                     var listenerName = _Object$keys2[_i4];
                     var name = listenerName.replace(/^zoid_/, "");
                     var errorHandler = function(err) {
@@ -7760,14 +7766,59 @@
                         errorListener.cancel();
                     }));
                 };
-                for (var _i4 = 0, _Object$keys2 = Object.keys(listeners); _i4 < _Object$keys2.length; _i4++) _loop(_i4, _Object$keys2);
+                for (var _i4 = 0, _Object$keys2 = Object.keys(listeners); _i4 < _Object$keys2.length; _i4++) _loop();
             }
         };
         return BaseComponent;
     }();
     var esm_extends = __webpack_require__(9);
-    var belter_src = __webpack_require__(12);
-    var base32 = __webpack_require__(25);
+    __webpack_require__(14);
+    Object.create(Error.prototype);
+    function onResize(el, handler, _temp) {
+        var _ref2 = void 0 === _temp ? {} : _temp, _ref2$width = _ref2.width, width = void 0 === _ref2$width || _ref2$width, _ref2$height = _ref2.height, height = void 0 === _ref2$height || _ref2$height, _ref2$interval = _ref2.interval, interval = void 0 === _ref2$interval ? 100 : _ref2$interval, _ref2$win = _ref2.win, win = void 0 === _ref2$win ? window : _ref2$win;
+        var currentWidth = el.offsetWidth;
+        var currentHeight = el.offsetHeight;
+        handler({
+            width: currentWidth,
+            height: currentHeight
+        });
+        var check = function() {
+            var newWidth = el.offsetWidth;
+            var newHeight = el.offsetHeight;
+            (width && newWidth !== currentWidth || height && newHeight !== currentHeight) && handler({
+                width: newWidth,
+                height: newHeight
+            });
+            currentWidth = newWidth;
+            currentHeight = newHeight;
+        };
+        var observer;
+        var timeout;
+        if (void 0 !== win.ResizeObserver) (observer = new win.ResizeObserver(check)).observe(el); else if (void 0 !== win.MutationObserver) {
+            (observer = new win.MutationObserver(check)).observe(el, {
+                attributes: !0,
+                childList: !0,
+                subtree: !0,
+                characterData: !1
+            });
+            win.addEventListener("resize", check);
+        } else !function loop() {
+            check();
+            timeout = setTimeout(loop, interval);
+        }();
+        return {
+            cancel: function() {
+                observer.disconnect();
+                window.removeEventListener("resize", check);
+                clearTimeout(timeout);
+            }
+        };
+    }
+    function isShadowElement(element) {
+        for (;element.parentNode; ) element = element.parentNode;
+        return "[object ShadowRoot]" === element.toString();
+    }
+    var base32 = __webpack_require__(27);
     var base32_default = __webpack_require__.n(base32);
     var constants = __webpack_require__(6);
     function normalize(str) {
@@ -7821,7 +7872,7 @@
         if (!componentMeta) throw new Error("Can not get parent component window - window not rendered by zoid");
         return getWindowByRef(componentMeta.renderParent);
     }));
-    var src_error = __webpack_require__(20);
+    var src_error = __webpack_require__(21);
     function normalizeChildProp(component, props, key, value) {
         var prop = component.getProp(key);
         return prop ? "function" == typeof prop.childDecorate ? prop.childDecorate(value) : value : component.looseProps ? value : void 0;
@@ -7840,13 +7891,13 @@
             _this.component = component;
             if (!_this.hasValidParentDomain()) {
                 _this.error(new src_error.c("Can not be rendered by domain: " + _this.getParentDomain()));
-                return _assertThisInitialized(_this);
+                return Object(assertThisInitialized.a)(_this);
             }
             _this.component.log("construct_child");
             _this.onPropHandlers = [];
-            var _loop = function(_i2, _ref2) {
+            var _loop = function() {
                 var item = _ref2[_i2];
-                var _loop2 = function(_i4, _ref4) {
+                var _loop2 = function() {
                     var _ref4$_i = _ref4[_i4], name = _ref4$_i[0], getter = _ref4$_i[1];
                     Object.defineProperty(item, name, {
                         configurable: !0,
@@ -7859,12 +7910,12 @@
                     });
                 };
                 for (var _i4 = 0, _ref4 = [ [ "xchild", function() {
-                    return _assertThisInitialized(_this);
+                    return Object(assertThisInitialized.a)(_this);
                 } ], [ "xprops", function() {
                     return _this.props;
-                } ] ]; _i4 < _ref4.length; _i4++) _loop2(_i4, _ref4);
+                } ] ]; _i4 < _ref4.length; _i4++) _loop2();
             };
-            for (var _i2 = 0, _ref2 = [ _this.component, window ]; _i2 < _ref2.length; _i2++) _loop(_i2, _ref2);
+            for (var _i2 = 0, _ref2 = [ _this.component, window ]; _i2 < _ref2.length; _i2++) _loop();
             _this.component.log("init_child");
             _this.setWindows();
             _this.onInit = _this.sendToParent(constants.POST_MESSAGE.INIT, {
@@ -7874,7 +7925,7 @@
                 _this.context = data.context;
                 _this.setProps(data.props, origin);
                 _this.watchForResize();
-                return _assertThisInitialized(_this);
+                return Object(assertThisInitialized.a)(_this);
             })).catch((function(err) {
                 _this.error(err);
                 throw err;
@@ -8004,7 +8055,7 @@
             var _this$getAutoResize = this.getAutoResize(), width = _this$getAutoResize.width, height = _this$getAutoResize.height, element = _this$getAutoResize.element;
             if ((width || height) && this.context !== constants.CONTEXT_TYPES.POPUP && !this.watchingForResize) {
                 this.watchingForResize = !0;
-                Object(belter_src.h)(element, (function(_ref8) {
+                onResize(element, (function(_ref8) {
                     _this4.resize(width ? _ref8.width : void 0, height ? _ref8.height : void 0);
                 }), {
                     width: width,
@@ -8360,7 +8411,7 @@
         } else "string" === type || "object" === type || "number" === type && void 0 !== resultValue && (resultValue = parseInt(resultValue, 10));
         return resultValue;
     }
-    function getQueryParam(prop, key, value) {
+    function props_getQueryParam(prop, key, value) {
         return zalgo_promise_src.a.try((function() {
             return "function" == typeof prop.queryParam ? prop.queryParam(value) : "string" == typeof prop.queryParam ? prop.queryParam : key;
         }));
@@ -8370,10 +8421,10 @@
             return "function" == typeof prop.queryValue ? prop.queryValue(value) : value;
         }));
     }
-    var _class, _class2, parent_temp;
+    var _class, _class2;
     lib.v.props = lib.v.props || {};
     lib.v.windows = lib.v.windows || {};
-    var parent_ParentComponent = (_applyDecoratedDescriptor((_class = (parent_temp = _class2 = function(_BaseComponent) {
+    var parent_ParentComponent = (_applyDecoratedDescriptor((_class = ((_class2 = function(_BaseComponent) {
         Object(inheritsLoose.a)(ParentComponent, _BaseComponent);
         function ParentComponent(component, context, _ref) {
             var _this;
@@ -8586,8 +8637,8 @@
                 uid: uid
             };
         };
-        _proto.buildChildWindowName = function(_temp2) {
-            var _ref6$renderTo = (void 0 === _temp2 ? {} : _temp2).renderTo, renderTo = void 0 === _ref6$renderTo ? window : _ref6$renderTo;
+        _proto.buildChildWindowName = function(_temp) {
+            var _ref6$renderTo = (void 0 === _temp ? {} : _temp).renderTo, renderTo = void 0 === _ref6$renderTo ? window : _ref6$renderTo;
             var childDomain = this.component.getDomain(null, this.props.env);
             var sameDomain = Object(cross_domain_utils_src.v)(renderTo);
             var uid = Object(lib.U)();
@@ -8689,7 +8740,7 @@
                     var value = props[key];
                     if (value && prop.queryParam) return value;
                 })).then((function(value) {
-                    if (value) return zalgo_promise_src.a.all([ getQueryParam(prop, key, value), getQueryValue(prop, 0, value) ]).then((function(_ref) {
+                    if (value) return zalgo_promise_src.a.all([ props_getQueryParam(prop, key, value), getQueryValue(prop, 0, value) ]).then((function(_ref) {
                         var queryParam = _ref[0], queryValue = _ref[1];
                         var result;
                         if ("boolean" == typeof queryValue) result = "1"; else if ("string" == typeof queryValue) result = queryValue.toString(); else {
@@ -8867,7 +8918,7 @@
                 throw new Error("Unable to delegate rendering. Possibly the component is not loaded in the target window.\n\n" + Object(lib.S)(err));
             }));
             var overrides = this.driver.delegateOverrides;
-            var _loop = function(_i6, _Object$keys4) {
+            var _loop = function() {
                 var key = _Object$keys4[_i6];
                 var val = overrides[key];
                 if (val === constants.DELEGATE.CALL_ORIGINAL) return "continue";
@@ -8882,7 +8933,7 @@
                     }));
                 };
             };
-            for (var _i6 = 0, _Object$keys4 = Object.keys(overrides); _i6 < _Object$keys4.length; _i6++) _loop(_i6, _Object$keys4);
+            for (var _i6 = 0, _Object$keys4 = Object.keys(overrides); _i6 < _Object$keys4.length; _i6++) _loop();
         };
         _proto.watchForClose = function() {
             var _this16 = this;
@@ -9122,7 +9173,11 @@
                         console.error(err.stack ? err.stack : err);
                     }
                     var _ref10 = "object" == typeof _this31.component.autoResize && null !== _this31.component.autoResize ? _this31.component.autoResize : {}, _ref10$width = _ref10.width, width = void 0 !== _ref10$width && _ref10$width, _ref10$height = _ref10.height, height = void 0 !== _ref10$height && _ref10$height, _ref10$element = _ref10.element, element = void 0 === _ref10$element ? "body" : _ref10$element;
-                    (element = Object(belter_src.b)(element, doc)) && (width || height) && Object(belter_src.h)(element, (function(_ref11) {
+                    (element = function(id, doc) {
+                        void 0 === doc && (doc = document);
+                        return (element = id) instanceof window.Element || null !== element && "object" == typeof element && 1 === element.nodeType && "object" == typeof element.style && "object" == typeof element.ownerDocument ? id : "string" == typeof id ? doc.querySelector(id) : void 0;
+                        var element;
+                    }(element, doc)) && (width || height) && onResize(element, (function(_ref11) {
                         _this31.resize(width ? _ref11.width : void 0, height ? _ref11.height : void 0);
                     }), {
                         width: width,
@@ -9170,7 +9225,34 @@
             return zalgo_promise_src.a.try((function() {
                 var el;
                 if (!(el = element ? Object(lib.u)(element) : document.body)) throw new Error("Could not find element to open container into");
-                Object(belter_src.f)(el) && (el = Object(belter_src.d)(el));
+                isShadowElement(el) && (el = function(element) {
+                    var shadowHost = function(element) {
+                        var shadowRoot = function(element) {
+                            for (;element.parentNode; ) element = element.parentNode;
+                            if (isShadowElement(element)) return element;
+                        }(element);
+                        if (shadowRoot.host) return shadowRoot.host;
+                    }(element);
+                    if (!shadowHost) throw new Error("Element is not in shadow dom");
+                    if (isShadowElement(shadowHost)) throw new Error("Host element is also in shadow dom");
+                    var slotName = "shadow-slot-" + (chars = "0123456789abcdef", "xxxxxxxxxx".replace(/./g, (function() {
+                        return chars.charAt(Math.floor(Math.random() * chars.length));
+                    })) + "_" + function(str) {
+                        if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
+                            return String.fromCharCode(parseInt(p1, 16));
+                        })));
+                        if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
+                        throw new Error("Can not find window.btoa or Buffer");
+                    }((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase());
+                    var chars;
+                    var slot = document.createElement("slot");
+                    slot.setAttribute("name", slotName);
+                    element.appendChild(slot);
+                    var slotProvider = document.createElement("div");
+                    slotProvider.setAttribute("slot", slotName);
+                    shadowHost.appendChild(slotProvider);
+                    return slotProvider;
+                }(el));
                 if (_this33.component.containerTemplate) {
                     var container = _this33.renderTemplate(_this33.component.containerTemplate, {
                         container: el
@@ -9244,7 +9326,7 @@
             }
         } ]);
         return ParentComponent;
-    }(base_BaseComponent), _class2.activeComponents = [], parent_temp)).prototype, "getOutlet", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "getOutlet"), _class.prototype), 
+    }(base_BaseComponent)).activeComponents = [], _class2)).prototype, "getOutlet", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "getOutlet"), _class.prototype), 
     _applyDecoratedDescriptor(_class.prototype, "prefetch", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "prefetch"), _class.prototype), 
     _applyDecoratedDescriptor(_class.prototype, "loadHTML", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "loadHTML"), _class.prototype), 
     _applyDecoratedDescriptor(_class.prototype, "buildUrl", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "buildUrl"), _class.prototype), 
@@ -9292,7 +9374,7 @@
             _this.focus = function() {
                 return zalgo_promise_src.a.all([ _this.isWindowClosed().then((function(closed) {
                     closed || window.open("", _this.childWindowName);
-                })), options.overrides.focus.call(_assertThisInitialized(_this)) ]).then(lib.F);
+                })), options.overrides.focus.call(Object(assertThisInitialized.a)(_this)) ]).then(lib.F);
             };
             _this.clean.register("destroyFocusOverride", (function() {
                 _this.focus = lib.F;
@@ -9307,7 +9389,7 @@
             }
             _this.childWindowName = options.childWindowName;
             _this.isWindowClosed = options.isWindowClosed;
-            parent_ParentComponent.prototype.registerActiveComponent.call(_assertThisInitialized(_this));
+            parent_ParentComponent.prototype.registerActiveComponent.call(Object(assertThisInitialized.a)(_this));
             _this.watchForClose();
             return _this;
         }
@@ -9322,13 +9404,13 @@
         _proto.getOverrides = function(context) {
             var overrides = {};
             var self = this;
-            var _loop = function(_i6, _Object$keys4) {
+            var _loop = function() {
                 var key = _Object$keys4[_i6];
                 overrides[key] = function() {
                     return parent_ParentComponent.prototype[key].apply(self, arguments);
                 };
             };
-            for (var _i6 = 0, _Object$keys4 = Object.keys(RENDER_DRIVERS[context].delegateOverrides); _i6 < _Object$keys4.length; _i6++) _loop(_i6, _Object$keys4);
+            for (var _i6 = 0, _Object$keys4 = Object.keys(RENDER_DRIVERS[context].delegateOverrides); _i6 < _Object$keys4.length; _i6++) _loop();
             return overrides;
         };
         _proto.destroy = function() {
@@ -9343,7 +9425,7 @@
         } ]);
         return DelegateComponent;
     }(base_BaseComponent);
-    var drivers = __webpack_require__(22);
+    var drivers = __webpack_require__(23);
     function defaultContainerTemplate(_ref) {
         var id = _ref.id, CLASS = _ref.CLASS, outlet = _ref.outlet, jsxDom = _ref.jsxDom, _ref$dimensions = _ref.dimensions;
         return jsxDom("div", {
@@ -9360,7 +9442,7 @@
             class: "loader"
         }))));
     }
-    var component_class, component_class2, component_temp;
+    var component_class, component_class2;
     var component_drivers = {
         angular: drivers.angular,
         angular2: drivers.angular2,
@@ -9369,7 +9451,7 @@
         vue: drivers.vue,
         script: drivers.script
     };
-    var component_Component = (_applyDecoratedDescriptor((component_class = (component_temp = component_class2 = function(_BaseComponent) {
+    var component_Component = (_applyDecoratedDescriptor((component_class = ((component_class2 = function(_BaseComponent) {
         Object(inheritsLoose.a)(Component, _BaseComponent);
         function Component(options) {
             var _this;
@@ -9401,7 +9483,7 @@
             _this.xchild = void 0;
             _this.xprops = void 0;
             !function(options) {
-                if (!options) throw new Error("Expecred options to be passed");
+                if (!options) throw new Error("Expected options to be passed");
                 if (!options.tag || !options.tag.match(/^[a-z0-9-]+$/)) throw new Error("Invalid options.tag: " + options.tag);
                 !function(options) {
                     if (options.props && "object" != typeof options.props) throw new Error("Expected options.props to be an object");
@@ -9600,7 +9682,7 @@
             _this.addProp(options, "prerenderTemplate", defaultPrerenderTemplate);
             _this.addProp(options, "validate");
             _this.addProp(options, "unsafeRenderTo", !1);
-            Component.components[_this.tag] = _assertThisInitialized(_this);
+            Component.components[_this.tag] = Object(assertThisInitialized.a)(_this);
             _this.registerDrivers();
             _this.registerChild();
             _this.listenDelegate();
@@ -9823,7 +9905,7 @@
             return Component.components[tag];
         };
         return Component;
-    }(base_BaseComponent), component_class2.components = {}, component_temp)).prototype, "getPropNames", [ lib.D ], Object.getOwnPropertyDescriptor(component_class.prototype, "getPropNames"), component_class.prototype), 
+    }(base_BaseComponent)).components = {}, component_class2)).prototype, "getPropNames", [ lib.D ], Object.getOwnPropertyDescriptor(component_class.prototype, "getPropNames"), component_class.prototype), 
     component_class);
     function interface_create(options) {
         return new component_Component(options);
@@ -9836,19 +9918,24 @@
     }
     var postRobot = src;
     var CONSTANTS = constants;
-    var device = __webpack_require__(16);
+    var device = __webpack_require__(17);
     var util = __webpack_require__(10);
     var config = __webpack_require__(4);
     var src_constants = __webpack_require__(0);
     var lib_session = __webpack_require__(15);
-    var dom = __webpack_require__(19);
-    var security = __webpack_require__(21);
+    var dom = __webpack_require__(20);
+    var security = __webpack_require__(22);
     var PAGE_TYPES = {
         HOME: "home",
         PRODUCT: "product",
         CART: "cart",
-        CHECKOUT: "checkout"
+        CHECKOUT: "checkout",
+        PRODUCT_LISTING: "product-listing",
+        SEARCH_RESULTS: "search-results",
+        PRODUCT_DETAILS: "product-details",
+        MINI_CART: "mini-cart"
     };
+    var belter_src = __webpack_require__(13);
     var getCurrentScript = Object(util.i)((function() {
         var scripts = [].slice.call(document.getElementsByTagName("script"));
         for (var _i2 = 0; _i2 < scripts.length; _i2++) {
@@ -9919,8 +10006,8 @@
     function getBowser() {
         var userAgent = Object(device.a)();
         if (bowserCache[userAgent]) return bowserCache[userAgent];
-        delete __webpack_require__.c[33];
-        var bowser = __webpack_require__(33);
+        delete __webpack_require__.c[35];
+        var bowser = __webpack_require__(35);
         bowserCache[userAgent] = bowser;
         return bowser;
     }
@@ -9968,14 +10055,24 @@
             if (window.console.log) return window.console.log(err);
         }
     }
-    var headerBuilders = [];
+    function checkForDeprecatedIntegration() {
+        var scripts = [].slice.call(document.getElementsByTagName("script"));
+        for (var _i2 = 0; _i2 < scripts.length; _i2++) {
+            var _script$attributes$ty;
+            if ("application/x-component" === (null == (_script$attributes$ty = scripts[_i2].attributes.type) ? void 0 : _script$attributes$ty.value)) {
+                Object(beaver_logger_client.p)("deprecated_integration_application_xcomponent");
+                console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
+            }
+        }
+    }
+    var http_headerBuilders = [];
     var corrids = [];
     Object(beaver_logger_client.c)((function() {
         return {
             prev_corr_ids: corrids.join(",")
         };
     }));
-    function request(_ref) {
+    function http_request(_ref) {
         var url = _ref.url, _ref$method = _ref.method, method = void 0 === _ref$method ? "get" : _ref$method, _ref$headers = _ref.headers, headers = void 0 === _ref$headers ? {} : _ref$headers, json = _ref.json, data = _ref.data, body = _ref.body, _ref$win = _ref.win, win = void 0 === _ref$win ? window : _ref$win, _ref$timeout = _ref.timeout, timeout = void 0 === _ref$timeout ? 0 : _ref$timeout;
         return "/demo/checkout/api/braintree/client-token/" === url ? zalgo_promise_src.a.resolve("eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJjMDFhZmRkM2Y1OTJmNWVhNTNlMzE5MWQwYmIyMWVjYjM5NzNlZGM1MzkwNDZiMjJmNTA2ODEyNzIzZmRlMTJifGNsaWVudF9pZD1jbGllbnRfaWQkc2FuZGJveCQ0ZHByYmZjNnBoNTk1Y2NqXHUwMDI2Y3JlYXRlZF9hdD0yMDE3LTA0LTI2VDIzOjI2OjU5Ljg3OTA3ODYwNiswMDAwXHUwMDI2bWVyY2hhbnRfaWQ9M3cydHR2d2QyNDY1NDhoZCIsImNvbmZpZ1VybCI6Imh0dHBzOi8vYXBpLnNhbmRib3guYnJhaW50cmVlZ2F0ZXdheS5jb206NDQzL21lcmNoYW50cy8zdzJ0dHZ3ZDI0NjU0OGhkL2NsaWVudF9hcGkvdjEvY29uZmlndXJhdGlvbiIsImNoYWxsZW5nZXMiOltdLCJlbnZpcm9ubWVudCI6InNhbmRib3giLCJjbGllbnRBcGlVcmwiOiJodHRwczovL2FwaS5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tOjQ0My9tZXJjaGFudHMvM3cydHR2d2QyNDY1NDhoZC9jbGllbnRfYXBpIiwiYXNzZXRzVXJsIjoiaHR0cHM6Ly9hc3NldHMuYnJhaW50cmVlZ2F0ZXdheS5jb20iLCJhdXRoVXJsIjoiaHR0cHM6Ly9hdXRoLnZlbm1vLnNhbmRib3guYnJhaW50cmVlZ2F0ZXdheS5jb20iLCJhbmFseXRpY3MiOnsidXJsIjoiaHR0cHM6Ly9jbGllbnQtYW5hbHl0aWNzLnNhbmRib3guYnJhaW50cmVlZ2F0ZXdheS5jb20vM3cydHR2d2QyNDY1NDhoZCJ9LCJ0aHJlZURTZWN1cmVFbmFibGVkIjpmYWxzZSwicGF5cGFsRW5hYmxlZCI6dHJ1ZSwicGF5cGFsIjp7ImRpc3BsYXlOYW1lIjoiYmFyY28uMDMtZmFjaWxpdGF0b3JAZ21haWwuY29tIiwiY2xpZW50SWQiOiJBV3VZdnFnMGtaN2Y5S0V4TVpqZU53T3RjQV8yZVhnOWpMZy1QSnBGX0pnYk44M0YyVml5aEdnV2JCNDg4RGU3MFpucGRBZEI2TUNqekNqSyIsInByaXZhY3lVcmwiOiJodHRwczovL2V4YW1wbGUuY29tIiwidXNlckFncmVlbWVudFVybCI6Imh0dHBzOi8vZXhhbXBsZS5jb20iLCJiYXNlVXJsIjoiaHR0cHM6Ly9hc3NldHMuYnJhaW50cmVlZ2F0ZXdheS5jb20iLCJhc3NldHNVcmwiOiJodHRwczovL2NoZWNrb3V0LnBheXBhbC5jb20iLCJkaXJlY3RCYXNlVXJsIjpudWxsLCJhbGxvd0h0dHAiOnRydWUsImVudmlyb25tZW50Tm9OZXR3b3JrIjpmYWxzZSwiZW52aXJvbm1lbnQiOiJvZmZsaW5lIiwidW52ZXR0ZWRNZXJjaGFudCI6ZmFsc2UsImJyYWludHJlZUNsaWVudElkIjoibWFzdGVyY2xpZW50MyIsImJpbGxpbmdBZ3JlZW1lbnRzRW5hYmxlZCI6dHJ1ZSwibWVyY2hhbnRBY2NvdW50SWQiOiJVU0QiLCJjdXJyZW5jeUlzb0NvZGUiOiJVU0QifSwiY29pbmJhc2VFbmFibGVkIjpmYWxzZSwibWVyY2hhbnRJZCI6IjN3MnR0dndkMjQ2NTQ4aGQiLCJ2ZW5tbyI6Im9mZiJ9") : new zalgo_promise_src.a((function(resolve, reject) {
             if (json && data || json && body || data && json) throw new Error("Only options.json or options.data or options.body should be passed");
@@ -9986,8 +10083,8 @@
             }
             json ? normalizedHeaders["content-type"] = normalizedHeaders["content-type"] || "application/json" : (data || body) && (normalizedHeaders["content-type"] = normalizedHeaders["content-type"] || "application/x-www-form-urlencoded; charset=utf-8");
             normalizedHeaders.accept = normalizedHeaders.accept || "application/json";
-            for (var _i6 = 0; _i6 < headerBuilders.length; _i6++) {
-                var builtHeaders = (0, headerBuilders[_i6])();
+            for (var _i6 = 0; _i6 < http_headerBuilders.length; _i6++) {
+                var builtHeaders = (0, http_headerBuilders[_i6])();
                 for (var _i8 = 0, _Object$keys4 = Object.keys(builtHeaders); _i8 < _Object$keys4.length; _i8++) {
                     var _key3 = _Object$keys4[_i8];
                     normalizedHeaders[_key3.toLowerCase()] = builtHeaders[_key3];
@@ -10041,26 +10138,26 @@
             xhr.send(body);
         }));
     }
-    request.get = function(url, options) {
+    http_request.get = function(url, options) {
         void 0 === options && (options = {});
-        return request(Object(esm_extends.a)({
+        return http_request(Object(esm_extends.a)({
             method: "get",
             url: url
         }, options));
     };
-    request.post = function(url, data, options) {
+    http_request.post = function(url, data, options) {
         void 0 === options && (options = {});
-        return request(Object(esm_extends.a)({
+        return http_request(Object(esm_extends.a)({
             method: "post",
             url: url,
             data: data
         }, options));
     };
-    request.addHeaderBuilder = function(method) {
-        headerBuilders.push(method);
+    http_request.addHeaderBuilder = function(method) {
+        http_headerBuilders.push(method);
     };
-    __webpack_require__(23);
     __webpack_require__(24);
+    __webpack_require__(26);
     var openMetaFrame = Object(util.i)((function(env) {
         void 0 === env && (env = config.a.env);
         return zalgo_promise_src.a.try((function() {
@@ -10152,7 +10249,7 @@
             return getRememberedFundingPromise(source);
         }));
     }
-    function htmlEncode(html) {
+    function jsx_htmlEncode(html) {
         void 0 === html && (html = "");
         return html.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/\//g, "&#x2F;");
     }
@@ -10174,7 +10271,7 @@
             return props ? Object.keys(props).filter((function(key) {
                 return "innerHTML" !== key && props && !1 !== props[key];
             })).map((function(key) {
-                return props && !0 === props[key] ? "" + htmlEncode(key) : props ? htmlEncode(key) + '="' + htmlEncode(props[key]) + '"' : "";
+                return props && !0 === props[key] ? "" + jsx_htmlEncode(key) : props ? jsx_htmlEncode(key) + '="' + jsx_htmlEncode(props[key]) + '"' : "";
             })).join(" ") : "";
         };
         _proto.childrenToString = function() {
@@ -10184,7 +10281,7 @@
             !function iterate(children) {
                 for (var _i2 = 0; _i2 < children.length; _i2++) {
                     var child = children[_i2];
-                    null != child && (Array.isArray(child) ? iterate(child) : result += child instanceof JsxHTMLNode ? child.toString() : htmlEncode(child));
+                    null != child && (Array.isArray(child) ? iterate(child) : result += child instanceof JsxHTMLNode ? child.toString() : jsx_htmlEncode(child));
                 }
             }(this.children);
             return result;
@@ -15103,7 +15200,7 @@
             function focus(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                Object(device.f)() && Object(belter_src.j)() ? window.alert("Please switch tabs to reactivate the PayPal window") : zalgo_promise_src.a.try(actions.focus).catch(actions.close);
+                Object(device.f)() && Object(belter_src.f)() ? window.alert("Please switch tabs to reactivate the PayPal window") : zalgo_promise_src.a.try(actions.focus).catch(actions.close);
             }
             var overlayColor = (props.style || {}).overlayColor || src_constants.q.BLACK;
             var logoColor = LOGO_COLOR[overlayColor];
@@ -15366,7 +15463,7 @@
                             try {
                                 var isButton = -1 !== window.location.href.indexOf("/smart/button");
                                 var isGuest = -1 !== _this.window.location.href.indexOf("/webapps/xoonboarding");
-                                if (isButton && isGuest) return request({
+                                if (isButton && isGuest) return http_request({
                                     win: _this.window,
                                     method: "get",
                                     url: "/webapps/xoonboarding/api/auth"
@@ -15606,7 +15703,7 @@
         function focus(event) {
             event.preventDefault();
             event.stopPropagation();
-            Object(device.f)() && Object(belter_src.j)() ? window.alert("Please switch tabs to reactivate the PayPal window") : actions.focus();
+            Object(device.f)() && Object(belter_src.f)() ? window.alert("Please switch tabs to reactivate the PayPal window") : actions.focus();
         }
         var overlayColor = (props.style || {}).overlayColor || src_constants.q.BLACK;
         var logoColor = template_containerTemplate_LOGO_COLOR[overlayColor];
@@ -15929,7 +16026,7 @@
         if (!clientID) throw new Error("Client ID not found for env: " + env);
         if (proxyRest.createAccessToken && !proxyRest.createAccessToken.source.closed) return proxyRest.createAccessToken(env, client);
         var basicAuth = Object(belter_src.a)(clientID + ":");
-        return request({
+        return http_request({
             method: "post",
             url: config.a.authApiUrls[env],
             headers: {
@@ -15954,7 +16051,7 @@
         experienceDetails.temporary = !0;
         experienceDetails.name = experienceDetails.name ? experienceDetails.name + "_" + Math.random().toString() : Math.random().toString();
         return createAccessToken(env, client).then((function(accessToken) {
-            return request({
+            return http_request({
                 method: "post",
                 url: config.a.experienceApiUrls[env],
                 headers: {
@@ -16013,7 +16110,7 @@
                         if (!client[env = env || config.a.env]) throw new Error("Client ID not found for env: " + env);
                         var trackingID = Object(util.r)();
                         return createAccessToken(env, client).then((function(accessToken) {
-                            return request({
+                            return http_request({
                                 method: "put",
                                 url: config.a.trackingApiUrls[env] + "/" + merchantID + "/" + trackingID,
                                 headers: {
@@ -16035,7 +16132,7 @@
                     };
                     trackingID && (headers["Paypal-Client-Metadata-Id"] = trackingID);
                     meta && meta.partner_attribution_id && (headers["PayPal-Partner-Attribution-Id"] = meta.partner_attribution_id);
-                    return request({
+                    return http_request({
                         method: "post",
                         url: config.a.paymentApiUrls[env],
                         headers: headers,
@@ -16072,7 +16169,7 @@
                 Authorization: "Bearer " + accessToken
             };
             meta && meta.partner_attribution_id && (headers["PayPal-Partner-Attribution-Id"] = meta.partner_attribution_id);
-            return request({
+            return http_request({
                 method: "post",
                 url: config.a.orderApiUrls[env],
                 headers: headers,
@@ -16099,7 +16196,7 @@
                 if (experienceDetails) return zalgo_promise_src.a.resolve(createExperienceProfile(env, client, experienceDetails));
             })).then((function(experienceID) {
                 experienceID && (billingDetails.experience_profile_id = experienceID);
-                return request({
+                return http_request({
                     method: "post",
                     url: config.a.billingApiUrls[env],
                     headers: {
@@ -23688,7 +23785,7 @@
                         var _this2 = this;
                         void 0 === data && (data = {});
                         var actions = {
-                            request: request,
+                            request: http_request,
                             payment: {
                                 create: function(options) {
                                     return _this2.props.braintree ? _this2.props.braintree.then((function(client) {
@@ -24027,7 +24124,7 @@
                                 return result;
                             }));
                         };
-                        actions.request = request;
+                        actions.request = http_request;
                         onAuthorizeListener.trigger({
                             paymentToken: data.paymentToken
                         });
@@ -24308,7 +24405,7 @@
         for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) args[_key - 1] = arguments[_key];
         var instance = {
             clone: function(_temp3) {
-                var _ref6$decorate = (void 0 === _temp3 ? {} : _temp3).decorate, decorate = void 0 === _ref6$decorate ? belter_src.c : _ref6$decorate;
+                var _ref6$decorate = (void 0 === _temp3 ? {} : _temp3).decorate, decorate = void 0 === _ref6$decorate ? belter_src.b : _ref6$decorate;
                 return {
                     render: function(container) {
                         var decoratedProps = decorate(props);
@@ -24318,7 +24415,7 @@
             }
         };
         instances.push(instance);
-        var _props = props, _props$onDestroy = _props.onDestroy, onDestroy = void 0 === _props$onDestroy ? belter_src.g : _props$onDestroy;
+        var _props = props, _props$onDestroy = _props.onDestroy, onDestroy = void 0 === _props$onDestroy ? belter_src.d : _props$onDestroy;
         var newProps = Object(esm_extends.a)({}, props, {
             onDestroy: function() {
                 var index = instances.indexOf(instance);
@@ -24507,23 +24604,23 @@
         }
         return callOriginal();
     }));
-    var debounce = !1;
+    var hacks_debounce = !1;
     Object(util.l)(component_Checkout, "renderTo", (function(_ref3) {
         var callOriginal = _ref3.callOriginal, props = _ref3.args[1];
-        if (debounce) {
+        if (hacks_debounce) {
             Object(beaver_logger_client.p)("button_mutliple_click_debounce");
             return new zalgo_promise_src.a(util.j);
         }
-        debounce = !0;
-        var _loop = function(_i2, _ref5) {
+        hacks_debounce = !0;
+        var _loop = function() {
             var methodName = _ref5[_i2];
             var original = props[methodName];
             props[methodName] = function() {
-                debounce = !1;
+                hacks_debounce = !1;
                 if (original) return original.apply(this, arguments);
             };
         };
-        for (var _i2 = 0, _ref5 = [ "onAuthorize", "onCancel", "onError", "onClose" ]; _i2 < _ref5.length; _i2++) _loop(_i2, _ref5);
+        for (var _i2 = 0, _ref5 = [ "onAuthorize", "onCancel", "onError", "onClose" ]; _i2 < _ref5.length; _i2++) _loop();
         return callOriginal();
     }));
     Object(util.l)(rest.payment, "create", (function(_ref6) {
@@ -24843,7 +24940,7 @@
                     var script = getCurrentScript();
                     if (script && script.hasAttribute("data-page-type")) {
                         var pageType = script.getAttribute("data-page-type").toLowerCase();
-                        if (-1 === Object(belter_src.l)(PAGE_TYPES).indexOf(pageType) && pageType.length) throw new Error("Invalid page type, '" + pageType + "'");
+                        if (-1 === Object(belter_src.h)(PAGE_TYPES).indexOf(pageType) && pageType.length) throw new Error("Invalid page type, '" + pageType + "'");
                         return pageType;
                     }
                     return "";
@@ -24857,6 +24954,7 @@
                 logLevel: "warn"
             });
         }();
+        window.addEventListener("load", checkForDeprecatedIntegration);
         pptm.shouldCreateInitialPptmScript() && pptm.createPptmScript();
         precacheRemembered && (Object(lib_session.d)((function(session) {
             return session.recentlyCheckedRemembered;
