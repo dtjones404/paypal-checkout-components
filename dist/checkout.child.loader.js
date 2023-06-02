@@ -73,6 +73,12 @@
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.r(__webpack_exports__);
+    __webpack_require__.d(__webpack_exports__, "onLoadCheckoutIntegration", (function() {
+        return onLoadCheckoutIntegration;
+    }));
+    __webpack_require__.d(__webpack_exports__, "isCheckoutXComponent", (function() {
+        return isCheckoutXComponent;
+    }));
     var esm_extends = __webpack_require__(0);
     var config = {
         checkoutjs_url: "https://www.paypalobjects.com/api/checkout{version}.js",
@@ -199,12 +205,6 @@
         }(err));
         if (err || result) return integrationResponder.respond(err, result);
     }));
-    __webpack_require__.d(__webpack_exports__, "onLoadCheckoutIntegration", (function() {
-        return onLoadCheckoutIntegration;
-    }));
-    __webpack_require__.d(__webpack_exports__, "isCheckoutXComponent", (function() {
-        return isCheckoutXComponent;
-    }));
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.r(__webpack_exports__);
@@ -218,12 +218,11 @@
                 var _extends2;
                 var childname = _childnamespaces2[_i4];
                 var childnamespace = xports[childname];
-                namespace[childname] && (childnamespace = Object(esm_extends.a)({}, namespace[childname], {}, childnamespace));
-                xports = Object(esm_extends.a)({}, namespace, {}, xports, ((_extends2 = {})[childname] = childnamespace, 
+                namespace[childname] && (childnamespace = Object(esm_extends.a)({}, namespace[childname], childnamespace));
+                xports = Object(esm_extends.a)({}, namespace, xports, ((_extends2 = {})[childname] = childnamespace, 
                 _extends2));
             }
         }
         for (var _i6 = 0, _namespaces4 = namespaces; _i6 < _namespaces4.length; _i6++) window[_namespaces4[_i6]] = xports;
     }(__webpack_require__(1), [ "paypal" ]);
 } ]);
-//# sourceMappingURL=checkout.child.loader.js.map
