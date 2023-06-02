@@ -76,6 +76,12 @@
             return target;
         }).apply(this, arguments);
     }
+    function _setPrototypeOf(o, p) {
+        return (_setPrototypeOf = Object.setPrototypeOf || function(o, p) {
+            o.__proto__ = p;
+            return o;
+        })(o, p);
+    }
     function utils_isPromise(item) {
         try {
             if (!item) return !1;
@@ -226,8 +232,9 @@
                         }
                     }
                     if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
-                        _result2.resolved ? promise.resolve(_result2.value) : promise.reject(_result2.error);
-                        _result2.errorHandled = !0;
+                        var promiseResult = _result2;
+                        promiseResult.resolved ? promise.resolve(promiseResult.value) : promise.reject(promiseResult.error);
+                        promiseResult.errorHandled = !0;
                     } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? promise.resolve(_result2.value) : promise.reject(_result2.error) : chain(_result2, promise) : promise.resolve(_result2);
                 }
                 handlers.length = 0;
@@ -278,6 +285,10 @@
             if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
             return Promise.resolve(this);
         };
+        _proto.lazy = function() {
+            this.errorHandled = !0;
+            return this;
+        };
         ZalgoPromise.resolve = function(value) {
             return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise((function(resolve, reject) {
                 return value.then(resolve, reject);
@@ -292,7 +303,7 @@
         ZalgoPromise.all = function(promises) {
             var promise = new ZalgoPromise;
             var count = promises.length;
-            var results = [];
+            var results = [].slice();
             if (!count) {
                 promise.resolve(results);
                 return promise;
@@ -383,9 +394,21 @@
         return ZalgoPromise;
     }();
     var IE_WIN_ACCESS_ERROR = "Call was rejected by callee.\r\n";
+    function getActualProtocol(win) {
+        void 0 === win && (win = window);
+        return win.location.protocol;
+    }
+    function getProtocol(win) {
+        void 0 === win && (win = window);
+        if (win.mockDomain) {
+            var protocol = win.mockDomain.split("//")[0];
+            if (protocol) return protocol;
+        }
+        return getActualProtocol(win);
+    }
     function isAboutProtocol(win) {
         void 0 === win && (win = window);
-        return "about:" === win.location.protocol;
+        return "about:" === getProtocol(win);
     }
     function canReadFromWindow(win) {
         try {
@@ -397,7 +420,7 @@
         void 0 === win && (win = window);
         var location = win.location;
         if (!location) throw new Error("Can not read window location");
-        var protocol = location.protocol;
+        var protocol = getActualProtocol(win);
         if (!protocol) throw new Error("Can not read window protocol");
         if ("file:" === protocol) return "file://";
         if ("about:" === protocol) {
@@ -448,6 +471,12 @@
                 } catch (err) {}
                 try {
                     if (isAboutProtocol(win) && canReadFromWindow()) return !0;
+                } catch (err) {}
+                try {
+                    if (function(win) {
+                        void 0 === win && (win = window);
+                        return "mock:" === getProtocol(win);
+                    }(win) && canReadFromWindow()) return !0;
                 } catch (err) {}
                 try {
                     if (getActualDomain(win) === getActualDomain(window)) return !0;
@@ -667,13 +696,13 @@
     function base64encode(str) {
         if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
             return String.fromCharCode(parseInt(p1, 16));
-        })));
-        if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
+        }))).replace(/[=]/g, "");
+        if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64").replace(/[=]/g, "");
         throw new Error("Can not find window.btoa or Buffer");
     }
     function uniqueID() {
         var chars = "0123456789abcdef";
-        return "xxxxxxxxxx".replace(/./g, (function() {
+        return "uid_" + "xxxxxxxxxx".replace(/./g, (function() {
             return chars.charAt(Math.floor(Math.random() * chars.length));
         })) + "_" + base64encode((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
     }
@@ -808,7 +837,21 @@
         var uid = script.getAttribute("data-uid");
         if (uid && "string" == typeof uid) return uid;
         if ((uid = script.getAttribute("data-uid-auto")) && "string" == typeof uid) return uid;
-        uid = uniqueID();
+        if (script.src) {
+            var hashedString = function(str) {
+                var hash = "";
+                for (var i = 0; i < str.length; i++) {
+                    var total = str[i].charCodeAt(0) * i;
+                    str[i + 1] && (total += str[i + 1].charCodeAt(0) * (i - 1));
+                    hash += String.fromCharCode(97 + Math.abs(total) % 26);
+                }
+                return hash;
+            }(JSON.stringify({
+                src: script.src,
+                dataset: script.dataset
+            }));
+            uid = "uid_" + hashedString.slice(hashedString.length - 30);
+        } else uid = uniqueID();
         script.setAttribute("data-uid-auto", uid);
         return uid;
     }));
@@ -1784,7 +1827,7 @@
         !function(subClass, superClass) {
             subClass.prototype = Object.create(superClass.prototype);
             subClass.prototype.constructor = subClass;
-            subClass.__proto__ = superClass;
+            _setPrototypeOf(subClass, superClass);
         }(JsxHTMLNodeContainer, _JsxHTMLNode);
         function JsxHTMLNodeContainer(children) {
             return _JsxHTMLNode.call(this, "", {}, children) || this;
