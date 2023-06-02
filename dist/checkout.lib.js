@@ -59,7 +59,7 @@
             return {}.hasOwnProperty.call(object, property);
         };
         __webpack_require__.p = "";
-        return __webpack_require__(__webpack_require__.s = 42);
+        return __webpack_require__(__webpack_require__.s = 44);
     }([ function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         __webpack_require__.d(__webpack_exports__, "m", (function() {
@@ -815,7 +815,7 @@
         __webpack_require__.d(__webpack_exports__, "b", (function() {
             return jsxRender;
         }));
-        var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(20);
+        var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(19);
         var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(12);
         function htmlEncode(html) {
             void 0 === html && (html = "");
@@ -1035,8 +1035,9 @@
                             }
                         }
                         if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
-                            _result2.resolved ? promise.resolve(_result2.value) : promise.reject(_result2.error);
-                            _result2.errorHandled = !0;
+                            var promiseResult = _result2;
+                            promiseResult.resolved ? promise.resolve(promiseResult.value) : promise.reject(promiseResult.error);
+                            promiseResult.errorHandled = !0;
                         } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? promise.resolve(_result2.value) : promise.reject(_result2.error) : chain(_result2, promise) : promise.resolve(_result2);
                     }
                     handlers.length = 0;
@@ -1087,6 +1088,10 @@
                 if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
                 return Promise.resolve(this);
             };
+            _proto.lazy = function() {
+                this.errorHandled = !0;
+                return this;
+            };
             ZalgoPromise.resolve = function(value) {
                 return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise((function(resolve, reject) {
                     return value.then(resolve, reject);
@@ -1101,7 +1106,7 @@
             ZalgoPromise.all = function(promises) {
                 var promise = new ZalgoPromise;
                 var count = promises.length;
-                var results = [];
+                var results = [].slice();
                 if (!count) {
                     promise.resolve(results);
                     return promise;
@@ -1134,11 +1139,17 @@
             };
             ZalgoPromise.hash = function(promises) {
                 var result = {};
-                return ZalgoPromise.all(Object.keys(promises).map((function(key) {
-                    return ZalgoPromise.resolve(promises[key]).then((function(value) {
-                        result[key] = value;
-                    }));
-                }))).then((function() {
+                var awaitPromises = [];
+                var _loop = function(key) {
+                    if (promises.hasOwnProperty(key)) {
+                        var value = promises[key];
+                        utils_isPromise(value) ? awaitPromises.push(value.then((function(res) {
+                            result[key] = res;
+                        }))) : result[key] = value;
+                    }
+                };
+                for (var key in promises) _loop(key);
+                return ZalgoPromise.all(awaitPromises).then((function() {
                     return result;
                 }));
             };
@@ -1187,157 +1198,160 @@
         }();
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        __webpack_require__.d(__webpack_exports__, "z", (function() {
+        __webpack_require__.d(__webpack_exports__, "A", (function() {
             return isDevice;
         }));
-        __webpack_require__.d(__webpack_exports__, "F", (function() {
+        __webpack_require__.d(__webpack_exports__, "G", (function() {
             return isIos;
         }));
-        __webpack_require__.d(__webpack_exports__, "D", (function() {
+        __webpack_require__.d(__webpack_exports__, "E", (function() {
             return isIE;
         }));
-        __webpack_require__.d(__webpack_exports__, "E", (function() {
+        __webpack_require__.d(__webpack_exports__, "F", (function() {
             return isIEIntranet;
         }));
-        __webpack_require__.d(__webpack_exports__, "W", (function() {
+        __webpack_require__.d(__webpack_exports__, "X", (function() {
             return supportsPopups;
         }));
-        __webpack_require__.d(__webpack_exports__, "J", (function() {
+        __webpack_require__.d(__webpack_exports__, "K", (function() {
             return util.j;
         }));
-        __webpack_require__.d(__webpack_exports__, "L", (function() {
+        __webpack_require__.d(__webpack_exports__, "M", (function() {
             return util.k;
         }));
-        __webpack_require__.d(__webpack_exports__, "X", (function() {
+        __webpack_require__.d(__webpack_exports__, "Y", (function() {
             return util.s;
         }));
-        __webpack_require__.d(__webpack_exports__, "I", (function() {
+        __webpack_require__.d(__webpack_exports__, "J", (function() {
             return util.i;
         }));
-        __webpack_require__.d(__webpack_exports__, "S", (function() {
+        __webpack_require__.d(__webpack_exports__, "T", (function() {
             return util.o;
         }));
-        __webpack_require__.d(__webpack_exports__, "e", (function() {
+        __webpack_require__.d(__webpack_exports__, "f", (function() {
             return util.c;
         }));
         __webpack_require__.d(__webpack_exports__, "b", (function() {
             return util.a;
         }));
-        __webpack_require__.d(__webpack_exports__, "U", (function() {
+        __webpack_require__.d(__webpack_exports__, "V", (function() {
             return util.q;
         }));
-        __webpack_require__.d(__webpack_exports__, "V", (function() {
+        __webpack_require__.d(__webpack_exports__, "W", (function() {
             return util.r;
         }));
-        __webpack_require__.d(__webpack_exports__, "N", (function() {
+        __webpack_require__.d(__webpack_exports__, "O", (function() {
             return util.l;
         }));
-        __webpack_require__.d(__webpack_exports__, "f", (function() {
+        __webpack_require__.d(__webpack_exports__, "g", (function() {
             return util.d;
         }));
-        __webpack_require__.d(__webpack_exports__, "y", (function() {
+        __webpack_require__.d(__webpack_exports__, "z", (function() {
             return initLogger;
         }));
-        __webpack_require__.d(__webpack_exports__, "T", (function() {
+        __webpack_require__.d(__webpack_exports__, "U", (function() {
             return setLogLevel;
         }));
-        __webpack_require__.d(__webpack_exports__, "h", (function() {
+        __webpack_require__.d(__webpack_exports__, "i", (function() {
             return getBrowser;
         }));
-        __webpack_require__.d(__webpack_exports__, "B", (function() {
+        __webpack_require__.d(__webpack_exports__, "C", (function() {
             return isEligible;
         }));
-        __webpack_require__.d(__webpack_exports__, "d", (function() {
+        __webpack_require__.d(__webpack_exports__, "e", (function() {
             return checkRecognizedBrowser;
+        }));
+        __webpack_require__.d(__webpack_exports__, "d", (function() {
+            return checkForDeprecatedIntegration;
         }));
         __webpack_require__.d(__webpack_exports__, "c", (function() {
             return checkForCommonErrors;
         }));
-        __webpack_require__.d(__webpack_exports__, "H", (function() {
+        __webpack_require__.d(__webpack_exports__, "I", (function() {
             return loadScript;
         }));
-        __webpack_require__.d(__webpack_exports__, "n", (function() {
+        __webpack_require__.d(__webpack_exports__, "o", (function() {
             return getElement;
         }));
-        __webpack_require__.d(__webpack_exports__, "o", (function() {
+        __webpack_require__.d(__webpack_exports__, "p", (function() {
             return getElements;
         }));
-        __webpack_require__.d(__webpack_exports__, "K", (function() {
+        __webpack_require__.d(__webpack_exports__, "L", (function() {
             return onDocumentReady;
         }));
-        __webpack_require__.d(__webpack_exports__, "q", (function() {
+        __webpack_require__.d(__webpack_exports__, "r", (function() {
             return getQueryParam;
         }));
-        __webpack_require__.d(__webpack_exports__, "Y", (function() {
+        __webpack_require__.d(__webpack_exports__, "Z", (function() {
             return urlWillRedirectPage;
         }));
-        __webpack_require__.d(__webpack_exports__, "g", (function() {
+        __webpack_require__.d(__webpack_exports__, "h", (function() {
             return extendUrl;
         }));
-        __webpack_require__.d(__webpack_exports__, "P", (function() {
+        __webpack_require__.d(__webpack_exports__, "Q", (function() {
             return redirect;
         }));
-        __webpack_require__.d(__webpack_exports__, "i", (function() {
+        __webpack_require__.d(__webpack_exports__, "j", (function() {
             return getBrowserLocale;
         }));
-        __webpack_require__.d(__webpack_exports__, "A", (function() {
+        __webpack_require__.d(__webpack_exports__, "B", (function() {
             return isElementVisible;
         }));
-        __webpack_require__.d(__webpack_exports__, "p", (function() {
+        __webpack_require__.d(__webpack_exports__, "q", (function() {
             return getPageRenderTime;
         }));
-        __webpack_require__.d(__webpack_exports__, "s", (function() {
+        __webpack_require__.d(__webpack_exports__, "t", (function() {
             return getResourceLoadTime;
         }));
-        __webpack_require__.d(__webpack_exports__, "R", (function() {
+        __webpack_require__.d(__webpack_exports__, "S", (function() {
             return request;
         }));
-        __webpack_require__.d(__webpack_exports__, "x", (function() {
+        __webpack_require__.d(__webpack_exports__, "y", (function() {
             return getThrottle;
         }));
-        __webpack_require__.d(__webpack_exports__, "t", (function() {
+        __webpack_require__.d(__webpack_exports__, "u", (function() {
             return getReturnToken;
         }));
-        __webpack_require__.d(__webpack_exports__, "w", (function() {
+        __webpack_require__.d(__webpack_exports__, "x", (function() {
             return getSessionState;
         }));
-        __webpack_require__.d(__webpack_exports__, "v", (function() {
+        __webpack_require__.d(__webpack_exports__, "w", (function() {
             return getSessionID;
         }));
-        __webpack_require__.d(__webpack_exports__, "j", (function() {
+        __webpack_require__.d(__webpack_exports__, "k", (function() {
             return getButtonSessionID;
         }));
-        __webpack_require__.d(__webpack_exports__, "M", (function() {
+        __webpack_require__.d(__webpack_exports__, "N", (function() {
             return openMetaFrame;
         }));
-        __webpack_require__.d(__webpack_exports__, "r", (function() {
+        __webpack_require__.d(__webpack_exports__, "s", (function() {
             return getRememberedFunding;
         }));
-        __webpack_require__.d(__webpack_exports__, "Q", (function() {
+        __webpack_require__.d(__webpack_exports__, "R", (function() {
             return rememberFunding;
         }));
-        __webpack_require__.d(__webpack_exports__, "C", (function() {
+        __webpack_require__.d(__webpack_exports__, "D", (function() {
             return isFundingRemembered;
         }));
-        __webpack_require__.d(__webpack_exports__, "O", (function() {
+        __webpack_require__.d(__webpack_exports__, "P", (function() {
             return precacheRememberedFunding;
         }));
-        __webpack_require__.d(__webpack_exports__, "k", (function() {
+        __webpack_require__.d(__webpack_exports__, "l", (function() {
             return getCurrentScript;
         }));
-        __webpack_require__.d(__webpack_exports__, "u", (function() {
+        __webpack_require__.d(__webpack_exports__, "v", (function() {
             return getScriptVersion;
         }));
-        __webpack_require__.d(__webpack_exports__, "l", (function() {
+        __webpack_require__.d(__webpack_exports__, "m", (function() {
             return getCurrentScriptUrl;
         }));
-        __webpack_require__.d(__webpack_exports__, "m", (function() {
+        __webpack_require__.d(__webpack_exports__, "n", (function() {
             return getDomainSetting;
         }));
         __webpack_require__.d(__webpack_exports__, "a", (function() {
             return allowIframe;
         }));
-        __webpack_require__.d(__webpack_exports__, "G", (function() {
+        __webpack_require__.d(__webpack_exports__, "H", (function() {
             return isPayPalDomain;
         }));
         var cross_domain_utils_src = __webpack_require__(7);
@@ -1766,8 +1780,8 @@
         function getBowser() {
             var userAgent = getUserAgent();
             if (bowserCache[userAgent]) return bowserCache[userAgent];
-            delete __webpack_require__.c[36];
-            var bowser = __webpack_require__(36);
+            delete __webpack_require__.c[38];
+            var bowser = __webpack_require__(38);
             bowserCache[userAgent] = bowser;
             return bowser;
         }
@@ -1813,6 +1827,16 @@
             if (window.console) {
                 if (window.console.warn) return window.console.warn(err);
                 if (window.console.log) return window.console.log(err);
+            }
+        }
+        function checkForDeprecatedIntegration() {
+            var scripts = [].slice.call(document.getElementsByTagName("script"));
+            for (var _i2 = 0; _i2 < scripts.length; _i2++) {
+                var _script$attributes$ty;
+                if ("application/x-component" === (null == (_script$attributes$ty = scripts[_i2].attributes.type) ? void 0 : _script$attributes$ty.value)) {
+                    Object(client.q)("deprecated_integration_application_xcomponent");
+                    console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
+                }
             }
         }
         function checkForCommonErrors() {
@@ -3595,8 +3619,8 @@
         var esm_extends = __webpack_require__(11);
         var src = __webpack_require__(7);
         var zalgo_promise_src = __webpack_require__(2);
-        var cross_domain_safe_weakmap_src = __webpack_require__(17);
-        var error = __webpack_require__(22);
+        var cross_domain_safe_weakmap_src = __webpack_require__(15);
+        var error = __webpack_require__(23);
         function urlEncode(str) {
             return str.replace(/\?/g, "%3F").replace(/&/g, "%26").replace(/#/g, "%23").replace(/\+/g, "%2B");
         }
@@ -3628,83 +3652,74 @@
         function replaceObject(item, replacers, fullKey) {
             void 0 === fullKey && (fullKey = "");
             if (Array.isArray(item)) {
-                var _ret = function() {
-                    var length = item.length;
-                    var result = [];
-                    var _loop = function(i) {
-                        Object.defineProperty(result, i, {
-                            configurable: !0,
-                            enumerable: !0,
-                            get: function() {
-                                var itemKey = fullKey ? fullKey + "." + i : "" + i;
-                                var child = item[i];
-                                var replacer = replacers[typeof child];
-                                if (replacer) {
-                                    var replaced = replacer(child, i, itemKey);
-                                    if (void 0 !== replaced) {
-                                        result[i] = replaced;
-                                        return result[i];
-                                    }
-                                }
-                                if ("object" == typeof child && null !== child) {
-                                    result[i] = replaceObject(child, replacers, itemKey);
+                var length = item.length;
+                var result = [];
+                var _loop = function(i) {
+                    Object.defineProperty(result, i, {
+                        configurable: !0,
+                        enumerable: !0,
+                        get: function() {
+                            var itemKey = fullKey ? fullKey + "." + i : "" + i;
+                            var child = item[i];
+                            var replacer = replacers[typeof child];
+                            if (replacer) {
+                                var replaced = replacer(child, i, itemKey);
+                                if (void 0 !== replaced) {
+                                    result[i] = replaced;
                                     return result[i];
                                 }
-                                result[i] = child;
+                            }
+                            if ("object" == typeof child && null !== child) {
+                                result[i] = replaceObject(child, replacers, itemKey);
                                 return result[i];
-                            },
-                            set: function(value) {
-                                delete result[i];
-                                result[i] = value;
                             }
-                        });
-                    };
-                    for (var i = 0; i < length; i++) _loop(i);
-                    return {
-                        v: result
-                    };
-                }();
-                if ("object" == typeof _ret) return _ret.v;
-            } else {
-                if ("object" != typeof item || null === item) throw new Error("Pass an object or array");
-                var _ret2 = function() {
-                    var result = {};
-                    var _loop2 = function(key) {
-                        if (!item.hasOwnProperty(key)) return "continue";
-                        Object.defineProperty(result, key, {
-                            configurable: !0,
-                            enumerable: !0,
-                            get: function() {
-                                var itemKey = fullKey ? fullKey + "." + key : "" + key;
-                                var child = item[key];
-                                var replacer = replacers[typeof child];
-                                if (replacer) {
-                                    var replaced = replacer(child, key, itemKey);
-                                    if (void 0 !== replaced) {
-                                        result[key] = replaced;
-                                        return result[key];
-                                    }
-                                }
-                                if ("object" == typeof child && null !== child) {
-                                    result[key] = replaceObject(child, replacers, itemKey);
-                                    return result[key];
-                                }
-                                result[key] = child;
-                                return result[key];
-                            },
-                            set: function(value) {
-                                delete result[key];
-                                result[key] = value;
-                            }
-                        });
-                    };
-                    for (var key in item) _loop2(key);
-                    return {
-                        v: result
-                    };
-                }();
-                if ("object" == typeof _ret2) return _ret2.v;
+                            result[i] = child;
+                            return result[i];
+                        },
+                        set: function(value) {
+                            delete result[i];
+                            result[i] = value;
+                        }
+                    });
+                };
+                for (var i = 0; i < length; i++) _loop(i);
+                return result;
             }
+            if ("object" == typeof item && null !== item) {
+                var _result = {};
+                var _loop2 = function(key) {
+                    if (!item.hasOwnProperty(key)) return "continue";
+                    Object.defineProperty(_result, key, {
+                        configurable: !0,
+                        enumerable: !0,
+                        get: function() {
+                            var itemKey = fullKey ? fullKey + "." + key : "" + key;
+                            var child = item[key];
+                            var replacer = replacers[typeof child];
+                            if (replacer) {
+                                var replaced = replacer(child, key, itemKey);
+                                if (void 0 !== replaced) {
+                                    _result[key] = replaced;
+                                    return _result[key];
+                                }
+                            }
+                            if ("object" == typeof child && null !== child) {
+                                _result[key] = replaceObject(child, replacers, itemKey);
+                                return _result[key];
+                            }
+                            _result[key] = child;
+                            return _result[key];
+                        },
+                        set: function(value) {
+                            delete _result[key];
+                            _result[key] = value;
+                        }
+                    });
+                };
+                for (var key in item) _loop2(key);
+                return _result;
+            }
+            throw new Error("Pass an object or array");
         }
         function copyProp(source, target, name, def) {
             if (source.hasOwnProperty(name)) {
@@ -4418,9 +4433,21 @@
             ABOUT: "about:"
         };
         var IE_WIN_ACCESS_ERROR = "Call was rejected by callee.\r\n";
+        function getActualProtocol(win) {
+            void 0 === win && (win = window);
+            return win.location.protocol;
+        }
+        function getProtocol(win) {
+            void 0 === win && (win = window);
+            if (win.mockDomain) {
+                var protocol = win.mockDomain.split("//")[0];
+                if (protocol) return protocol;
+            }
+            return getActualProtocol(win);
+        }
         function isAboutProtocol(win) {
             void 0 === win && (win = window);
-            return win.location.protocol === PROTOCOL.ABOUT;
+            return getProtocol(win) === PROTOCOL.ABOUT;
         }
         function getParent(win) {
             void 0 === win && (win = window);
@@ -4444,7 +4471,7 @@
             void 0 === win && (win = window);
             var location = win.location;
             if (!location) throw new Error("Can not read window location");
-            var protocol = location.protocol;
+            var protocol = getActualProtocol(win);
             if (!protocol) throw new Error("Can not read window protocol");
             if (protocol === PROTOCOL.FILE) return PROTOCOL.FILE + "//";
             if (protocol === PROTOCOL.ABOUT) {
@@ -4470,6 +4497,12 @@
             } catch (err) {}
             try {
                 if (isAboutProtocol(win) && canReadFromWindow()) return !0;
+            } catch (err) {}
+            try {
+                if (function(win) {
+                    void 0 === win && (win = window);
+                    return getProtocol(win) === PROTOCOL.MOCK;
+                }(win) && canReadFromWindow()) return !0;
             } catch (err) {}
             try {
                 if (getActualDomain(win) === getActualDomain(window)) return !0;
@@ -4663,8 +4696,7 @@
             } catch (err) {}
         }
         function findFrameByName(win, name) {
-            var frame;
-            return (frame = getFrameByName(win, name)) ? frame : function findChildFrameByName(win, name) {
+            return getFrameByName(win, name) || function findChildFrameByName(win, name) {
                 var frame = getFrameByName(win, name);
                 if (frame) return frame;
                 for (var _i11 = 0, _getFrames4 = getFrames(win); _i11 < _getFrames4.length; _i11++) {
@@ -4747,7 +4779,7 @@
             })));
         }
         function stringifyDomainPattern(pattern) {
-            return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() : pattern.toString();
+            return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() + ")" : pattern.toString();
         }
         function getDomainFromUrl(url) {
             return url.match(/^(https?|mock|file):\/\//) ? url.split("/").slice(0, 3).join("/") : getDomain();
@@ -4808,6 +4840,9 @@
             } catch (err) {
                 return !0;
             }
+            try {
+                if ("postMessage" in obj && "self" in obj && "location" in obj) return !0;
+            } catch (err) {}
             return !1;
         }
     }, function(module, __webpack_exports__, __webpack_require__) {
@@ -5092,18 +5127,18 @@
             return regexMap;
         }));
         var zalgo_promise_src__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-        var belter_src__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(15);
+        var belter_src__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(17);
         __webpack_require__.d(__webpack_exports__, "j", (function() {
-            return belter_src__WEBPACK_IMPORTED_MODULE_1__.g;
+            return belter_src__WEBPACK_IMPORTED_MODULE_1__.d;
         }));
         __webpack_require__.d(__webpack_exports__, "k", (function() {
-            return belter_src__WEBPACK_IMPORTED_MODULE_1__.i;
+            return belter_src__WEBPACK_IMPORTED_MODULE_1__.e;
         }));
         __webpack_require__.d(__webpack_exports__, "s", (function() {
-            return belter_src__WEBPACK_IMPORTED_MODULE_1__.k;
+            return belter_src__WEBPACK_IMPORTED_MODULE_1__.g;
         }));
         __webpack_require__.d(__webpack_exports__, "f", (function() {
-            return belter_src__WEBPACK_IMPORTED_MODULE_1__.e;
+            return belter_src__WEBPACK_IMPORTED_MODULE_1__.c;
         }));
         var moduleGlobal = {};
         function getGlobal() {
@@ -5370,7 +5405,7 @@
         var SEND_MESSAGE_STRATEGIES = {};
         SEND_MESSAGE_STRATEGIES[conf.b.SEND_STRATEGIES.POST_MESSAGE] = function(win, serializedMessage, domain) {
             try {
-                __webpack_require__(37).emulateIERestrictions(window, win);
+                __webpack_require__(39).emulateIERestrictions(window, win);
             } catch (err) {
                 return;
             }
@@ -5446,7 +5481,7 @@
                 }));
             }));
         }
-        var cross_domain_safe_weakmap_src = __webpack_require__(17);
+        var cross_domain_safe_weakmap_src = __webpack_require__(15);
         global.a.responseListeners = global.a.responseListeners || {};
         global.a.requestListeners = global.a.requestListeners || {};
         global.a.WINDOW_WILDCARD = global.a.WINDOW_WILDCARD || new function() {};
@@ -5591,7 +5626,7 @@
                 data: event.data
             };
             try {
-                __webpack_require__(37).emulateIERestrictions(messageEvent.source, window);
+                __webpack_require__(39).emulateIERestrictions(messageEvent.source, window);
             } catch (err) {
                 return;
             }
@@ -5874,7 +5909,7 @@
             global.a.methods.delete(win);
             global.a.readyPromises.delete(win);
         }
-        var bridge = __webpack_require__(39);
+        var bridge = __webpack_require__(41);
         function init() {
             if (!global.a.initialized) {
                 Object(lib.a)(window, "message", messageListener);
@@ -5945,7 +5980,7 @@
         __webpack_require__.d(__webpack_exports__, "k", (function() {
             return onChildWindowReady;
         }));
-        var src = __webpack_require__(17);
+        var src = __webpack_require__(15);
         var cross_domain_utils_src = __webpack_require__(7);
         var conf = __webpack_require__(10);
         function stringifyError(err, level) {
@@ -6233,769 +6268,6 @@
         }
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        __webpack_require__.d(__webpack_exports__, "j", (function() {
-            return supportsPopups;
-        }));
-        __webpack_require__.d(__webpack_exports__, "e", (function() {
-            return isLocalStorageEnabled;
-        }));
-        __webpack_require__.d(__webpack_exports__, "b", (function() {
-            return getElementSafe;
-        }));
-        __webpack_require__.d(__webpack_exports__, "h", (function() {
-            return onResize;
-        }));
-        __webpack_require__.d(__webpack_exports__, "f", (function() {
-            return isShadowElement;
-        }));
-        __webpack_require__.d(__webpack_exports__, "d", (function() {
-            return insertShadowSlot;
-        }));
-        __webpack_require__.d(__webpack_exports__, "a", (function() {
-            return base64encode;
-        }));
-        __webpack_require__.d(__webpack_exports__, "k", (function() {
-            return uniqueID;
-        }));
-        __webpack_require__.d(__webpack_exports__, "g", (function() {
-            return noop;
-        }));
-        __webpack_require__.d(__webpack_exports__, "i", (function() {
-            return once;
-        }));
-        __webpack_require__.d(__webpack_exports__, "c", (function() {
-            return identity;
-        }));
-        function getUserAgent() {
-            return window.navigator.mockUserAgent || window.navigator.userAgent;
-        }
-        function isOperaMini(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return ua.indexOf("Opera Mini") > -1;
-        }
-        function supportsPopups(ua) {
-            void 0 === ua && (ua = getUserAgent());
-            return !(function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return !!function(ua) {
-                    void 0 === ua && (ua = getUserAgent());
-                    return /iPhone|iPod|iPad/.test(ua);
-                }(ua) && (!!function(ua) {
-                    void 0 === ua && (ua = getUserAgent());
-                    return /\bGSA\b/.test(ua);
-                }(ua) || /.+AppleWebKit(?!.*Safari)/.test(ua));
-            }(ua) || function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return !!function(ua) {
-                    void 0 === ua && (ua = getUserAgent());
-                    return /Android/.test(ua);
-                }(ua) && /Version\/[\d.]+/.test(ua) && !isOperaMini(ua);
-            }(ua) || isOperaMini(ua) || function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return /FxiOS/i.test(ua);
-            }(ua) || function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return /EdgiOS/i.test(ua);
-            }(ua) || function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return -1 !== ua.indexOf("FBAN") || -1 !== ua.indexOf("FBAV");
-            }(ua) || function(ua) {
-                void 0 === ua && (ua = getUserAgent());
-                return /QQBrowser/.test(ua);
-            }(ua) || "undefined" != typeof process && process.versions && process.versions.electron || (userAgent = getUserAgent(), 
-            /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent)) || !0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches);
-            var userAgent;
-        }
-        __webpack_require__(11);
-        __webpack_require__(2);
-        __webpack_require__(7);
-        var cross_domain_safe_weakmap_src = __webpack_require__(17);
-        function base64encode(str) {
-            if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
-                return String.fromCharCode(parseInt(p1, 16));
-            })));
-            if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
-            throw new Error("Can not find window.btoa or Buffer");
-        }
-        function uniqueID() {
-            var chars = "0123456789abcdef";
-            return "xxxxxxxxxx".replace(/./g, (function() {
-                return chars.charAt(Math.floor(Math.random() * chars.length));
-            })) + "_" + base64encode((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-        }
-        var objectIDs;
-        function noop() {}
-        function once(method) {
-            var called = !1;
-            return function(fn, name) {
-                try {
-                    delete fn.name;
-                    fn.name = name;
-                } catch (err) {}
-                fn.__name__ = fn.displayName = name;
-                return fn;
-            }((function() {
-                if (!called) {
-                    called = !0;
-                    return method.apply(this, arguments);
-                }
-            }), ((fn = method).name || fn.__name__ || fn.displayName || "anonymous") + "::once");
-            var fn;
-        }
-        function identity(item) {
-            return item;
-        }
-        function isLocalStorageEnabled() {
-            return function(method, logic, args) {
-                void 0 === args && (args = []);
-                var cache = method.__inline_memoize_cache__ = method.__inline_memoize_cache__ || {};
-                var key = function(args) {
-                    try {
-                        return JSON.stringify([].slice.call(args), (function(subkey, val) {
-                            return "function" == typeof val ? "memoize[" + function(obj) {
-                                objectIDs = objectIDs || new cross_domain_safe_weakmap_src.a;
-                                if (null == obj || "object" != typeof obj && "function" != typeof obj) throw new Error("Invalid object");
-                                var uid = objectIDs.get(obj);
-                                if (!uid) {
-                                    uid = typeof obj + ":" + uniqueID();
-                                    objectIDs.set(obj, uid);
-                                }
-                                return uid;
-                            }(val) + "]" : val;
-                        }));
-                    } catch (err) {
-                        throw new Error("Arguments not serializable -- can not be used to memoize");
-                    }
-                }(args);
-                return cache.hasOwnProperty(key) ? cache[key] : cache[key] = function() {
-                    try {
-                        if ("undefined" == typeof window) return !1;
-                        if (window.localStorage) {
-                            var value = Math.random().toString();
-                            window.localStorage.setItem("__test__localStorage__", value);
-                            var result = window.localStorage.getItem("__test__localStorage__");
-                            window.localStorage.removeItem("__test__localStorage__");
-                            if (value === result) return !0;
-                        }
-                    } catch (err) {}
-                    return !1;
-                }.apply(void 0, args);
-            }(isLocalStorageEnabled);
-        }
-        function getElementSafe(id, doc) {
-            void 0 === doc && (doc = document);
-            return (element = id) instanceof window.Element || null !== element && "object" == typeof element && 1 === element.nodeType && "object" == typeof element.style && "object" == typeof element.ownerDocument ? id : "string" == typeof id ? doc.querySelector(id) : void 0;
-            var element;
-        }
-        Object.create(Error.prototype);
-        function onResize(el, handler, _temp) {
-            var _ref2 = void 0 === _temp ? {} : _temp, _ref2$width = _ref2.width, width = void 0 === _ref2$width || _ref2$width, _ref2$height = _ref2.height, height = void 0 === _ref2$height || _ref2$height, _ref2$interval = _ref2.interval, interval = void 0 === _ref2$interval ? 100 : _ref2$interval, _ref2$win = _ref2.win, win = void 0 === _ref2$win ? window : _ref2$win;
-            var currentWidth = el.offsetWidth;
-            var currentHeight = el.offsetHeight;
-            handler({
-                width: currentWidth,
-                height: currentHeight
-            });
-            var check = function() {
-                var newWidth = el.offsetWidth;
-                var newHeight = el.offsetHeight;
-                (width && newWidth !== currentWidth || height && newHeight !== currentHeight) && handler({
-                    width: newWidth,
-                    height: newHeight
-                });
-                currentWidth = newWidth;
-                currentHeight = newHeight;
-            };
-            var observer;
-            var timeout;
-            if (void 0 !== win.ResizeObserver) (observer = new win.ResizeObserver(check)).observe(el); else if (void 0 !== win.MutationObserver) {
-                (observer = new win.MutationObserver(check)).observe(el, {
-                    attributes: !0,
-                    childList: !0,
-                    subtree: !0,
-                    characterData: !1
-                });
-                win.addEventListener("resize", check);
-            } else !function loop() {
-                check();
-                timeout = setTimeout(loop, interval);
-            }();
-            return {
-                cancel: function() {
-                    observer.disconnect();
-                    window.removeEventListener("resize", check);
-                    clearTimeout(timeout);
-                }
-            };
-        }
-        function isShadowElement(element) {
-            for (;element.parentNode; ) element = element.parentNode;
-            return "[object ShadowRoot]" === element.toString();
-        }
-        function insertShadowSlot(element) {
-            var shadowHost = function(element) {
-                var shadowRoot = function(element) {
-                    for (;element.parentNode; ) element = element.parentNode;
-                    if (isShadowElement(element)) return element;
-                }(element);
-                if (shadowRoot.host) return shadowRoot.host;
-            }(element);
-            if (!shadowHost) throw new Error("Element is not in shadow dom");
-            if (isShadowElement(shadowHost)) throw new Error("Host element is also in shadow dom");
-            var slotName = "shadow-slot-" + uniqueID();
-            var slot = document.createElement("slot");
-            slot.setAttribute("name", slotName);
-            element.appendChild(slot);
-            var slotProvider = document.createElement("div");
-            slotProvider.setAttribute("slot", slotName);
-            shadowHost.appendChild(slotProvider);
-            return slotProvider;
-        }
-    }, function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        __webpack_require__.d(__webpack_exports__, "a", (function() {
-            return Checkout;
-        }));
-        var esm_extends = __webpack_require__(11);
-        var src = __webpack_require__(2);
-        var beaver_logger_client = __webpack_require__(5);
-        var zoid_src = __webpack_require__(19);
-        var belter_src = __webpack_require__(15);
-        var lib = __webpack_require__(3);
-        var config = __webpack_require__(4);
-        var constants = __webpack_require__(0);
-        var post_robot_src = __webpack_require__(13);
-        function match(str, pattern) {
-            var regmatch = str.match(pattern);
-            if (regmatch) return regmatch[1];
-        }
-        var onAuthorize;
-        Object(lib.G)() && Object(post_robot_src.on)("onLegacyPaymentAuthorize", {
-            window: window.parent
-        }, (function(_ref) {
-            onAuthorize = _ref.data.method;
-        }));
-        function onLegacyPaymentAuthorize(method) {
-            onAuthorize = method;
-            return src.a.try((function() {
-                if (post_robot_src.bridge && !Object(lib.G)()) return post_robot_src.bridge.openBridge(Object(lib.g)(config.a.postBridgeUrl, {
-                    version: Object(lib.u)()
-                }), config.a.postBridgeDomain).then((function(postBridge) {
-                    return Object(post_robot_src.send)(postBridge, "onLegacyPaymentAuthorize", {
-                        method: method
-                    }, {
-                        domain: config.a.paypalDomain
-                    }).then(lib.J);
-                }));
-            }));
-        }
-        window.onLegacyPaymentAuthorize = onLegacyPaymentAuthorize;
-        window.watchForLegacyFallback = function(win) {
-            var interval = setInterval((function() {
-                try {
-                    if (-1 === win.document.body.innerHTML.indexOf("merchantpaymentweb") && -1 === win.document.body.innerHTML.indexOf("wapapp") || win.ppxoWatching || win.closed) return;
-                    win.ppxoWatching = !0;
-                    var XMLHttpRequestsend = win.XMLHttpRequest.prototype.send;
-                    win.XMLHttpRequest.prototype.send = function() {
-                        if (this._patched) return XMLHttpRequestsend.apply(this, arguments);
-                        this._patched = !0;
-                        var self = this;
-                        var onload = this.onload;
-                        function listener() {
-                            if (self.readyState === self.DONE && 200 === self.status && self.responseText) try {
-                                var response = JSON.parse(self.responseText.replace("while (1);", ""));
-                                if ("redirect" === response.type && response.url && onAuthorize) {
-                                    var url = response.url;
-                                    clearInterval(interval);
-                                    win.close();
-                                    onAuthorize({
-                                        returnUrl: url,
-                                        paymentToken: match(url, /token=((EC-)?[A-Z0-9]+)/),
-                                        billingToken: match(url, /ba_token=((BA-)?[A-Z0-9]+)/),
-                                        payerID: match(url, /PayerID=([A-Z0-9]+)/),
-                                        paymentID: match(url, /paymentId=((PAY-)?[A-Z0-9]+)/)
-                                    });
-                                    onAuthorize = null;
-                                    win.PAYPAL && win.PAYPAL.Checkout && win.PAYPAL.Checkout.XhrResponse && win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES && Object.defineProperty(win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES, "Redirect", {
-                                        value: Math.random().toString()
-                                    });
-                                    win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady && (win.mob.Xhr.prototype._xhrOnReady = lib.J);
-                                }
-                            } catch (err) {
-                                return;
-                            }
-                            if (onload) return onload.apply(this, arguments);
-                        }
-                        if (this.onload !== listener) try {
-                            delete this.onload;
-                            this.addEventListener("load", listener);
-                            Object.defineProperty(this, "onload", {
-                                get: function() {
-                                    return listener;
-                                },
-                                set: function(handler) {
-                                    onload = handler;
-                                }
-                            });
-                        } catch (err) {}
-                        return XMLHttpRequestsend.apply(this, arguments);
-                    };
-                } catch (err) {}
-            }), 100);
-        };
-        window.onLegacyFallback = window.watchForLegacyFallback;
-        var integrations = __webpack_require__(23);
-        var template = __webpack_require__(25);
-        var Checkout = Object(zoid_src.c)({
-            tag: "paypal-checkout",
-            name: "ppcheckout",
-            scrolling: !0,
-            buildUrl: function(props) {
-                var env = props.env || config.a.env;
-                if (!props.payment) throw new Error("Can not build url without payment prop");
-                return props.payment().then((function(token) {
-                    if (!token) throw new Error("Expected payment id or token to be passed, got " + token);
-                    return Object(integrations.c)(env, props.fundingSource, token);
-                }));
-            },
-            get unsafeRenderTo() {
-                return config.a.env === constants.t.LOCAL;
-            },
-            get domain() {
-                return Object(esm_extends.a)({}, config.a.paypalDomains);
-            },
-            get bridgeUrl() {
-                return config.a.metaFrameUrls;
-            },
-            get bridgeDomain() {
-                return config.a.paypalDomains;
-            },
-            contexts: {
-                iframe: !Object(lib.W)(),
-                popup: !0
-            },
-            get version() {
-                return Object(lib.u)();
-            },
-            validate: function() {
-                Object(lib.B)() || Object(beaver_logger_client.q)("checkout_render_ineligible");
-            },
-            prerenderTemplate: template.a,
-            containerTemplate: template.b,
-            props: {
-                sessionID: {
-                    type: "string",
-                    required: !1,
-                    def: function() {
-                        return Object(lib.v)();
-                    },
-                    queryParam: !0
-                },
-                buttonSessionID: {
-                    type: "string",
-                    required: !1,
-                    def: function() {
-                        return Object(lib.j)();
-                    },
-                    queryParam: !0
-                },
-                env: {
-                    type: "string",
-                    required: !1,
-                    queryParam: !0,
-                    def: function() {
-                        return config.a.env;
-                    },
-                    validate: function(env) {
-                        if (!config.a.paypalUrls[env]) throw new Error("Invalid env: " + env);
-                    }
-                },
-                meta: {
-                    type: "object",
-                    required: !1,
-                    def: function() {
-                        return window.xprops && window.xprops.meta || {};
-                    }
-                },
-                stage: {
-                    type: "string",
-                    required: !1,
-                    queryParam: !0,
-                    def: function(props) {
-                        var env = props.env || config.a.env;
-                        if (env === constants.t.STAGE || env === constants.t.LOCAL) return config.a.stage;
-                    }
-                },
-                stageUrl: {
-                    type: "string",
-                    required: !1,
-                    queryParam: !0,
-                    def: function(props) {
-                        var env = props.env || config.a.env;
-                        if (env === constants.t.STAGE || env === constants.t.LOCAL) return config.a.stageUrl;
-                    }
-                },
-                authCode: {
-                    type: "string",
-                    required: !1,
-                    def: function() {
-                        return config.a.authCode;
-                    },
-                    queryParam: "code"
-                },
-                localhostUrl: {
-                    type: "string",
-                    required: !1,
-                    queryParam: !0,
-                    def: function(props) {
-                        if ((props.env || config.a.env) === constants.t.LOCAL) return config.a.localhostUrl;
-                    }
-                },
-                checkoutUri: {
-                    type: "string",
-                    required: !1,
-                    queryParam: !0,
-                    def: function() {
-                        return config.a.checkoutUri;
-                    }
-                },
-                locale: {
-                    type: "string",
-                    required: !1,
-                    queryParam: "locale.x",
-                    allowDelegate: !0,
-                    def: function() {
-                        var _getBrowserLocale = Object(lib.i)();
-                        return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
-                    }
-                },
-                client: {
-                    type: "object",
-                    required: !1,
-                    def: function() {
-                        return {};
-                    },
-                    sendToChild: !1,
-                    validate: function(client, props) {
-                        var env = props.env || config.a.env;
-                        if (!client[env]) throw new Error("Client ID not found for env: " + env);
-                        if (client[env].match(/^(.)\1+$/)) throw new Error("Invalid client ID: " + client[env]);
-                    }
-                },
-                payment: {
-                    type: "function",
-                    required: !1,
-                    memoize: !0,
-                    promisify: !0,
-                    queryParam: function(payment) {
-                        return payment().then((function(token) {
-                            return Object(integrations.b)(token);
-                        }));
-                    },
-                    queryValue: function(payment) {
-                        return payment();
-                    },
-                    childDecorate: function(payment) {
-                        var token = Object(lib.q)("token");
-                        return token ? Object(lib.I)((function() {
-                            return src.a.resolve(token);
-                        })) : payment;
-                    },
-                    validate: function(payment, props) {
-                        if (!payment && !props.url) throw new Error("Expected either props.payment or props.url to be passed");
-                    },
-                    alias: "billingAgreement"
-                },
-                style: {
-                    type: "object",
-                    required: !1,
-                    allowDelegate: !0,
-                    def: function() {
-                        return {};
-                    },
-                    validate: function(style) {
-                        if (style.overlayColor && style.overlayColor !== constants.q.BLACK && style.overlayColor !== constants.q.WHITE) throw new Error("Invalid background color: " + style.overlayColor);
-                    }
-                },
-                commit: {
-                    type: "boolean",
-                    required: !1
-                },
-                experience: {
-                    type: "object",
-                    required: !1,
-                    def: function() {
-                        return {};
-                    }
-                },
-                fundingSource: {
-                    type: "string",
-                    required: !1,
-                    queryParam: !0
-                },
-                fundingOffered: {
-                    type: "object",
-                    required: !1,
-                    queryParam: !0,
-                    def: function() {
-                        return [].slice.call(document.querySelectorAll("[" + constants.c.FUNDING_SOURCE + "]")).map((function(el) {
-                            return el.getAttribute(constants.c.FUNDING_SOURCE);
-                        }));
-                    },
-                    queryValue: function(val) {
-                        return val.join(",");
-                    }
-                },
-                onAuthorize: {
-                    type: "function",
-                    required: !0,
-                    once: !0,
-                    decorate: function(original) {
-                        if (original) return function(data, actions) {
-                            var _this = this;
-                            void 0 === actions && (actions = {});
-                            data && !data.intent && Object(beaver_logger_client.q)("checkout_authorize_no_intent", {
-                                paymentID: data.paymentID,
-                                token: data.paymentToken
-                            });
-                            var close = function() {
-                                return src.a.try((function() {
-                                    if (actions.close) return actions.close();
-                                })).then((function() {
-                                    return _this.closeComponent();
-                                }));
-                            };
-                            var redirect = function(win, url) {
-                                return src.a.all([ Object(lib.P)(win || window.top, url || data.returnUrl), close() ]);
-                            };
-                            return src.a.try((function() {
-                                try {
-                                    var isButton = -1 !== window.location.href.indexOf("/smart/button");
-                                    var isGuest = -1 !== _this.window.location.href.indexOf("/webapps/xoonboarding");
-                                    if (isButton && isGuest) return Object(lib.R)({
-                                        win: _this.window,
-                                        method: "get",
-                                        url: "/webapps/xoonboarding/api/auth"
-                                    }).then((function(result) {
-                                        result && result.data && result.data.access_token && (window.$Api && window.$Api.addHeader && window.$Api.addHeader("x-paypal-internal-euat", result.data.access_token));
-                                    })).catch((function() {}));
-                                } catch (err) {}
-                            })).then((function() {
-                                return original.call(_this, data, Object(esm_extends.a)({}, actions, {
-                                    close: close,
-                                    redirect: redirect
-                                }));
-                            })).catch((function(err) {
-                                return _this.error(err);
-                            })).finally((function() {
-                                return _this.close();
-                            }));
-                        };
-                    }
-                },
-                onShippingChange: {
-                    type: "function",
-                    required: !1
-                },
-                onAuth: {
-                    type: "function",
-                    required: !1,
-                    sameDomain: !0,
-                    childDecorate: function(original) {
-                        if (original) return function(data) {
-                            "string" == typeof data && (data = {
-                                accessToken: data
-                            });
-                            return original(data);
-                        };
-                    }
-                },
-                accessToken: {
-                    type: "function",
-                    required: !1
-                },
-                onCancel: {
-                    type: "function",
-                    required: !1,
-                    once: !0,
-                    noop: !0,
-                    decorate: function(original) {
-                        return function(data, actions) {
-                            var _this2 = this;
-                            void 0 === actions && (actions = {});
-                            var close = function() {
-                                return src.a.try((function() {
-                                    if (actions.close) return actions.close();
-                                })).then((function() {
-                                    return _this2.closeComponent();
-                                }));
-                            };
-                            var redirect = function(win, url) {
-                                return src.a.all([ Object(lib.P)(win || window.top, url || data.cancelUrl), close() ]);
-                            };
-                            return src.a.try((function() {
-                                return original.call(_this2, data, Object(esm_extends.a)({}, actions, {
-                                    close: close,
-                                    redirect: redirect
-                                }));
-                            })).finally((function() {
-                                _this2.close();
-                            }));
-                        };
-                    }
-                },
-                init: {
-                    type: "function",
-                    required: !1,
-                    once: !0,
-                    noop: !0,
-                    decorate: function(original) {
-                        return function(data) {
-                            var _track;
-                            Object(beaver_logger_client.k)("checkout_init");
-                            Object(beaver_logger_client.p)(((_track = {})[constants.u.KEY.STATE] = constants.u.STATE.CHECKOUT, 
-                            _track[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.CHECKOUT_INIT, _track[constants.u.KEY.CONTEXT_TYPE] = constants.u.CONTEXT_TYPE[constants.C.EC_TOKEN], 
-                            _track[constants.u.KEY.TOKEN] = data.paymentToken, _track[constants.u.KEY.SELLER_ID] = data.merchantID, 
-                            _track[constants.u.KEY.CONTEXT_ID] = data.paymentToken, _track));
-                            Object(beaver_logger_client.h)();
-                            this.paymentToken = data.paymentToken;
-                            this.cancelUrl = data.cancelUrl;
-                            return original.apply(this, arguments);
-                        };
-                    }
-                },
-                onClose: {
-                    type: "function",
-                    required: !1,
-                    once: !0,
-                    promisify: !0,
-                    noop: !0,
-                    decorate: function(original) {
-                        return function(reason) {
-                            var onClose = original.apply(this, arguments);
-                            var CLOSE_REASONS = zoid_src.a.CLOSE_REASONS;
-                            var shouldCancel = this.props.onCancel && -1 !== [ CLOSE_REASONS.CLOSE_DETECTED, CLOSE_REASONS.USER_CLOSED ].indexOf(reason);
-                            if (shouldCancel) {
-                                Object(beaver_logger_client.k)("close_trigger_cancel");
-                                return this.props.onCancel({
-                                    paymentToken: this.paymentToken,
-                                    cancelUrl: this.cancelUrl
-                                }).then((function() {
-                                    return onClose;
-                                }));
-                            }
-                            return onClose;
-                        };
-                    }
-                },
-                onError: {
-                    type: "function",
-                    required: !1,
-                    promisify: !0,
-                    noop: !0,
-                    once: !0
-                },
-                fallback: {
-                    type: "function",
-                    required: !1,
-                    once: !0,
-                    def: function() {
-                        return function(url) {
-                            Object(beaver_logger_client.q)("fallback", {
-                                url: url
-                            });
-                            if (Object(lib.m)("allow_full_page_fallback")) {
-                                window.top.location = url;
-                                return this.close();
-                            }
-                            return onLegacyPaymentAuthorize(this.props.onAuthorize);
-                        };
-                    }
-                },
-                logLevel: {
-                    type: "string",
-                    required: !1,
-                    get value() {
-                        return config.a.logLevel;
-                    }
-                },
-                test: {
-                    type: "object",
-                    required: !1,
-                    def: function() {
-                        return window.__test__ || {
-                            action: "checkout"
-                        };
-                    }
-                },
-                sdkMeta: {
-                    type: "string",
-                    queryParam: !0,
-                    sendToChild: !1,
-                    def: function() {
-                        return Object(belter_src.a)(JSON.stringify({
-                            url: Object(lib.l)()
-                        }));
-                    }
-                }
-            },
-            get dimensions() {
-                return Object(lib.z)() ? {
-                    width: "100%",
-                    height: "590px"
-                } : {
-                    width: "500px",
-                    height: "590px"
-                };
-            }
-        });
-        if (Checkout.isChild() && Checkout.xchild && Checkout.xprops) {
-            Checkout.xprops && Checkout.xprops.logLevel && Object(lib.T)(Checkout.xprops.logLevel);
-            Checkout.xchild.onProps((function(xprops) {
-                Object(lib.N)(xprops, "onAuthorize", (function(_ref) {
-                    var callOriginal = _ref.callOriginal, data = _ref.args[0];
-                    if (data && !data.intent) {
-                        Object(beaver_logger_client.q)("hermes_authorize_no_intent", {
-                            paymentID: data.paymentID,
-                            token: data.paymentToken
-                        });
-                        try {
-                            var intent = window.injector.get("$CheckoutCartModel").instance(data.paymentToken).payment_action;
-                            Object(beaver_logger_client.q)("hermes_intent", {
-                                paymentID: data.paymentID,
-                                token: data.paymentToken,
-                                intent: intent
-                            });
-                        } catch (err) {}
-                        Object(beaver_logger_client.j)();
-                    }
-                    return callOriginal();
-                }));
-            }));
-        }
-        Object(lib.N)(Checkout, "init", (function(_ref2) {
-            var _ref2$args = _ref2.args;
-            return _ref2.original.call(_ref2.context, _ref2$args[0], _ref2$args[1], "body");
-        }));
-        Object(lib.N)(Checkout, "render", (function(_ref3) {
-            return _ref3.original.call(_ref3.context, _ref3.args[0], "body");
-        }));
-        Object(lib.N)(Checkout, "renderTo", (function(_ref4) {
-            var _ref4$args = _ref4.args, win = _ref4$args[0], props = _ref4$args[1], original = _ref4.original, context = _ref4.context;
-            var payment = props.payment();
-            props.payment = function() {
-                return payment;
-            };
-            return original.call(context, win, props, "body").catch((function(err) {
-                if (err instanceof zoid_src.b && Object(lib.G)()) {
-                    Checkout.contexts.iframe = !0;
-                    return original.call(context, win, props, "body");
-                }
-                throw err;
-            }));
-        }));
-    }, function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
         __webpack_require__.d(__webpack_exports__, "a", (function() {
             return weakmap_CrossDomainSafeWeakMap;
         }));
@@ -7135,6 +6407,817 @@
             };
             return CrossDomainSafeWeakMap;
         }();
+    }, function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        __webpack_require__.d(__webpack_exports__, "a", (function() {
+            return Checkout;
+        }));
+        var esm_extends = __webpack_require__(11);
+        var src = __webpack_require__(2);
+        var beaver_logger_client = __webpack_require__(5);
+        var zoid_src = __webpack_require__(20);
+        var belter_src = __webpack_require__(17);
+        var lib = __webpack_require__(3);
+        var config = __webpack_require__(4);
+        var constants = __webpack_require__(0);
+        var post_robot_src = __webpack_require__(13);
+        function match(str, pattern) {
+            var regmatch = str.match(pattern);
+            if (regmatch) return regmatch[1];
+        }
+        var onAuthorize;
+        Object(lib.H)() && Object(post_robot_src.on)("onLegacyPaymentAuthorize", {
+            window: window.parent
+        }, (function(_ref) {
+            onAuthorize = _ref.data.method;
+        }));
+        function onLegacyPaymentAuthorize(method) {
+            onAuthorize = method;
+            return src.a.try((function() {
+                if (post_robot_src.bridge && !Object(lib.H)()) return post_robot_src.bridge.openBridge(Object(lib.h)(config.a.postBridgeUrl, {
+                    version: Object(lib.v)()
+                }), config.a.postBridgeDomain).then((function(postBridge) {
+                    return Object(post_robot_src.send)(postBridge, "onLegacyPaymentAuthorize", {
+                        method: method
+                    }, {
+                        domain: config.a.paypalDomain
+                    }).then(lib.K);
+                }));
+            }));
+        }
+        window.onLegacyPaymentAuthorize = onLegacyPaymentAuthorize;
+        window.watchForLegacyFallback = function(win) {
+            var interval = setInterval((function() {
+                try {
+                    if (-1 === win.document.body.innerHTML.indexOf("merchantpaymentweb") && -1 === win.document.body.innerHTML.indexOf("wapapp") || win.ppxoWatching || win.closed) return;
+                    win.ppxoWatching = !0;
+                    var XMLHttpRequestsend = win.XMLHttpRequest.prototype.send;
+                    win.XMLHttpRequest.prototype.send = function() {
+                        if (this._patched) return XMLHttpRequestsend.apply(this, arguments);
+                        this._patched = !0;
+                        var self = this;
+                        var onload = this.onload;
+                        function listener() {
+                            if (self.readyState === self.DONE && 200 === self.status && self.responseText) try {
+                                var response = JSON.parse(self.responseText.replace("while (1);", ""));
+                                if ("redirect" === response.type && response.url && onAuthorize) {
+                                    var url = response.url;
+                                    clearInterval(interval);
+                                    win.close();
+                                    onAuthorize({
+                                        returnUrl: url,
+                                        paymentToken: match(url, /token=((EC-)?[A-Z0-9]+)/),
+                                        billingToken: match(url, /ba_token=((BA-)?[A-Z0-9]+)/),
+                                        payerID: match(url, /PayerID=([A-Z0-9]+)/),
+                                        paymentID: match(url, /paymentId=((PAY-)?[A-Z0-9]+)/)
+                                    });
+                                    onAuthorize = null;
+                                    win.PAYPAL && win.PAYPAL.Checkout && win.PAYPAL.Checkout.XhrResponse && win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES && Object.defineProperty(win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES, "Redirect", {
+                                        value: Math.random().toString()
+                                    });
+                                    win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady && (win.mob.Xhr.prototype._xhrOnReady = lib.K);
+                                }
+                            } catch (err) {
+                                return;
+                            }
+                            if (onload) return onload.apply(this, arguments);
+                        }
+                        if (this.onload !== listener) try {
+                            delete this.onload;
+                            this.addEventListener("load", listener);
+                            Object.defineProperty(this, "onload", {
+                                get: function() {
+                                    return listener;
+                                },
+                                set: function(handler) {
+                                    onload = handler;
+                                }
+                            });
+                        } catch (err) {}
+                        return XMLHttpRequestsend.apply(this, arguments);
+                    };
+                } catch (err) {}
+            }), 100);
+        };
+        window.onLegacyFallback = window.watchForLegacyFallback;
+        var integrations = __webpack_require__(24);
+        var template = __webpack_require__(27);
+        var Checkout = Object(zoid_src.c)({
+            tag: "paypal-checkout",
+            name: "ppcheckout",
+            scrolling: !0,
+            buildUrl: function(props) {
+                var env = props.env || config.a.env;
+                if (!props.payment) throw new Error("Can not build url without payment prop");
+                return props.payment().then((function(token) {
+                    if (!token) throw new Error("Expected payment id or token to be passed, got " + token);
+                    return Object(integrations.c)(env, props.fundingSource, token);
+                }));
+            },
+            get unsafeRenderTo() {
+                return config.a.env === constants.t.LOCAL;
+            },
+            get domain() {
+                return Object(esm_extends.a)({}, config.a.paypalDomains);
+            },
+            get bridgeUrl() {
+                return config.a.metaFrameUrls;
+            },
+            get bridgeDomain() {
+                return config.a.paypalDomains;
+            },
+            contexts: {
+                iframe: !Object(lib.X)(),
+                popup: !0
+            },
+            get version() {
+                return Object(lib.v)();
+            },
+            validate: function() {
+                Object(lib.C)() || Object(beaver_logger_client.q)("checkout_render_ineligible");
+            },
+            prerenderTemplate: template.a,
+            containerTemplate: template.b,
+            props: {
+                sessionID: {
+                    type: "string",
+                    required: !1,
+                    def: function() {
+                        return Object(lib.w)();
+                    },
+                    queryParam: !0
+                },
+                buttonSessionID: {
+                    type: "string",
+                    required: !1,
+                    def: function() {
+                        return Object(lib.k)();
+                    },
+                    queryParam: !0
+                },
+                env: {
+                    type: "string",
+                    required: !1,
+                    queryParam: !0,
+                    def: function() {
+                        return config.a.env;
+                    },
+                    validate: function(env) {
+                        if (!config.a.paypalUrls[env]) throw new Error("Invalid env: " + env);
+                    }
+                },
+                meta: {
+                    type: "object",
+                    required: !1,
+                    def: function() {
+                        return window.xprops && window.xprops.meta || {};
+                    }
+                },
+                stage: {
+                    type: "string",
+                    required: !1,
+                    queryParam: !0,
+                    def: function(props) {
+                        var env = props.env || config.a.env;
+                        if (env === constants.t.STAGE || env === constants.t.LOCAL) return config.a.stage;
+                    }
+                },
+                stageUrl: {
+                    type: "string",
+                    required: !1,
+                    queryParam: !0,
+                    def: function(props) {
+                        var env = props.env || config.a.env;
+                        if (env === constants.t.STAGE || env === constants.t.LOCAL) return config.a.stageUrl;
+                    }
+                },
+                authCode: {
+                    type: "string",
+                    required: !1,
+                    def: function() {
+                        return config.a.authCode;
+                    },
+                    queryParam: "code"
+                },
+                localhostUrl: {
+                    type: "string",
+                    required: !1,
+                    queryParam: !0,
+                    def: function(props) {
+                        if ((props.env || config.a.env) === constants.t.LOCAL) return config.a.localhostUrl;
+                    }
+                },
+                checkoutUri: {
+                    type: "string",
+                    required: !1,
+                    queryParam: !0,
+                    def: function() {
+                        return config.a.checkoutUri;
+                    }
+                },
+                locale: {
+                    type: "string",
+                    required: !1,
+                    queryParam: "locale.x",
+                    allowDelegate: !0,
+                    def: function() {
+                        var _getBrowserLocale = Object(lib.j)();
+                        return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
+                    }
+                },
+                client: {
+                    type: "object",
+                    required: !1,
+                    def: function() {
+                        return {};
+                    },
+                    sendToChild: !1,
+                    validate: function(client, props) {
+                        var env = props.env || config.a.env;
+                        if (!client[env]) throw new Error("Client ID not found for env: " + env);
+                        if (client[env].match(/^(.)\1+$/)) throw new Error("Invalid client ID: " + client[env]);
+                    }
+                },
+                payment: {
+                    type: "function",
+                    required: !1,
+                    memoize: !0,
+                    promisify: !0,
+                    queryParam: function(payment) {
+                        return payment().then((function(token) {
+                            return Object(integrations.b)(token);
+                        }));
+                    },
+                    queryValue: function(payment) {
+                        return payment();
+                    },
+                    childDecorate: function(payment) {
+                        var token = Object(lib.r)("token");
+                        return token ? Object(lib.J)((function() {
+                            return src.a.resolve(token);
+                        })) : payment;
+                    },
+                    validate: function(payment, props) {
+                        if (!payment && !props.url) throw new Error("Expected either props.payment or props.url to be passed");
+                    },
+                    alias: "billingAgreement"
+                },
+                style: {
+                    type: "object",
+                    required: !1,
+                    allowDelegate: !0,
+                    def: function() {
+                        return {};
+                    },
+                    validate: function(style) {
+                        if (style.overlayColor && style.overlayColor !== constants.q.BLACK && style.overlayColor !== constants.q.WHITE) throw new Error("Invalid background color: " + style.overlayColor);
+                    }
+                },
+                commit: {
+                    type: "boolean",
+                    required: !1
+                },
+                experience: {
+                    type: "object",
+                    required: !1,
+                    def: function() {
+                        return {};
+                    }
+                },
+                fundingSource: {
+                    type: "string",
+                    required: !1,
+                    queryParam: !0
+                },
+                fundingOffered: {
+                    type: "object",
+                    required: !1,
+                    queryParam: !0,
+                    def: function() {
+                        return [].slice.call(document.querySelectorAll("[" + constants.c.FUNDING_SOURCE + "]")).map((function(el) {
+                            return el.getAttribute(constants.c.FUNDING_SOURCE);
+                        }));
+                    },
+                    queryValue: function(val) {
+                        return val.join(",");
+                    }
+                },
+                onAuthorize: {
+                    type: "function",
+                    required: !0,
+                    once: !0,
+                    decorate: function(original) {
+                        if (original) return function(data, actions) {
+                            var _this = this;
+                            void 0 === actions && (actions = {});
+                            data && !data.intent && Object(beaver_logger_client.q)("checkout_authorize_no_intent", {
+                                paymentID: data.paymentID,
+                                token: data.paymentToken
+                            });
+                            var close = function() {
+                                return src.a.try((function() {
+                                    if (actions.close) return actions.close();
+                                })).then((function() {
+                                    return _this.closeComponent();
+                                }));
+                            };
+                            var redirect = function(win, url) {
+                                return src.a.all([ Object(lib.Q)(win || window.top, url || data.returnUrl), close() ]);
+                            };
+                            return src.a.try((function() {
+                                try {
+                                    var isButton = -1 !== window.location.href.indexOf("/smart/button");
+                                    var isGuest = -1 !== _this.window.location.href.indexOf("/webapps/xoonboarding");
+                                    if (isButton && isGuest) return Object(lib.S)({
+                                        win: _this.window,
+                                        method: "get",
+                                        url: "/webapps/xoonboarding/api/auth"
+                                    }).then((function(result) {
+                                        result && result.data && result.data.access_token && (window.$Api && window.$Api.addHeader && window.$Api.addHeader("x-paypal-internal-euat", result.data.access_token));
+                                    })).catch((function() {}));
+                                } catch (err) {}
+                            })).then((function() {
+                                return original.call(_this, data, Object(esm_extends.a)({}, actions, {
+                                    close: close,
+                                    redirect: redirect
+                                }));
+                            })).catch((function(err) {
+                                return _this.error(err);
+                            })).finally((function() {
+                                return _this.close();
+                            }));
+                        };
+                    }
+                },
+                onShippingChange: {
+                    type: "function",
+                    required: !1
+                },
+                onAuth: {
+                    type: "function",
+                    required: !1,
+                    sameDomain: !0,
+                    childDecorate: function(original) {
+                        if (original) return function(data) {
+                            "string" == typeof data && (data = {
+                                accessToken: data
+                            });
+                            return original(data);
+                        };
+                    }
+                },
+                accessToken: {
+                    type: "function",
+                    required: !1
+                },
+                onCancel: {
+                    type: "function",
+                    required: !1,
+                    once: !0,
+                    noop: !0,
+                    decorate: function(original) {
+                        return function(data, actions) {
+                            var _this2 = this;
+                            void 0 === actions && (actions = {});
+                            var close = function() {
+                                return src.a.try((function() {
+                                    if (actions.close) return actions.close();
+                                })).then((function() {
+                                    return _this2.closeComponent();
+                                }));
+                            };
+                            var redirect = function(win, url) {
+                                return src.a.all([ Object(lib.Q)(win || window.top, url || data.cancelUrl), close() ]);
+                            };
+                            return src.a.try((function() {
+                                return original.call(_this2, data, Object(esm_extends.a)({}, actions, {
+                                    close: close,
+                                    redirect: redirect
+                                }));
+                            })).finally((function() {
+                                _this2.close();
+                            }));
+                        };
+                    }
+                },
+                init: {
+                    type: "function",
+                    required: !1,
+                    once: !0,
+                    noop: !0,
+                    decorate: function(original) {
+                        return function(data) {
+                            var _track;
+                            Object(beaver_logger_client.k)("checkout_init");
+                            Object(beaver_logger_client.p)(((_track = {})[constants.u.KEY.STATE] = constants.u.STATE.CHECKOUT, 
+                            _track[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.CHECKOUT_INIT, _track[constants.u.KEY.CONTEXT_TYPE] = constants.u.CONTEXT_TYPE[constants.C.EC_TOKEN], 
+                            _track[constants.u.KEY.TOKEN] = data.paymentToken, _track[constants.u.KEY.SELLER_ID] = data.merchantID, 
+                            _track[constants.u.KEY.CONTEXT_ID] = data.paymentToken, _track));
+                            Object(beaver_logger_client.h)();
+                            this.paymentToken = data.paymentToken;
+                            this.cancelUrl = data.cancelUrl;
+                            return original.apply(this, arguments);
+                        };
+                    }
+                },
+                onClose: {
+                    type: "function",
+                    required: !1,
+                    once: !0,
+                    promisify: !0,
+                    noop: !0,
+                    decorate: function(original) {
+                        return function(reason) {
+                            var onClose = original.apply(this, arguments);
+                            var CLOSE_REASONS = zoid_src.a.CLOSE_REASONS;
+                            var shouldCancel = this.props.onCancel && -1 !== [ CLOSE_REASONS.CLOSE_DETECTED, CLOSE_REASONS.USER_CLOSED ].indexOf(reason);
+                            if (shouldCancel) {
+                                Object(beaver_logger_client.k)("close_trigger_cancel");
+                                return this.props.onCancel({
+                                    paymentToken: this.paymentToken,
+                                    cancelUrl: this.cancelUrl
+                                }).then((function() {
+                                    return onClose;
+                                }));
+                            }
+                            return onClose;
+                        };
+                    }
+                },
+                onError: {
+                    type: "function",
+                    required: !1,
+                    promisify: !0,
+                    noop: !0,
+                    once: !0
+                },
+                fallback: {
+                    type: "function",
+                    required: !1,
+                    once: !0,
+                    def: function() {
+                        return function(url) {
+                            Object(beaver_logger_client.q)("fallback", {
+                                url: url
+                            });
+                            if (Object(lib.n)("allow_full_page_fallback")) {
+                                window.top.location = url;
+                                return this.close();
+                            }
+                            return onLegacyPaymentAuthorize(this.props.onAuthorize);
+                        };
+                    }
+                },
+                logLevel: {
+                    type: "string",
+                    required: !1,
+                    get value() {
+                        return config.a.logLevel;
+                    }
+                },
+                test: {
+                    type: "object",
+                    required: !1,
+                    def: function() {
+                        return window.__test__ || {
+                            action: "checkout"
+                        };
+                    }
+                },
+                sdkMeta: {
+                    type: "string",
+                    queryParam: !0,
+                    sendToChild: !1,
+                    def: function() {
+                        return Object(belter_src.a)(JSON.stringify({
+                            url: Object(lib.m)()
+                        }));
+                    }
+                }
+            },
+            get dimensions() {
+                return Object(lib.A)() ? {
+                    width: "100%",
+                    height: "590px"
+                } : {
+                    width: "500px",
+                    height: "590px"
+                };
+            }
+        });
+        if (Checkout.isChild() && Checkout.xchild && Checkout.xprops) {
+            Checkout.xprops && Checkout.xprops.logLevel && Object(lib.U)(Checkout.xprops.logLevel);
+            Checkout.xchild.onProps((function(xprops) {
+                Object(lib.O)(xprops, "onAuthorize", (function(_ref) {
+                    var callOriginal = _ref.callOriginal, data = _ref.args[0];
+                    if (data && !data.intent) {
+                        Object(beaver_logger_client.q)("hermes_authorize_no_intent", {
+                            paymentID: data.paymentID,
+                            token: data.paymentToken
+                        });
+                        try {
+                            var intent = window.injector.get("$CheckoutCartModel").instance(data.paymentToken).payment_action;
+                            Object(beaver_logger_client.q)("hermes_intent", {
+                                paymentID: data.paymentID,
+                                token: data.paymentToken,
+                                intent: intent
+                            });
+                        } catch (err) {}
+                        Object(beaver_logger_client.j)();
+                    }
+                    return callOriginal();
+                }));
+            }));
+        }
+        Object(lib.O)(Checkout, "init", (function(_ref2) {
+            var _ref2$args = _ref2.args;
+            return _ref2.original.call(_ref2.context, _ref2$args[0], _ref2$args[1], "body");
+        }));
+        Object(lib.O)(Checkout, "render", (function(_ref3) {
+            return _ref3.original.call(_ref3.context, _ref3.args[0], "body");
+        }));
+        Object(lib.O)(Checkout, "renderTo", (function(_ref4) {
+            var _ref4$args = _ref4.args, win = _ref4$args[0], props = _ref4$args[1], original = _ref4.original, context = _ref4.context;
+            var payment = props.payment();
+            props.payment = function() {
+                return payment;
+            };
+            return original.call(context, win, props, "body").catch((function(err) {
+                if (err instanceof zoid_src.b && Object(lib.H)()) {
+                    Checkout.contexts.iframe = !0;
+                    return original.call(context, win, props, "body");
+                }
+                throw err;
+            }));
+        }));
+    }, function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        __webpack_require__.d(__webpack_exports__, "f", (function() {
+            return supportsPopups;
+        }));
+        __webpack_require__.d(__webpack_exports__, "c", (function() {
+            return isLocalStorageEnabled;
+        }));
+        __webpack_require__.d(__webpack_exports__, "a", (function() {
+            return base64encode;
+        }));
+        __webpack_require__.d(__webpack_exports__, "g", (function() {
+            return uniqueID;
+        }));
+        __webpack_require__.d(__webpack_exports__, "d", (function() {
+            return noop;
+        }));
+        __webpack_require__.d(__webpack_exports__, "e", (function() {
+            return once;
+        }));
+        __webpack_require__.d(__webpack_exports__, "b", (function() {
+            return identity;
+        }));
+        function getUserAgent() {
+            return window.navigator.mockUserAgent || window.navigator.userAgent;
+        }
+        function isOperaMini(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return /Opera Mini/i.test(ua);
+        }
+        function supportsPopups(ua) {
+            void 0 === ua && (ua = getUserAgent());
+            return !(function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return !!function(ua) {
+                    void 0 === ua && (ua = getUserAgent());
+                    return /iPhone|iPod|iPad/.test(ua);
+                }(ua) && (!!function(ua) {
+                    void 0 === ua && (ua = getUserAgent());
+                    return /\bGSA\b/.test(ua);
+                }(ua) || /.+AppleWebKit(?!.*Safari)|.*WKWebView/.test(ua));
+            }(ua) || function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return !!function(ua) {
+                    void 0 === ua && (ua = getUserAgent());
+                    return /Android/.test(ua);
+                }(ua) && /Version\/[\d.]+/.test(ua) && !isOperaMini(ua);
+            }(ua) || isOperaMini(ua) || function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /FxiOS/i.test(ua);
+            }(ua) || function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /EdgiOS/i.test(ua);
+            }(ua) || function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /FBAN/.test(ua) || /FBAV/.test(ua);
+            }(ua) || function(ua) {
+                void 0 === ua && (ua = getUserAgent());
+                return /QQBrowser/.test(ua);
+            }(ua) || "undefined" != typeof process && process.versions && process.versions.electron || (userAgent = getUserAgent(), 
+            /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent)) || !0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches);
+            var userAgent;
+        }
+        __webpack_require__(19);
+        __webpack_require__(11);
+        var zalgo_promise_src = __webpack_require__(2);
+        __webpack_require__(7);
+        var cross_domain_safe_weakmap_src = __webpack_require__(15);
+        __webpack_require__(22);
+        __webpack_require__(26);
+        function getFunctionName(fn) {
+            return fn.name || fn.__name__ || fn.displayName || "anonymous";
+        }
+        function setFunctionName(fn, name) {
+            try {
+                delete fn.name;
+                fn.name = name;
+            } catch (err) {}
+            fn.__name__ = fn.displayName = name;
+            return fn;
+        }
+        function base64encode(str) {
+            if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
+                return String.fromCharCode(parseInt(p1, 16));
+            }))).replace(/[=]/g, "");
+            if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64").replace(/[=]/g, "");
+            throw new Error("Can not find window.btoa or Buffer");
+        }
+        function uniqueID() {
+            var chars = "0123456789abcdef";
+            return "uid_" + "xxxxxxxxxx".replace(/./g, (function() {
+                return chars.charAt(Math.floor(Math.random() * chars.length));
+            })) + "_" + base64encode((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+        }
+        var objectIDs;
+        function serializeArgs(args) {
+            try {
+                return JSON.stringify([].slice.call(args), (function(subkey, val) {
+                    return "function" == typeof val ? "memoize[" + function(obj) {
+                        objectIDs = objectIDs || new cross_domain_safe_weakmap_src.a;
+                        if (null == obj || "object" != typeof obj && "function" != typeof obj) throw new Error("Invalid object");
+                        var uid = objectIDs.get(obj);
+                        if (!uid) {
+                            uid = typeof obj + ":" + uniqueID();
+                            objectIDs.set(obj, uid);
+                        }
+                        return uid;
+                    }(val) + "]" : val;
+                }));
+            } catch (err) {
+                throw new Error("Arguments not serializable -- can not be used to memoize");
+            }
+        }
+        function getEmptyObject() {
+            return {};
+        }
+        var memoizeGlobalIndex = 0;
+        var memoizeGlobalIndexValidFrom = 0;
+        function memoize(method, options) {
+            void 0 === options && (options = {});
+            var _options$thisNamespac = options.thisNamespace, thisNamespace = void 0 !== _options$thisNamespac && _options$thisNamespac, cacheTime = options.time;
+            var simpleCache;
+            var thisCache;
+            var memoizeIndex = memoizeGlobalIndex;
+            memoizeGlobalIndex += 1;
+            var memoizedFunction = function() {
+                for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
+                if (memoizeIndex < memoizeGlobalIndexValidFrom) {
+                    simpleCache = null;
+                    thisCache = null;
+                    memoizeIndex = memoizeGlobalIndex;
+                    memoizeGlobalIndex += 1;
+                }
+                var cache;
+                cache = thisNamespace ? (thisCache = thisCache || new cross_domain_safe_weakmap_src.a).getOrSet(this, getEmptyObject) : simpleCache = simpleCache || {};
+                var cacheKey = serializeArgs(args);
+                var cacheResult = cache[cacheKey];
+                if (cacheResult && cacheTime && Date.now() - cacheResult.time < cacheTime) {
+                    delete cache[cacheKey];
+                    cacheResult = null;
+                }
+                if (cacheResult) return cacheResult.value;
+                var time = Date.now();
+                var value = method.apply(this, arguments);
+                cache[cacheKey] = {
+                    time: time,
+                    value: value
+                };
+                return value;
+            };
+            memoizedFunction.reset = function() {
+                simpleCache = null;
+                thisCache = null;
+            };
+            return setFunctionName(memoizedFunction, (options.name || getFunctionName(method)) + "::memoized");
+        }
+        memoize.clear = function() {
+            memoizeGlobalIndexValidFrom = memoizeGlobalIndex;
+        };
+        function noop() {}
+        function once(method) {
+            var called = !1;
+            return setFunctionName((function() {
+                if (!called) {
+                    called = !0;
+                    return method.apply(this, arguments);
+                }
+            }), getFunctionName(method) + "::once");
+        }
+        memoize((function(obj) {
+            if (Object.values) return Object.values(obj);
+            var result = [];
+            for (var key in obj) obj.hasOwnProperty(key) && result.push(obj[key]);
+            return result;
+        }));
+        function identity(item) {
+            return item;
+        }
+        Error;
+        function isDocumentReady() {
+            return Boolean(document.body) && "complete" === document.readyState;
+        }
+        function isDocumentInteractive() {
+            return Boolean(document.body) && "interactive" === document.readyState;
+        }
+        memoize((function() {
+            return new zalgo_promise_src.a((function(resolve) {
+                if (isDocumentReady() || isDocumentInteractive()) return resolve();
+                var interval = setInterval((function() {
+                    if (isDocumentReady() || isDocumentInteractive()) {
+                        clearInterval(interval);
+                        return resolve();
+                    }
+                }), 10);
+            }));
+        }));
+        function isLocalStorageEnabled() {
+            return function(method, logic, args) {
+                void 0 === args && (args = []);
+                var cache = method.__inline_memoize_cache__ = method.__inline_memoize_cache__ || {};
+                var key = serializeArgs(args);
+                return cache.hasOwnProperty(key) ? cache[key] : cache[key] = function() {
+                    try {
+                        if ("undefined" == typeof window) return !1;
+                        if (window.localStorage) {
+                            var value = Math.random().toString();
+                            window.localStorage.setItem("__test__localStorage__", value);
+                            var result = window.localStorage.getItem("__test__localStorage__");
+                            window.localStorage.removeItem("__test__localStorage__");
+                            if (value === result) return !0;
+                        }
+                    } catch (err) {}
+                    return !1;
+                }.apply(void 0, args);
+            }(isLocalStorageEnabled);
+        }
+        var currentScript = "undefined" != typeof document ? document.currentScript : null;
+        var getCurrentScript = memoize((function() {
+            if (currentScript) return currentScript;
+            if (currentScript = function() {
+                try {
+                    var stack = function() {
+                        try {
+                            throw new Error("_");
+                        } catch (err) {
+                            return err.stack || "";
+                        }
+                    }();
+                    var stackDetails = /.*at [^(]*\((.*):(.+):(.+)\)$/gi.exec(stack);
+                    var scriptLocation = stackDetails && stackDetails[1];
+                    if (!scriptLocation) return;
+                    for (var _i22 = 0, _Array$prototype$slic2 = [].slice.call(document.getElementsByTagName("script")).reverse(); _i22 < _Array$prototype$slic2.length; _i22++) {
+                        var script = _Array$prototype$slic2[_i22];
+                        if (script.src && script.src === scriptLocation) return script;
+                    }
+                } catch (err) {}
+            }()) return currentScript;
+            throw new Error("Can not determine current script");
+        }));
+        var currentUID = uniqueID();
+        memoize((function() {
+            var script;
+            try {
+                script = getCurrentScript();
+            } catch (err) {
+                return currentUID;
+            }
+            var uid = script.getAttribute("data-uid");
+            if (uid && "string" == typeof uid) return uid;
+            if ((uid = script.getAttribute("data-uid-auto")) && "string" == typeof uid) return uid;
+            if (script.src) {
+                var hashedString = function(str) {
+                    var hash = "";
+                    for (var i = 0; i < str.length; i++) {
+                        var total = str[i].charCodeAt(0) * i;
+                        str[i + 1] && (total += str[i + 1].charCodeAt(0) * (i - 1));
+                        hash += String.fromCharCode(97 + Math.abs(total) % 26);
+                    }
+                    return hash;
+                }(JSON.stringify({
+                    src: script.src,
+                    dataset: script.dataset
+                }));
+                uid = "uid_" + hashedString.slice(hashedString.length - 30);
+            } else uid = uniqueID();
+            script.setAttribute("data-uid-auto", uid);
+            return uid;
+        }));
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         __webpack_require__.d(__webpack_exports__, "b", (function() {
@@ -8630,6 +8713,17 @@
         _cardLogos);
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
+        __webpack_require__.d(__webpack_exports__, "a", (function() {
+            return _inheritsLoose;
+        }));
+        var _babel_runtime_helpers_esm_setPrototypeOf__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
+        function _inheritsLoose(subClass, superClass) {
+            subClass.prototype = Object.create(superClass.prototype);
+            subClass.prototype.constructor = subClass;
+            Object(_babel_runtime_helpers_esm_setPrototypeOf__WEBPACK_IMPORTED_MODULE_0__.a)(subClass, superClass);
+        }
+    }, function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
         __webpack_require__.d(__webpack_exports__, "c", (function() {
             return create;
         }));
@@ -8672,11 +8766,8 @@
             return CONSTANTS;
         }));
         var src = __webpack_require__(13);
-        function _assertThisInitialized(self) {
-            if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-            return self;
-        }
-        var inheritsLoose = __webpack_require__(20);
+        var assertThisInitialized = __webpack_require__(22);
+        var inheritsLoose = __webpack_require__(19);
         function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) {
             var desc = {};
             Object.keys(descriptor).forEach((function(key) {
@@ -8774,7 +8865,7 @@
                 if (!domain) throw new Error("Must pass domain to listen to");
                 if (this.listeners) {
                     var listeners = this.listeners();
-                    var _loop = function(_i4, _Object$keys2) {
+                    var _loop = function() {
                         var listenerName = _Object$keys2[_i4];
                         var name = listenerName.replace(/^zoid_/, "");
                         var errorHandler = function(err) {
@@ -8805,15 +8896,60 @@
                             errorListener.cancel();
                         }));
                     };
-                    for (var _i4 = 0, _Object$keys2 = Object.keys(listeners); _i4 < _Object$keys2.length; _i4++) _loop(_i4, _Object$keys2);
+                    for (var _i4 = 0, _Object$keys2 = Object.keys(listeners); _i4 < _Object$keys2.length; _i4++) _loop();
                 }
             };
             return BaseComponent;
         }();
         var esm_extends = __webpack_require__(11);
         var client = __webpack_require__(5);
-        var belter_src = __webpack_require__(15);
-        var base32 = __webpack_require__(28);
+        __webpack_require__(15);
+        Object.create(Error.prototype);
+        function onResize(el, handler, _temp) {
+            var _ref2 = void 0 === _temp ? {} : _temp, _ref2$width = _ref2.width, width = void 0 === _ref2$width || _ref2$width, _ref2$height = _ref2.height, height = void 0 === _ref2$height || _ref2$height, _ref2$interval = _ref2.interval, interval = void 0 === _ref2$interval ? 100 : _ref2$interval, _ref2$win = _ref2.win, win = void 0 === _ref2$win ? window : _ref2$win;
+            var currentWidth = el.offsetWidth;
+            var currentHeight = el.offsetHeight;
+            handler({
+                width: currentWidth,
+                height: currentHeight
+            });
+            var check = function() {
+                var newWidth = el.offsetWidth;
+                var newHeight = el.offsetHeight;
+                (width && newWidth !== currentWidth || height && newHeight !== currentHeight) && handler({
+                    width: newWidth,
+                    height: newHeight
+                });
+                currentWidth = newWidth;
+                currentHeight = newHeight;
+            };
+            var observer;
+            var timeout;
+            if (void 0 !== win.ResizeObserver) (observer = new win.ResizeObserver(check)).observe(el); else if (void 0 !== win.MutationObserver) {
+                (observer = new win.MutationObserver(check)).observe(el, {
+                    attributes: !0,
+                    childList: !0,
+                    subtree: !0,
+                    characterData: !1
+                });
+                win.addEventListener("resize", check);
+            } else !function loop() {
+                check();
+                timeout = setTimeout(loop, interval);
+            }();
+            return {
+                cancel: function() {
+                    observer.disconnect();
+                    window.removeEventListener("resize", check);
+                    clearTimeout(timeout);
+                }
+            };
+        }
+        function isShadowElement(element) {
+            for (;element.parentNode; ) element = element.parentNode;
+            return "[object ShadowRoot]" === element.toString();
+        }
+        var base32 = __webpack_require__(30);
         var base32_default = __webpack_require__.n(base32);
         var constants = __webpack_require__(8);
         function normalize(str) {
@@ -8867,7 +9003,7 @@
             if (!componentMeta) throw new Error("Can not get parent component window - window not rendered by zoid");
             return getWindowByRef(componentMeta.renderParent);
         }));
-        var src_error = __webpack_require__(22);
+        var src_error = __webpack_require__(23);
         function normalizeChildProp(component, props, key, value) {
             var prop = component.getProp(key);
             return prop ? "function" == typeof prop.childDecorate ? prop.childDecorate(value) : value : component.looseProps ? value : void 0;
@@ -8886,13 +9022,13 @@
                 _this.component = component;
                 if (!_this.hasValidParentDomain()) {
                     _this.error(new src_error.c("Can not be rendered by domain: " + _this.getParentDomain()));
-                    return _assertThisInitialized(_this);
+                    return Object(assertThisInitialized.a)(_this);
                 }
                 _this.component.log("construct_child");
                 _this.onPropHandlers = [];
-                var _loop = function(_i2, _ref2) {
+                var _loop = function() {
                     var item = _ref2[_i2];
-                    var _loop2 = function(_i4, _ref4) {
+                    var _loop2 = function() {
                         var _ref4$_i = _ref4[_i4], name = _ref4$_i[0], getter = _ref4$_i[1];
                         Object.defineProperty(item, name, {
                             configurable: !0,
@@ -8905,12 +9041,12 @@
                         });
                     };
                     for (var _i4 = 0, _ref4 = [ [ "xchild", function() {
-                        return _assertThisInitialized(_this);
+                        return Object(assertThisInitialized.a)(_this);
                     } ], [ "xprops", function() {
                         return _this.props;
-                    } ] ]; _i4 < _ref4.length; _i4++) _loop2(_i4, _ref4);
+                    } ] ]; _i4 < _ref4.length; _i4++) _loop2();
                 };
-                for (var _i2 = 0, _ref2 = [ _this.component, window ]; _i2 < _ref2.length; _i2++) _loop(_i2, _ref2);
+                for (var _i2 = 0, _ref2 = [ _this.component, window ]; _i2 < _ref2.length; _i2++) _loop();
                 _this.component.log("init_child");
                 _this.setWindows();
                 _this.onInit = _this.sendToParent(constants.POST_MESSAGE.INIT, {
@@ -8920,7 +9056,7 @@
                     _this.context = data.context;
                     _this.setProps(data.props, origin);
                     _this.watchForResize();
-                    return _assertThisInitialized(_this);
+                    return Object(assertThisInitialized.a)(_this);
                 })).catch((function(err) {
                     _this.error(err);
                     throw err;
@@ -9050,7 +9186,7 @@
                 var _this$getAutoResize = this.getAutoResize(), width = _this$getAutoResize.width, height = _this$getAutoResize.height, element = _this$getAutoResize.element;
                 if ((width || height) && this.context !== constants.CONTEXT_TYPES.POPUP && !this.watchingForResize) {
                     this.watchingForResize = !0;
-                    Object(belter_src.h)(element, (function(_ref8) {
+                    onResize(element, (function(_ref8) {
                         _this4.resize(width ? _ref8.width : void 0, height ? _ref8.height : void 0);
                     }), {
                         width: width,
@@ -9406,7 +9542,7 @@
             } else "string" === type || "object" === type || "number" === type && void 0 !== resultValue && (resultValue = parseInt(resultValue, 10));
             return resultValue;
         }
-        function getQueryParam(prop, key, value) {
+        function props_getQueryParam(prop, key, value) {
             return zalgo_promise_src.a.try((function() {
                 return "function" == typeof prop.queryParam ? prop.queryParam(value) : "string" == typeof prop.queryParam ? prop.queryParam : key;
             }));
@@ -9416,10 +9552,10 @@
                 return "function" == typeof prop.queryValue ? prop.queryValue(value) : value;
             }));
         }
-        var _class, _class2, _temp;
+        var _class, _class2;
         lib.v.props = lib.v.props || {};
         lib.v.windows = lib.v.windows || {};
-        var parent_ParentComponent = (_applyDecoratedDescriptor((_class = (_temp = _class2 = function(_BaseComponent) {
+        var parent_ParentComponent = (_applyDecoratedDescriptor((_class = ((_class2 = function(_BaseComponent) {
             Object(inheritsLoose.a)(ParentComponent, _BaseComponent);
             function ParentComponent(component, context, _ref) {
                 var _this;
@@ -9632,8 +9768,8 @@
                     uid: uid
                 };
             };
-            _proto.buildChildWindowName = function(_temp2) {
-                var _ref6$renderTo = (void 0 === _temp2 ? {} : _temp2).renderTo, renderTo = void 0 === _ref6$renderTo ? window : _ref6$renderTo;
+            _proto.buildChildWindowName = function(_temp) {
+                var _ref6$renderTo = (void 0 === _temp ? {} : _temp).renderTo, renderTo = void 0 === _ref6$renderTo ? window : _ref6$renderTo;
                 var childDomain = this.component.getDomain(null, this.props.env);
                 var sameDomain = Object(cross_domain_utils_src.v)(renderTo);
                 var uid = Object(lib.U)();
@@ -9735,7 +9871,7 @@
                         var value = props[key];
                         if (value && prop.queryParam) return value;
                     })).then((function(value) {
-                        if (value) return zalgo_promise_src.a.all([ getQueryParam(prop, key, value), getQueryValue(prop, 0, value) ]).then((function(_ref) {
+                        if (value) return zalgo_promise_src.a.all([ props_getQueryParam(prop, key, value), getQueryValue(prop, 0, value) ]).then((function(_ref) {
                             var queryParam = _ref[0], queryValue = _ref[1];
                             var result;
                             if ("boolean" == typeof queryValue) result = "1"; else if ("string" == typeof queryValue) result = queryValue.toString(); else {
@@ -9837,8 +9973,15 @@
                     _this11.component.log("open_" + _this11.context, {
                         windowName: _this11.childWindowName
                     });
-                    if (!_this11.props.win) return _this11.driver.open.call(_this11);
-                    _this11.clean.set("window", _this11.props.win);
+                    var win = _this11.props.win;
+                    if (!win) return _this11.driver.open.call(_this11);
+                    _this11.clean.set("window", win);
+                    window.addEventListener("beforeunload", (function() {
+                        return win.close();
+                    }));
+                    window.addEventListener("unload", (function() {
+                        return win.close();
+                    }));
                     Object(cross_domain_utils_src.b)(_this11.window).name = _this11.childWindowName;
                 }));
             };
@@ -9906,7 +10049,7 @@
                     throw new Error("Unable to delegate rendering. Possibly the component is not loaded in the target window.\n\n" + Object(lib.S)(err));
                 }));
                 var overrides = this.driver.delegateOverrides;
-                var _loop = function(_i6, _Object$keys4) {
+                var _loop = function() {
                     var key = _Object$keys4[_i6];
                     var val = overrides[key];
                     if (val === constants.DELEGATE.CALL_ORIGINAL) return "continue";
@@ -9921,7 +10064,7 @@
                         }));
                     };
                 };
-                for (var _i6 = 0, _Object$keys4 = Object.keys(overrides); _i6 < _Object$keys4.length; _i6++) _loop(_i6, _Object$keys4);
+                for (var _i6 = 0, _Object$keys4 = Object.keys(overrides); _i6 < _Object$keys4.length; _i6++) _loop();
             };
             _proto.watchForClose = function() {
                 var _this16 = this;
@@ -10161,7 +10304,11 @@
                             console.error(err.stack ? err.stack : err);
                         }
                         var _ref10 = "object" == typeof _this31.component.autoResize && null !== _this31.component.autoResize ? _this31.component.autoResize : {}, _ref10$width = _ref10.width, width = void 0 !== _ref10$width && _ref10$width, _ref10$height = _ref10.height, height = void 0 !== _ref10$height && _ref10$height, _ref10$element = _ref10.element, element = void 0 === _ref10$element ? "body" : _ref10$element;
-                        (element = Object(belter_src.b)(element, doc)) && (width || height) && Object(belter_src.h)(element, (function(_ref11) {
+                        (element = function(id, doc) {
+                            void 0 === doc && (doc = document);
+                            return (element = id) instanceof window.Element || null !== element && "object" == typeof element && 1 === element.nodeType && "object" == typeof element.style && "object" == typeof element.ownerDocument ? id : "string" == typeof id ? doc.querySelector(id) : void 0;
+                            var element;
+                        }(element, doc)) && (width || height) && onResize(element, (function(_ref11) {
                             _this31.resize(width ? _ref11.width : void 0, height ? _ref11.height : void 0);
                         }), {
                             width: width,
@@ -10209,7 +10356,34 @@
                 return zalgo_promise_src.a.try((function() {
                     var el;
                     if (!(el = element ? Object(lib.u)(element) : document.body)) throw new Error("Could not find element to open container into");
-                    Object(belter_src.f)(el) && (el = Object(belter_src.d)(el));
+                    isShadowElement(el) && (el = function(element) {
+                        var shadowHost = function(element) {
+                            var shadowRoot = function(element) {
+                                for (;element.parentNode; ) element = element.parentNode;
+                                if (isShadowElement(element)) return element;
+                            }(element);
+                            if (shadowRoot.host) return shadowRoot.host;
+                        }(element);
+                        if (!shadowHost) throw new Error("Element is not in shadow dom");
+                        if (isShadowElement(shadowHost)) throw new Error("Host element is also in shadow dom");
+                        var slotName = "shadow-slot-" + (chars = "0123456789abcdef", "xxxxxxxxxx".replace(/./g, (function() {
+                            return chars.charAt(Math.floor(Math.random() * chars.length));
+                        })) + "_" + function(str) {
+                            if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (function(m, p1) {
+                                return String.fromCharCode(parseInt(p1, 16));
+                            })));
+                            if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
+                            throw new Error("Can not find window.btoa or Buffer");
+                        }((new Date).toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase());
+                        var chars;
+                        var slot = document.createElement("slot");
+                        slot.setAttribute("name", slotName);
+                        element.appendChild(slot);
+                        var slotProvider = document.createElement("div");
+                        slotProvider.setAttribute("slot", slotName);
+                        shadowHost.appendChild(slotProvider);
+                        return slotProvider;
+                    }(el));
                     if (_this33.component.containerTemplate) {
                         var container = _this33.renderTemplate(_this33.component.containerTemplate, {
                             container: el
@@ -10283,7 +10457,7 @@
                 }
             } ]);
             return ParentComponent;
-        }(base_BaseComponent), _class2.activeComponents = [], _temp)).prototype, "getOutlet", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "getOutlet"), _class.prototype), 
+        }(base_BaseComponent)).activeComponents = [], _class2)).prototype, "getOutlet", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "getOutlet"), _class.prototype), 
         _applyDecoratedDescriptor(_class.prototype, "prefetch", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "prefetch"), _class.prototype), 
         _applyDecoratedDescriptor(_class.prototype, "loadHTML", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "loadHTML"), _class.prototype), 
         _applyDecoratedDescriptor(_class.prototype, "buildUrl", [ lib.E ], Object.getOwnPropertyDescriptor(_class.prototype, "buildUrl"), _class.prototype), 
@@ -10331,7 +10505,7 @@
                 _this.focus = function() {
                     return zalgo_promise_src.a.all([ _this.isWindowClosed().then((function(closed) {
                         closed || window.open("", _this.childWindowName);
-                    })), options.overrides.focus.call(_assertThisInitialized(_this)) ]).then(lib.F);
+                    })), options.overrides.focus.call(Object(assertThisInitialized.a)(_this)) ]).then(lib.F);
                 };
                 _this.clean.register("destroyFocusOverride", (function() {
                     _this.focus = lib.F;
@@ -10346,7 +10520,7 @@
                 }
                 _this.childWindowName = options.childWindowName;
                 _this.isWindowClosed = options.isWindowClosed;
-                parent_ParentComponent.prototype.registerActiveComponent.call(_assertThisInitialized(_this));
+                parent_ParentComponent.prototype.registerActiveComponent.call(Object(assertThisInitialized.a)(_this));
                 _this.watchForClose();
                 return _this;
             }
@@ -10361,13 +10535,13 @@
             _proto.getOverrides = function(context) {
                 var overrides = {};
                 var self = this;
-                var _loop = function(_i6, _Object$keys4) {
+                var _loop = function() {
                     var key = _Object$keys4[_i6];
                     overrides[key] = function() {
                         return parent_ParentComponent.prototype[key].apply(self, arguments);
                     };
                 };
-                for (var _i6 = 0, _Object$keys4 = Object.keys(RENDER_DRIVERS[context].delegateOverrides); _i6 < _Object$keys4.length; _i6++) _loop(_i6, _Object$keys4);
+                for (var _i6 = 0, _Object$keys4 = Object.keys(RENDER_DRIVERS[context].delegateOverrides); _i6 < _Object$keys4.length; _i6++) _loop();
                 return overrides;
             };
             _proto.destroy = function() {
@@ -10382,7 +10556,7 @@
             } ]);
             return DelegateComponent;
         }(base_BaseComponent);
-        var drivers = __webpack_require__(24);
+        var drivers = __webpack_require__(25);
         function defaultContainerTemplate(_ref) {
             var id = _ref.id, CLASS = _ref.CLASS, outlet = _ref.outlet, jsxDom = _ref.jsxDom, _ref$dimensions = _ref.dimensions;
             return jsxDom("div", {
@@ -10399,7 +10573,7 @@
                 class: "loader"
             }))));
         }
-        var component_class, component_class2, component_temp;
+        var component_class, component_class2;
         var component_drivers = {
             angular: drivers.angular,
             angular2: drivers.angular2,
@@ -10408,7 +10582,7 @@
             vue: drivers.vue,
             script: drivers.script
         };
-        var component_Component = (_applyDecoratedDescriptor((component_class = (component_temp = component_class2 = function(_BaseComponent) {
+        var component_Component = (_applyDecoratedDescriptor((component_class = ((component_class2 = function(_BaseComponent) {
             Object(inheritsLoose.a)(Component, _BaseComponent);
             function Component(options) {
                 var _this;
@@ -10440,7 +10614,7 @@
                 _this.xchild = void 0;
                 _this.xprops = void 0;
                 !function(options) {
-                    if (!options) throw new Error("Expecred options to be passed");
+                    if (!options) throw new Error("Expected options to be passed");
                     if (!options.tag || !options.tag.match(/^[a-z0-9-]+$/)) throw new Error("Invalid options.tag: " + options.tag);
                     !function(options) {
                         if (options.props && "object" != typeof options.props) throw new Error("Expected options.props to be an object");
@@ -10639,7 +10813,7 @@
                 _this.addProp(options, "prerenderTemplate", defaultPrerenderTemplate);
                 _this.addProp(options, "validate");
                 _this.addProp(options, "unsafeRenderTo", !1);
-                Component.components[_this.tag] = _assertThisInitialized(_this);
+                Component.components[_this.tag] = Object(assertThisInitialized.a)(_this);
                 _this.registerDrivers();
                 _this.registerChild();
                 _this.listenDelegate();
@@ -10862,7 +11036,7 @@
                 return Component.components[tag];
             };
             return Component;
-        }(base_BaseComponent), component_class2.components = {}, component_temp)).prototype, "getPropNames", [ lib.D ], Object.getOwnPropertyDescriptor(component_class.prototype, "getPropNames"), component_class.prototype), 
+        }(base_BaseComponent)).components = {}, component_class2)).prototype, "getPropNames", [ lib.D ], Object.getOwnPropertyDescriptor(component_class.prototype, "getPropNames"), component_class.prototype), 
         component_class);
         function create(options) {
             return new component_Component(options);
@@ -10875,16 +11049,6 @@
         }
         var postRobot = src;
         var CONSTANTS = constants;
-    }, function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        __webpack_require__.d(__webpack_exports__, "a", (function() {
-            return _inheritsLoose;
-        }));
-        function _inheritsLoose(subClass, superClass) {
-            subClass.prototype = Object.create(superClass.prototype);
-            subClass.prototype.constructor = subClass;
-            subClass.__proto__ = superClass;
-        }
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         __webpack_require__.r(__webpack_exports__);
@@ -11012,7 +11176,7 @@
             });
         };
         var zalgo_promise_src = __webpack_require__(2);
-        var cross_domain_safe_weakmap_src = __webpack_require__(17);
+        var cross_domain_safe_weakmap_src = __webpack_require__(15);
         function needsBridgeForBrowser() {
             return !!Object(src.p)(window).match(/MSIE|trident|edge\/12|edge\/13/i) || !conf.a.ALLOW_POSTMESSAGE_POPUP;
         }
@@ -11272,6 +11436,15 @@
         }
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
+        __webpack_require__.d(__webpack_exports__, "a", (function() {
+            return _assertThisInitialized;
+        }));
+        function _assertThisInitialized(self) {
+            if (void 0 === self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+            return self;
+        }
+    }, function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
         __webpack_require__.d(__webpack_exports__, "b", (function() {
             return PopupOpenError;
         }));
@@ -11310,7 +11483,7 @@
         __webpack_require__.d(__webpack_exports__, "e", (function() {
             return mapPaymentToBraintree;
         }));
-        var checkout = __webpack_require__(26);
+        var checkout = __webpack_require__(28);
         var src = __webpack_require__(2);
         function awaitBraintreeClient(braintree, auth) {
             return src.a.resolve(auth).then((function(authorization) {
@@ -11392,37 +11565,48 @@
         }
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(29);
+        var _script__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
         __webpack_require__.d(__webpack_exports__, "script", (function() {
             return _script__WEBPACK_IMPORTED_MODULE_0__.a;
         }));
-        var _react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(30);
+        var _react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32);
         __webpack_require__.d(__webpack_exports__, "react", (function() {
             return _react__WEBPACK_IMPORTED_MODULE_1__.a;
         }));
-        var _vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(31);
+        var _vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
         __webpack_require__.d(__webpack_exports__, "vue", (function() {
             return _vue__WEBPACK_IMPORTED_MODULE_2__.a;
         }));
-        var _angular__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(32);
+        var _angular__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(34);
         __webpack_require__.d(__webpack_exports__, "angular", (function() {
             return _angular__WEBPACK_IMPORTED_MODULE_3__.a;
         }));
-        var _ember__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(33);
+        var _ember__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(35);
         __webpack_require__.o(_ember__WEBPACK_IMPORTED_MODULE_4__, "angular2") && __webpack_require__.d(__webpack_exports__, "angular2", (function() {
             return _ember__WEBPACK_IMPORTED_MODULE_4__.angular2;
         }));
         __webpack_require__.o(_ember__WEBPACK_IMPORTED_MODULE_4__, "glimmer") && __webpack_require__.d(__webpack_exports__, "glimmer", (function() {
             return _ember__WEBPACK_IMPORTED_MODULE_4__.glimmer;
         }));
-        var _glimmer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(34);
+        var _glimmer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(36);
         __webpack_require__.d(__webpack_exports__, "glimmer", (function() {
             return _glimmer__WEBPACK_IMPORTED_MODULE_5__.a;
         }));
-        var _angular2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(35);
+        var _angular2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(37);
         __webpack_require__.d(__webpack_exports__, "angular2", (function() {
             return _angular2__WEBPACK_IMPORTED_MODULE_6__.a;
         }));
+    }, function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        __webpack_require__.d(__webpack_exports__, "a", (function() {
+            return _setPrototypeOf;
+        }));
+        function _setPrototypeOf(o, p) {
+            return (_setPrototypeOf = Object.setPrototypeOf || function(o, p) {
+                o.__proto__ = p;
+                return o;
+            })(o, p);
+        }
     }, function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         __webpack_require__.d(__webpack_exports__, "a", (function() {
@@ -11452,12 +11636,12 @@
                 class: "loader"
             })))));
         }
-        var src = __webpack_require__(15);
+        var src = __webpack_require__(17);
         var zalgo_promise_src = __webpack_require__(2);
         var resources = __webpack_require__(18);
         var constants = __webpack_require__(0);
         var lib = __webpack_require__(3);
-        var containerContent = __webpack_require__(27);
+        var containerContent = __webpack_require__(29);
         function getContainerStyle(_ref) {
             var id = _ref.id, tag = _ref.tag, CONTEXT = _ref.CONTEXT, CLASS = _ref.CLASS, ANIMATION = _ref.ANIMATION;
             return "\n        #" + id + " {\n            position: absolute;\n            z-index: 2147483647;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n\n            -webkit-transform: translate3d(0, 0, 0);\n            -moz-transform: translate3d(0, 0, 0);\n            -ms-transform: translate3d(0, 0, 0);\n            -o-transform: translate3d(0, 0, 0);\n            transform: translate3d(0, 0, 0);\n        }\n\n        #" + id + "." + tag + "-background-color-" + constants.q.BLACK + " {\n            background-color: black;\n            background-color: rgba(0, 0, 0, 0.75);\n\n            background: -webkit-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,1) 1%, rgba(0,0,0,0.75) 100%);\n            background: -moz-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,1) 1%, rgba(0,0,0,0.75) 100%);\n            background: -ms-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,1) 1%, rgba(0,0,0,0.75) 100%);\n            background: radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,1) 1%, rgba(0,0,0,0.75) 100%);\n\n            color: #fff;\n        }\n\n        #" + id + "." + tag + "-background-color-" + constants.q.WHITE + " {\n            background-color: white;\n            background-color: rgba(255, 255, 255, 0.4);\n\n            background: -webkit-radial-gradient(50% 50%, ellipse closest-corner, rgba(255, 255, 255,1) 1%, rgba(255, 255, 255,0.4) 100%);\n            background: -moz-radial-gradient(50% 50%, ellipse closest-corner, rgba(255, 255, 255,1) 1%, rgba(255, 255, 255,0.4) 100%);\n            background: -ms-radial-gradient(50% 50%, ellipse closest-corner, rgba(255, 255, 255,1) 1%, rgba(255, 255, 255,0.4) 100%);\n            background: radial-gradient(50% 50%, ellipse closest-corner, rgba(255, 255, 255,1) 1%, rgba(255, 255, 255,0.4) 100%);\n\n            color: #333;\n        }\n\n        #" + id + "." + tag + "-background-color-" + constants.q.BLACK + " a {\n            color: #fff;\n        }\n\n        #" + id + "." + tag + "-background-color-" + constants.q.WHITE + " a {\n            color: #333;\n        }\n\n        #" + id + "." + tag + "-background-color-" + constants.q.BLACK + " .paypal-checkout-close:before,\n        #" + id + "." + tag + "-background-color-" + constants.q.BLACK + " .paypal-checkout-close:after {\n            background-color: #fff;\n        }\n\n        #" + id + "." + tag + "-background-color-" + constants.q.WHITE + " .paypal-checkout-close:before,\n        #" + id + "." + tag + "-background-color-" + constants.q.WHITE + " .paypal-checkout-close:after {\n            background-color: #111;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.POPUP + " {\n            cursor: pointer;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.POPUP + " {\n            cursor: pointer;\n        }\n\n        #" + id + " a {\n            text-decoration: none;\n        }\n\n        #" + id + ' .paypal-checkout-modal {\n            font-family: "HelveticaNeue", "HelveticaNeue-Light", "Helvetica Neue Light", helvetica, arial, sans-serif;\n            font-size: 14px;\n            text-align: center;\n\n            -webkit-box-sizing: border-box;\n            -moz-box-sizing: border-box;\n            -ms-box-sizing: border-box;\n            box-sizing: border-box;\n            max-width: 350px;\n            top: 50%;\n            left: 50%;\n            position: absolute;\n            transform: translateX(-50%) translateY(-50%);\n            -webkit-transform: translateX(-50%) translateY(-50%);\n            -moz-transform: translateX(-50%) translateY(-50%);\n            -o-transform: translateX(-50%) translateY(-50%);\n            -ms-transform: translateX(-50%) translateY(-50%);\n            cursor: pointer;\n            text-align: center;\n        }\n\n        #' + id + "." + tag + "-loading .paypal-checkout-message, #" + id + "." + tag + "-loading .paypal-checkout-continue {\n            display: none;\n        }\n\n        .paypal-checkout-loader {\n            display: none;\n        }\n\n        #" + id + "." + tag + "-loading .paypal-checkout-loader {\n            display: block;\n        }\n\n        #" + id + " .paypal-checkout-modal .paypal-checkout-logo {\n            cursor: pointer;\n            margin-bottom: 30px;\n            display: inline-block;\n        }\n\n        #" + id + " .paypal-checkout-modal .paypal-checkout-logo img {\n            height: 36px;\n        }\n\n        #" + id + " .paypal-checkout-modal .paypal-checkout-logo img.paypal-checkout-logo-pp {\n            margin-right: 10px;\n        }\n\n        #" + id + " .paypal-checkout-modal .paypal-checkout-message {\n            font-size: 15px;\n            line-height: 1.5;\n            padding: 10px 0;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-message, #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-continue {\n            display: none;\n        }\n\n        #" + id + " .paypal-checkout-modal .paypal-checkout-continue {\n            font-size: 15px;\n            line-height: 1.35;\n            padding: 10px 0;\n            font-weight: bold;\n        }\n\n        #" + id + " .paypal-checkout-modal .paypal-checkout-continue a {\n            border-bottom: 1px solid currentColor;\n        }\n\n        #" + id + " .paypal-checkout-close {\n            position: absolute;\n            right: 16px;\n            top: 16px;\n            width: 16px;\n            height: 16px;\n            opacity: 0.6;\n        }\n\n        #" + id + "." + tag + "-loading .paypal-checkout-close {\n            display: none;\n        }\n\n        #" + id + " .paypal-checkout-close:hover {\n            opacity: 1;\n        }\n\n        #" + id + " .paypal-checkout-close:before, .paypal-checkout-close:after {\n            position: absolute;\n            left: 8px;\n            content: ' ';\n            height: 16px;\n            width: 2px;\n        }\n\n        #" + id + " .paypal-checkout-close:before {\n            transform: rotate(45deg);\n            -webkit-transform: rotate(45deg);\n            -moz-transform: rotate(45deg);\n            -o-transform: rotate(45deg);\n            -ms-transform: rotate(45deg);\n        }\n\n        #" + id + " .paypal-checkout-close:after {\n            transform: rotate(-45deg);\n            -webkit-transform: rotate(-45deg);\n            -moz-transform: rotate(-45deg);\n            -o-transform: rotate(-45deg);\n            -ms-transform: rotate(-45deg);\n        }\n\n        #" + id + " .paypal-checkout-iframe-container {\n            display: none;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-iframe-container,\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-iframe-container > ." + CLASS.OUTLET + ",\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-iframe-container > ." + CLASS.OUTLET + " > iframe {\n            max-height: calc(95vh - 60px);\n            max-width: 95vw;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-iframe-container {\n\n            display: block;\n\n            position: absolute;\n\n            top: 50%;\n            left: 50%;\n\n            min-width: 450px;\n\n            transform: translate(-50%, -50%);\n            -webkit-transform: translate(-50%, -50%);\n            -moz-transform: translate(-50%, -50%);\n            -o-transform: translate(-50%, -50%);\n            -ms-transform: translate(-50%, -50%);\n\n            transform: translate3d(-50%, -50%, 0);\n            -webkit-transform: translate3d(-50%, -50%, 0);\n            -moz-transform: translate3d(-50%, -50%, 0);\n            -o-transform: translate3d(-50%, -50%, 0);\n            -ms-transform: translate3d(-50%, -50%, 0);\n\n            border-radius: 10px;\n            overflow: hidden;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " {\n\n            position: relative;\n\n            -webkit-transition: all 0.3s ease;\n            -moz-transition: all 0.3s ease;\n            -ms-transition: all 0.3s ease;\n            -o-transition: all 0.3 ease;\n            transition: all 0.3s ease;\n\n            -webkit-animation-duration: 0.3s;\n            animation-duration: 0.3s;\n            -webkit-animation-fill-mode: both;\n            animation-fill-mode: both;\n\n            min-width: 450px;\n            max-width: 450px;\n            width: 450px;\n            height: 535px;\n\n            background-color: white;\n\n            overflow: auto;\n            -webkit-overflow-scrolling: touch;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " > iframe {\n            position: absolute;\n            top: 0;\n            left: 0;\n            transition: opacity .4s ease-in-out;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " > iframe." + CLASS.COMPONENT_FRAME + " {\n            z-index: 100;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " > iframe." + CLASS.PRERENDER_FRAME + " {\n            z-index: 200;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " > iframe." + CLASS.VISIBLE + " {\n            opacity: 1;\n            z-index: 200;\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " > iframe." + CLASS.INVISIBLE + " {\n            opacity: 0;\n            z-index: 100;\n        }\n\n        @media screen and (-ms-high-contrast: active) {\n            #" + id + " .paypal-checkout-close {\n                opacity: 1;\n            }\n\n            #" + id + " .paypal-checkout-close:before , .paypal-checkout-close:after {\n                background-color: currentColor;\n            }\n        }\n\n        @media screen and (max-width: 470px) {\n\n            #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " .paypal-checkout-iframe-container,\n            #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " {\n                min-width: 100%;\n                min-width: calc(100% - 20px);\n                min-width: -webkit-calc(100% - 20px);\n                min-width: -moz-calc(100% - 20px);\n                min-width: -o-calc(100% - 20px);\n                min-width: -ms-calc(100% - 20px);\n\n                max-width: 100%;\n                max-width: calc(100% - 20px);\n                max-width: -webkit-calc(100% - 20px);\n                max-width: -moz-calc(100% - 20px);\n                max-width: -o-calc(100% - 20px);\n                max-width: -ms-calc(100% - 20px);\n            }\n        }\n\n        #" + id + "." + tag + "-context-" + CONTEXT.IFRAME + " ." + CLASS.OUTLET + " iframe {\n            width: 1px;\n            min-width: 100%;\n            height: 100%;\n        }\n\n        @-webkit-keyframes " + ANIMATION.SHOW_COMPONENT + " {\n            from {\n                opacity: 0;\n                transform: scale3d(.3, .3, .3);\n                -webkit-transform: scale3d(.3, .3, .3);\n            }\n\n            to {\n                opacity: 1;\n                transform: scale3d(1, 1, 1);\n                -webkit-transform: scale3d(1, 1, 1);\n            }\n        }\n\n        @keyframes " + ANIMATION.SHOW_COMPONENT + " {\n            from {\n                opacity: 0;\n                transform: scale3d(.3, .3, .3);\n                -webkit-transform: scale3d(.3, .3, .3);\n            }\n\n            to {\n                opacity: 1;\n                transform: scale3d(1, 1, 1);\n                -webkit-transform: scale3d(1, 1, 1);\n            }\n        }\n\n        @-webkit-keyframes " + ANIMATION.HIDE_COMPONENT + " {\n            from {\n                transform: scale3d(1, 1, 1);\n                -webkit-transform: scale3d(1, 1, 1);\n            }\n\n            to {\n                opacity: 0;\n                transform: scale3d(.3, .3, .3);\n                -webkit-transform: scale3d(.3, .3, .3);\n            }\n        }\n\n        @keyframes " + ANIMATION.HIDE_COMPONENT + " {\n            from {\n                transform: scale3d(1, 1, 1);\n                -webkit-transform: scale3d(1, 1, 1);\n            }\n\n            to {\n                opacity: 0;\n                transform: scale3d(.3, .3, .3);\n                -webkit-transform: scale3d(.3, .3, .3);\n            }\n        }\n\n        .paypal-spinner {\n            height: 30px;\n            width: 30px;\n            display: inline-block;\n            box-sizing: content-box;\n            opacity: 1;\n            filter: alpha(opacity=100);\n            -webkit-animation: rotation .7s infinite linear;\n            -moz-animation: rotation .7s infinite linear;\n            -o-animation: rotation .7s infinite linear;\n            animation: rotation .7s infinite linear;\n            border-left: 8px solid rgba(0, 0, 0, .2);\n            border-right: 8px solid rgba(0, 0, 0, .2);\n            border-bottom: 8px solid rgba(0, 0, 0, .2);\n            border-top: 8px solid #fff;\n            border-radius: 100%\n        }\n\n        @-webkit-keyframes rotation {\n            from {\n                -webkit-transform: rotate(0deg)\n            }\n            to {\n                -webkit-transform: rotate(359deg)\n            }\n        }\n        @-moz-keyframes rotation {\n            from {\n                -moz-transform: rotate(0deg)\n            }\n            to {\n                -moz-transform: rotate(359deg)\n            }\n        }\n        @-o-keyframes rotation {\n            from {\n                -o-transform: rotate(0deg)\n            }\n            to {\n                -o-transform: rotate(359deg)\n            }\n        }\n        @keyframes rotation {\n            from {\n                transform: rotate(0deg)\n            }\n            to {\n                transform: rotate(359deg)\n            }\n        }\n    ";
@@ -11476,7 +11660,7 @@
             function focus(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                Object(lib.F)() && Object(src.j)() ? window.alert("Please switch tabs to reactivate the PayPal window") : zalgo_promise_src.a.try(actions.focus).catch(actions.close);
+                Object(lib.G)() && Object(src.f)() ? window.alert("Please switch tabs to reactivate the PayPal window") : zalgo_promise_src.a.try(actions.focus).catch(actions.close);
             }
             var overlayColor = (props.style || {}).overlayColor || constants.q.BLACK;
             var logoColor = LOGO_COLOR[overlayColor];
@@ -14816,7 +15000,7 @@
             var root = "object" == typeof window ? window : {};
             !root.HI_BASE32_NO_NODE_JS && "object" == typeof process && process.versions && process.versions.node && (root = window);
             var COMMON_JS = !root.HI_BASE32_NO_COMMON_JS && "object" == typeof module && module.exports;
-            var AMD = __webpack_require__(40);
+            var AMD = __webpack_require__(42);
             var BASE32_ENCODE_CHAR = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".split("");
             var BASE32_DECODE_CHAR = {
                 A: 0,
@@ -14860,6 +15044,7 @@
                 throw err;
             };
             var decodeAsBytes = function(base32Str) {
+                if ("" === base32Str) return [];
                 if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                 var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length;
                 for (var i = 0, count = length >> 3 << 3; i < count; ) {
@@ -14942,6 +15127,7 @@
                     }
                     return str;
                 }(decodeAsBytes(base32Str));
+                if ("" === base32Str) return "";
                 if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                 var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                 -1 === length && (length = base32Str.length);
@@ -15048,6 +15234,7 @@
                         return base32Str;
                     }(input) : function(str) {
                         var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                        if ("" === str) return base32Str;
                         do {
                             blocks[0] = blocks[5];
                             blocks[1] = blocks[6];
@@ -15094,17 +15281,13 @@
             global: function() {
                 return window.document;
             },
-            register: function register(component, document) {
+            register: function(component, document) {
                 function render(element) {
                     if (element && element.tagName && "script" === element.tagName.toLowerCase() && element.attributes.type && "application/x-component" === element.attributes.type.value && element.parentNode) {
                         var tag = element.getAttribute("data-component");
                         if (tag && tag === component.tag) {
-                            component.log("instantiate_script_component");
-                            var props = element.innerText ? eval("(" + element.innerText + ")") : {};
-                            var container = document.createElement("div");
-                            if (!element.parentNode) throw new Error("Element has no parent");
-                            element.parentNode.replaceChild(container, element);
-                            component.render(props, container);
+                            component.log("instantiate_script_component_error");
+                            throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                         }
                     }
                 }
@@ -15125,7 +15308,7 @@
         __webpack_require__.d(__webpack_exports__, "a", (function() {
             return react;
         }));
-        var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(20);
+        var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(19);
         var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
         var react = {
             global: function() {
@@ -15271,7 +15454,7 @@
             return glimmer;
         }));
         var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(11);
-        var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(20);
+        var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(19);
         var glimmer = {
             global: function() {},
             register: function(component, GlimmerComponent) {
@@ -15340,7 +15523,7 @@
         };
     }, function(module, exports, __webpack_require__) {
         !function(e, t, n) {
-            module.exports ? module.exports = n() : __webpack_require__(41)("bowser", n);
+            module.exports ? module.exports = n() : __webpack_require__(43)("bowser", n);
         }(0, 0, (function() {
             function t(t) {
                 function n(e) {
@@ -15773,13 +15956,13 @@
             return constants.o;
         }));
         __webpack_require__.d(__webpack_exports__, "request", (function() {
-            return lib.R;
+            return lib.S;
         }));
         __webpack_require__.d(__webpack_exports__, "isEligible", (function() {
-            return lib.B;
+            return lib.C;
         }));
         __webpack_require__.d(__webpack_exports__, "isFundingRemembered", (function() {
-            return lib.C;
+            return lib.D;
         }));
         __webpack_require__.d(__webpack_exports__, "forceIframe", (function() {
             return lib.a;
@@ -15871,13 +16054,13 @@
             return constants.o;
         }));
         __webpack_require__.d(interface_namespaceObject, "request", (function() {
-            return lib.R;
+            return lib.S;
         }));
         __webpack_require__.d(interface_namespaceObject, "isEligible", (function() {
-            return lib.B;
+            return lib.C;
         }));
         __webpack_require__.d(interface_namespaceObject, "isFundingRemembered", (function() {
-            return lib.C;
+            return lib.D;
         }));
         __webpack_require__.d(interface_namespaceObject, "forceIframe", (function() {
             return lib.a;
@@ -15928,18 +16111,18 @@
             return interface_ThreeDomainSecure;
         }));
         var beaver_logger_client = __webpack_require__(5);
-        var src = __webpack_require__(19);
+        var src = __webpack_require__(20);
         var zalgo_promise_src = __webpack_require__(2);
         var post_robot_src = __webpack_require__(13);
         var lib = __webpack_require__(3);
         var src_checkout = __webpack_require__(16);
         var esm_extends = __webpack_require__(11);
-        var belter_src = __webpack_require__(15);
+        var belter_src = __webpack_require__(17);
         var constants = __webpack_require__(0);
         var config = __webpack_require__(4);
         var resources = __webpack_require__(18);
-        var containerContent = __webpack_require__(27);
-        var checkout_template = __webpack_require__(25);
+        var containerContent = __webpack_require__(29);
+        var checkout_template = __webpack_require__(27);
         var _LOGO_COLOR;
         var LOGO_COLOR = ((_LOGO_COLOR = {})[constants.q.BLACK] = constants.i.WHITE, _LOGO_COLOR[constants.q.WHITE] = constants.i.BLACK, 
         _LOGO_COLOR);
@@ -15957,7 +16140,7 @@
             function focus(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                Object(lib.F)() && Object(belter_src.j)() ? window.alert("Please switch tabs to reactivate the PayPal window") : actions.focus();
+                Object(lib.G)() && Object(belter_src.f)() ? window.alert("Please switch tabs to reactivate the PayPal window") : actions.focus();
             }
             var overlayColor = (props.style || {}).overlayColor || constants.q.BLACK;
             var logoColor = LOGO_COLOR[overlayColor];
@@ -16045,7 +16228,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.v)();
+                        return Object(lib.w)();
                     },
                     queryParam: !0
                 },
@@ -16058,7 +16241,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.j)();
+                        return Object(lib.k)();
                     },
                     queryParam: !0
                 },
@@ -16084,7 +16267,7 @@
                     queryParam: "locale.x",
                     allowDelegate: !0,
                     def: function() {
-                        var _getBrowserLocale = Object(lib.i)();
+                        var _getBrowserLocale = Object(lib.j)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     }
                 },
@@ -16118,7 +16301,7 @@
                     sendToChild: !1,
                     def: function() {
                         return Object(belter_src.a)(JSON.stringify({
-                            url: Object(lib.l)()
+                            url: Object(lib.m)()
                         }));
                     }
                 }
@@ -16142,7 +16325,7 @@
                     sendToChild: !1,
                     def: function() {
                         return Object(belter_src.a)(JSON.stringify({
-                            url: Object(lib.l)()
+                            url: Object(lib.m)()
                         }));
                     }
                 },
@@ -16152,7 +16335,7 @@
                     queryParam: "locale.x",
                     allowDelegate: !0,
                     def: function() {
-                        var _getBrowserLocale = Object(lib.i)();
+                        var _getBrowserLocale = Object(lib.j)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     }
                 },
@@ -16240,8 +16423,8 @@
                     source: "checkoutjs"
                 };
                 clientId ? params.client_id = clientId : delete params.client_id;
-                var fullUrl = Object(lib.g)(config.a.pptmUrl, params);
-                Object(lib.H)(fullUrl, 0, {
+                var fullUrl = Object(lib.h)(config.a.pptmUrl, params);
+                Object(lib.I)(fullUrl, 0, {
                     async: !0,
                     id: constants.E
                 }).then((function() {
@@ -16251,14 +16434,14 @@
                     _track2[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.PPTM_LOADED, _track2));
                 })).catch((function(err) {
                     Object(beaver_logger_client.k)("pptm_script_error", {
-                        error: Object(lib.U)(err)
+                        error: Object(lib.V)(err)
                     });
                 }));
             },
             shouldCreateInitialPptmScript: function() {
                 if (!window.location.hostname) return !1;
-                if (Object(lib.G)()) return !1;
-                var existingScript = Object(lib.n)(constants.E);
+                if (Object(lib.H)()) return !1;
+                var existingScript = Object(lib.o)(constants.E);
                 if (Boolean(existingScript)) {
                     Object(beaver_logger_client.k)("pptm_tried_loading_twice");
                     return !1;
@@ -16266,22 +16449,22 @@
                 return !0;
             },
             shouldReloadPptmScript: function(clientId) {
-                return !1 !== noContentFoundInContainer && !Object(lib.G)() && !config.a.merchantID && !!clientId;
+                return !1 !== noContentFoundInContainer && !Object(lib.H)() && !config.a.merchantID && !!clientId;
             },
             removePptm: function() {
-                var script = Object(lib.n)(constants.E);
+                var script = Object(lib.o)(constants.E);
                 script && script.parentNode.removeChild(script);
             }
         });
         var noContentFoundInContainer, callback, listener, obj;
         var proxyRest = {};
-        var createAccessToken = Object(lib.I)((function(env, client) {
+        var createAccessToken = Object(lib.J)((function(env, client) {
             Object(beaver_logger_client.k)("rest_api_create_access_token");
             var clientID = client[env = env || config.a.env];
             if (!clientID) throw new Error("Client ID not found for env: " + env);
             if (proxyRest.createAccessToken && !proxyRest.createAccessToken.source.closed) return proxyRest.createAccessToken(env, client);
             var basicAuth = Object(belter_src.a)(clientID + ":");
-            return Object(lib.R)({
+            return Object(lib.S)({
                 method: "post",
                 url: config.a.authApiUrls[env],
                 headers: {
@@ -16298,7 +16481,7 @@
         }), {
             time: 6e5
         });
-        var createExperienceProfile = Object(lib.I)((function(env, client, experienceDetails) {
+        var createExperienceProfile = Object(lib.J)((function(env, client, experienceDetails) {
             void 0 === experienceDetails && (experienceDetails = {});
             Object(beaver_logger_client.k)("rest_api_create_experience_profile");
             if (!client[env = env || config.a.env]) throw new Error("Client ID not found for env: " + env);
@@ -16306,7 +16489,7 @@
             experienceDetails.temporary = !0;
             experienceDetails.name = experienceDetails.name ? experienceDetails.name + "_" + Math.random().toString() : Math.random().toString();
             return createAccessToken(env, client).then((function(accessToken) {
-                return Object(lib.R)({
+                return Object(lib.S)({
                     method: "post",
                     url: config.a.experienceApiUrls[env],
                     headers: {
@@ -16362,12 +16545,12 @@
                     return zalgo_promise_src.a.try((function() {
                         if (tracking) return zalgo_promise_src.a.resolve(function(env, client, merchantID, trackingData) {
                             if (!client[env = env || config.a.env]) throw new Error("Client ID not found for env: " + env);
-                            var trackingID = Object(lib.X)();
+                            var trackingID = Object(lib.Y)();
                             return createAccessToken(env, client).then((function(accessToken) {
                                 var headers = {
                                     Authorization: "Bearer " + accessToken
                                 };
-                                return Object(lib.R)({
+                                return Object(lib.S)({
                                     method: "put",
                                     url: config.a.trackingApiUrls[env] + "/" + merchantID + "/" + trackingID,
                                     headers: headers,
@@ -16387,7 +16570,7 @@
                         };
                         trackingID && (headers["Paypal-Client-Metadata-Id"] = trackingID);
                         meta && meta.partner_attribution_id && (headers["PayPal-Partner-Attribution-Id"] = meta.partner_attribution_id);
-                        return Object(lib.R)({
+                        return Object(lib.S)({
                             method: "post",
                             url: config.a.paymentApiUrls[env],
                             headers: headers,
@@ -16424,7 +16607,7 @@
                     Authorization: "Bearer " + accessToken
                 };
                 meta && meta.partner_attribution_id && (headers["PayPal-Partner-Attribution-Id"] = meta.partner_attribution_id);
-                return Object(lib.R)({
+                return Object(lib.S)({
                     method: "post",
                     url: config.a.orderApiUrls[env],
                     headers: headers,
@@ -16451,7 +16634,7 @@
                     if (experienceDetails) return zalgo_promise_src.a.resolve(createExperienceProfile(env, client, experienceDetails));
                 })).then((function(experienceID) {
                     experienceID && (billingDetails.experience_profile_id = experienceID);
-                    return Object(lib.R)({
+                    return Object(lib.S)({
                         method: "post",
                         url: config.a.billingApiUrls[env],
                         headers: {
@@ -16485,16 +16668,16 @@
         }, (function(_ref) {
             proxyRest = _ref.data;
         }));
-        parentWin && Object(lib.G)() && !Object(cross_domain_utils_src.v)(parentWin) && Object(post_robot_src.send)(parentWin, "proxy_rest", {
+        parentWin && Object(lib.H)() && !Object(cross_domain_utils_src.v)(parentWin) && Object(post_robot_src.send)(parentWin, "proxy_rest", {
             createAccessToken: createAccessToken,
             createExperienceProfile: createExperienceProfile,
             createPayment: createPayment,
             createBillingAgreement: createBillingAgreement,
             createOrder: createOrder
         }).catch((function() {}));
-        var onAuthorizeListener = Object(lib.e)();
+        var onAuthorizeListener = Object(lib.f)();
         function log(experiment, treatment, token, state) {
-            Object(lib.w)((function(session) {
+            Object(lib.x)((function(session) {
                 var event = experiment + "_" + treatment + "_" + state;
                 var loggedEvents = session.loggedExperimentEvents = session.loggedExperimentEvents || [];
                 if (-1 !== loggedEvents.indexOf(event)) Object(beaver_logger_client.k)("duplicate_" + event); else {
@@ -16515,7 +16698,7 @@
         function logExperimentTreatment(_ref) {
             var experiment = _ref.experiment, treatment = _ref.treatment, state = _ref.state, token = _ref.token;
             if (experiment && treatment) {
-                Object(lib.w)((function(session) {
+                Object(lib.x)((function(session) {
                     session.externalExperiment = experiment;
                     session.externalExperimentTreatment = treatment;
                     token && (session.externalExperimentToken = token);
@@ -16524,7 +16707,7 @@
             }
         }
         function logReturn(token) {
-            var _getSessionState = Object(lib.w)((function(session) {
+            var _getSessionState = Object(lib.x)((function(session) {
                 return session;
             })), externalExperiment = _getSessionState.externalExperiment, externalExperimentTreatment = _getSessionState.externalExperimentTreatment, externalExperimentToken = _getSessionState.externalExperimentToken;
             externalExperiment && externalExperimentTreatment && externalExperimentToken === token ? log(externalExperiment, externalExperimentTreatment, token, "complete") : Object(beaver_logger_client.k)("experiment_mismatch", {
@@ -16534,20 +16717,20 @@
                 externalExperimentToken: externalExperimentToken
             });
         }
-        if (Object(lib.m)("log_authorize")) {
+        if (Object(lib.n)("log_authorize")) {
             onAuthorizeListener.once((function(_ref2) {
                 var paymentToken = _ref2.paymentToken;
                 setTimeout((function() {
                     logReturn(paymentToken);
                 }), 1);
             }));
-            var returnToken = Object(lib.t)();
+            var returnToken = Object(lib.u)();
             returnToken && setTimeout((function() {
                 returnToken && logReturn(returnToken);
             }), 1);
         }
-        var integrations = __webpack_require__(23);
-        var integrations_checkout = __webpack_require__(26);
+        var integrations = __webpack_require__(24);
+        var integrations_checkout = __webpack_require__(28);
         function normalizeCheckoutProps(props) {
             return {
                 env: props.env = props.env || config.a.env,
@@ -16570,7 +16753,7 @@
                                     err.code = "PAYMENT_CANCELLED";
                                     return reject(err);
                                 };
-                                popupBridge.open(Object(lib.g)(url, {
+                                popupBridge.open(Object(lib.h)(url, {
                                     redirect_uri: popupBridge.getReturnUrlPrefix()
                                 }));
                             }));
@@ -23855,15 +24038,15 @@
                 });
                 template.addEventListener("click", (function() {
                     Object(beaver_logger_client.q)("button_pre_template_click");
-                    if (Object(lib.E)()) {
+                    if (Object(lib.F)()) {
                         Object(beaver_logger_client.q)("button_pre_template_click_intranet_mode");
                         Object(beaver_logger_client.h)();
                         alert("IE Intranet mode is not supported by PayPal. Please disable intranet mode, or continue in an alternate browser.");
                     }
-                    if (Object(lib.m)("allow_full_page_fallback")) {
+                    if (Object(lib.n)("allow_full_page_fallback")) {
                         Object(beaver_logger_client.k)("pre_template_force_full_page");
                         _this.props.payment().then((function(token) {
-                            window.top.location = Object(lib.g)(config.a.checkoutUrl, {
+                            window.top.location = Object(lib.h)(config.a.checkoutUrl, {
                                 token: token
                             });
                         }));
@@ -23872,7 +24055,7 @@
                 return jsxDom("html", null, jsxDom("body", null, template));
             },
             get version() {
-                return Object(lib.u)();
+                return Object(lib.v)();
             },
             get domain() {
                 return config.a.paypalDomains;
@@ -23884,7 +24067,7 @@
                 }
             },
             validate: function() {
-                Object(lib.B)() || Object(beaver_logger_client.q)("button_render_ineligible");
+                Object(lib.C)() || Object(beaver_logger_client.q)("button_render_ineligible");
             },
             props: {
                 domain: {
@@ -23899,7 +24082,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.v)();
+                        return Object(lib.w)();
                     },
                     queryParam: !0
                 },
@@ -23907,7 +24090,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.X)();
+                        return Object(lib.Y)();
                     },
                     queryParam: !0
                 },
@@ -24031,7 +24214,7 @@
                             var _this2 = this;
                             void 0 === data && (data = {});
                             var actions = {
-                                request: lib.R,
+                                request: lib.S,
                                 payment: {
                                     create: function(options) {
                                         return _this2.props.braintree ? _this2.props.braintree.then((function(client) {
@@ -24057,7 +24240,7 @@
                                     }
                                 }
                             };
-                            if (Object(lib.m)("memoize_payment") && this.memoizedToken) return this.memoizedToken;
+                            if (Object(lib.n)("memoize_payment") && this.memoizedToken) return this.memoizedToken;
                             this.memoizedToken = zalgo_promise_src.a.try(original, this, [ data, actions ]);
                             var startTime = Date.now();
                             this.memoizedToken = this.memoizedToken.then((function(token) {
@@ -24134,7 +24317,7 @@
                         })));
                         (function(props) {
                             var _normalizeProps = normalizeProps(props, {
-                                locale: Object(lib.i)()
+                                locale: Object(lib.j)()
                             }), label = _normalizeProps.label, funding = _normalizeProps.funding, layout = _normalizeProps.layout, locale = _normalizeProps.locale, max = _normalizeProps.max, sources = _normalizeProps.sources, env = _normalizeProps.env;
                             var allowed = funding.allowed;
                             var country = locale.country;
@@ -24157,11 +24340,11 @@
                             if (-1 !== sources.indexOf(constants.v.CREDIT)) return !1;
                             var domain = Object(cross_domain_utils_src.h)().replace(/^https?:\/\//, "").replace(/^www\./, "");
                             return -1 !== config.a.creditTestDomains.indexOf(domain);
-                        })(props) && (creditThrottle = Object(lib.x)("dual_credit_automatic", 50)).isEnabled() && (allowed = [].concat(allowed, [ constants.v.CREDIT ]));
-                        var remembered = Object(lib.r)((function(sources) {
+                        })(props) && (creditThrottle = Object(lib.y)("dual_credit_automatic", 50)).isEnabled() && (allowed = [].concat(allowed, [ constants.v.CREDIT ]));
+                        var remembered = Object(lib.s)((function(sources) {
                             return sources;
                         }));
-                        if (!Object(lib.z)() || Object(lib.m)("disable_venmo")) {
+                        if (!Object(lib.A)() || Object(lib.n)("disable_venmo")) {
                             remembered && -1 !== remembered.indexOf(constants.v.VENMO) && (remembered = remembered.filter((function(source) {
                                 return source !== constants.v.VENMO;
                             })));
@@ -24172,7 +24355,7 @@
                             disallowed: disallowed,
                             remembered: remembered,
                             remember: function(sources) {
-                                Object(lib.Q)(sources);
+                                Object(lib.R)(sources);
                             }
                         };
                     }
@@ -24193,8 +24376,8 @@
                     decorate: function(original) {
                         return function() {
                             var _track2;
-                            var _getBrowser = Object(lib.h)(), _getBrowser$browser = _getBrowser.browser, browser = void 0 === _getBrowser$browser ? "unrecognized" : _getBrowser$browser, _getBrowser$version = _getBrowser.version, version = void 0 === _getBrowser$version ? "unrecognized" : _getBrowser$version;
-                            Object(beaver_logger_client.k)("button_render_browser_" + browser + "_" + (Object(lib.z)() ? "mobile" : "desktop") + "_" + version);
+                            var _getBrowser = Object(lib.i)(), _getBrowser$browser = _getBrowser.browser, browser = void 0 === _getBrowser$browser ? "unrecognized" : _getBrowser$browser, _getBrowser$version = _getBrowser.version, version = void 0 === _getBrowser$version ? "unrecognized" : _getBrowser$version;
+                            Object(beaver_logger_client.k)("button_render_browser_" + browser + "_" + (Object(lib.A)() ? "mobile" : "desktop") + "_" + version);
                             var style = this.props.style || {};
                             Object(beaver_logger_client.k)("button_render");
                             Object(beaver_logger_client.k)("button_render_color_" + (style.color || "default"));
@@ -24210,7 +24393,7 @@
                             _track2[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.BUTTON_RENDER, _track2[constants.u.KEY.BUTTON_TYPE] = constants.u.BUTTON_TYPE.IFRAME, 
                             _track2[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, _track2[constants.u.KEY.BUTTON_SOURCE] = this.props.source, 
                             _track2));
-                            Object(lib.E)() && Object(beaver_logger_client.q)("button_render_intranet_mode");
+                            Object(lib.F)() && Object(beaver_logger_client.q)("button_render_intranet_mode");
                             if (creditThrottle) {
                                 var _creditThrottle$logSt;
                                 creditThrottle.logStart(((_creditThrottle$logSt = {})[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, 
@@ -24236,9 +24419,9 @@
                             Object(beaver_logger_client.p)(((_track3 = {})[constants.u.KEY.STATE] = constants.u.STATE.CHECKOUT, 
                             _track3[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.CHECKOUT_APPROVE, _track3[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, 
                             _track3[constants.u.KEY.BUTTON_VERSION] = data && data.button_version, _track3));
-                            Object(lib.E)() && Object(beaver_logger_client.q)("button_authorize_intranet_mode");
-                            Object(lib.B)() || Object(beaver_logger_client.k)("button_authorize_ineligible");
-                            Object(lib.d)("authorize");
+                            Object(lib.F)() && Object(beaver_logger_client.q)("button_authorize_intranet_mode");
+                            Object(lib.C)() || Object(beaver_logger_client.k)("button_authorize_ineligible");
+                            Object(lib.e)("authorize");
                             Object(beaver_logger_client.h)();
                             var restart = actions.restart;
                             actions.restart = function() {
@@ -24250,10 +24433,10 @@
                                 return zalgo_promise_src.a.try((function() {
                                     if (actions.close) return actions.close();
                                 })).then((function() {
-                                    return Object(lib.P)(win || window.top, url || data.returnUrl);
+                                    return Object(lib.Q)(win || window.top, url || data.returnUrl);
                                 }));
                             };
-                            actions.payment.tokenize = Object(lib.I)((function() {
+                            actions.payment.tokenize = Object(lib.J)((function() {
                                 if (!_this3.props.braintree) throw new Error("Must pass in Braintree client to tokenize payment");
                                 return _this3.props.braintree.then((function(client) {
                                     return client.tokenizePayment(data);
@@ -24279,7 +24462,7 @@
                                     return result;
                                 }));
                             };
-                            actions.request = lib.R;
+                            actions.request = lib.S;
                             onAuthorizeListener.trigger({
                                 paymentToken: data.paymentToken
                             });
@@ -24352,7 +24535,7 @@
                     once: !0,
                     def: function() {
                         return function(err) {
-                            if (Object(lib.E)()) {
+                            if (Object(lib.F)()) {
                                 Object(beaver_logger_client.q)("button_error_intranet_mode");
                                 Object(beaver_logger_client.h)();
                                 alert("IE Intranet mode is not supported by PayPal. Please disable intranet mode, or continue in an alternate browser.");
@@ -24377,7 +24560,7 @@
                             Object(beaver_logger_client.h)();
                             return original.call(this, data, Object(esm_extends.a)({}, actions, {
                                 redirect: function(win, url) {
-                                    return zalgo_promise_src.a.all([ Object(lib.P)(win || window.top, url || data.cancelUrl), actions.close() ]);
+                                    return zalgo_promise_src.a.all([ Object(lib.Q)(win || window.top, url || data.cancelUrl), actions.close() ]);
                                 }
                             }));
                         };
@@ -24397,7 +24580,7 @@
                             _track6[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, _track6[constants.u.KEY.CHOSEN_FUNDING] = data && (data.card || data.fundingSource), 
                             _track6[constants.u.KEY.PAYMENT_FLOW] = data && data.flow, _track6[constants.u.KEY.BUTTON_VERSION] = data && data.button_version, 
                             _track6));
-                            Object(lib.E)() && Object(beaver_logger_client.q)("button_click_intranet_mode");
+                            Object(lib.F)() && Object(beaver_logger_client.q)("button_click_intranet_mode");
                             if (creditThrottle) {
                                 var _creditThrottle$log;
                                 creditThrottle.log("click", ((_creditThrottle$log = {})[constants.u.KEY.STATE] = constants.u.STATE.BUTTON, 
@@ -24456,7 +24639,7 @@
                     required: !1,
                     queryParam: "locale.x",
                     def: function() {
-                        var _getBrowserLocale = Object(lib.i)();
+                        var _getBrowserLocale = Object(lib.j)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     },
                     validate: validateButtonLocale
@@ -24519,7 +24702,7 @@
                     sendToChild: !1,
                     def: function() {
                         return Object(belter_src.a)(JSON.stringify({
-                            url: Object(lib.l)()
+                            url: Object(lib.m)()
                         }));
                     }
                 },
@@ -24558,7 +24741,7 @@
             for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) args[_key - 1] = arguments[_key];
             var instance = {
                 clone: function(_temp3) {
-                    var _ref6$decorate = (void 0 === _temp3 ? {} : _temp3).decorate, decorate = void 0 === _ref6$decorate ? belter_src.c : _ref6$decorate;
+                    var _ref6$decorate = (void 0 === _temp3 ? {} : _temp3).decorate, decorate = void 0 === _ref6$decorate ? belter_src.b : _ref6$decorate;
                     return {
                         render: function(container) {
                             var decoratedProps = decorate(props);
@@ -24568,7 +24751,7 @@
                 }
             };
             instances.push(instance);
-            var _props = props, _props$onDestroy = _props.onDestroy, onDestroy = void 0 === _props$onDestroy ? belter_src.g : _props$onDestroy;
+            var _props = props, _props$onDestroy = _props.onDestroy, onDestroy = void 0 === _props$onDestroy ? belter_src.d : _props$onDestroy;
             var newProps = Object(esm_extends.a)({}, props, {
                 onDestroy: function() {
                     var index = instances.indexOf(instance);
@@ -24600,7 +24783,7 @@
                                 }).then((function(token) {
                                     var _extendUrl;
                                     if (!token) throw new Error("Expected props.payment to return a payment id or token");
-                                    return Object(lib.g)(Object(integrations_checkout.b)(env, constants.v.PAYPAL, token), ((_extendUrl = {})[Object(integrations_checkout.a)(token)] = token, 
+                                    return Object(lib.h)(Object(integrations_checkout.b)(env, constants.v.PAYPAL, token), ((_extendUrl = {})[Object(integrations_checkout.a)(token)] = token, 
                                     _extendUrl.useraction = props.commit ? "commit" : "", _extendUrl.native_xo = "1", 
                                     _extendUrl));
                                 }));
@@ -24631,11 +24814,11 @@
                                 "payment" === opType ? actions.redirect = function(win, redirectUrl) {
                                     void 0 === win && (win = window);
                                     void 0 === redirectUrl && (redirectUrl = return_uri);
-                                    return Object(lib.P)(win, redirectUrl);
+                                    return Object(lib.Q)(win, redirectUrl);
                                 } : "cancel" === opType && (actions.redirect = function(win, redirectUrl) {
                                     void 0 === win && (win = window);
                                     void 0 === redirectUrl && (redirectUrl = cancel_uri);
-                                    return Object(lib.P)(win, redirectUrl);
+                                    return Object(lib.Q)(win, redirectUrl);
                                 });
                                 return actions;
                             }(payload.queryItems);
@@ -24648,7 +24831,7 @@
                         }));
                     }(props, popupBridge).catch((function(err) {
                         Object(beaver_logger_client.g)("popup_bridge_error", {
-                            err: Object(lib.U)(err)
+                            err: Object(lib.V)(err)
                         });
                         return original();
                     })) : original();
@@ -24675,7 +24858,7 @@
                     }));
                 };
             }(src_checkout.a, ButtonComponent);
-            Object(lib.p)().then((function(pageRenderTime) {
+            Object(lib.q)().then((function(pageRenderTime) {
                 var _track;
                 var fundingSources = [].slice.call(document.querySelectorAll("[" + constants.c.FUNDING_SOURCE + "]")).map((function(el) {
                     return el.getAttribute(constants.c.CARD) || el.getAttribute(constants.c.FUNDING_SOURCE);
@@ -24697,18 +24880,18 @@
                 }
             }));
             var xprops = ButtonComponent.xprops || src_checkout.a.xprops;
-            xprops && xprops.logLevel && Object(lib.T)(xprops.logLevel);
+            xprops && xprops.logLevel && Object(lib.U)(xprops.logLevel);
             xprops.payment && !xprops.createOrder && (xprops.createOrder = xprops.payment);
             xprops.onAuthorize && !xprops.onApprove && (xprops.onApprove = xprops.onAuthorize);
             try {
                 xprops && xprops.onShippingChange && window.pre && window.pre.inlineGuest && window.pre.inlineGuest.res && window.pre.inlineGuest.res.data && window.pre.inlineGuest.res.data.treatments && (window.pre.inlineGuest.res.data.treatments = []);
             } catch (err) {}
         }(component_Button);
-        Object(lib.D)() && Object(lib.m)("ie_full_page") && (src_checkout.a.renderTo = function(win) {
+        Object(lib.E)() && Object(lib.n)("ie_full_page") && (src_checkout.a.renderTo = function(win) {
             Object(beaver_logger_client.k)("force_ie_full_page");
             Object(beaver_logger_client.h)();
             var checkout = src_checkout.a.init({
-                onAuthorize: lib.J
+                onAuthorize: lib.K
             });
             checkout.delegate(win);
             checkout.openContainer().then((function() {
@@ -24716,7 +24899,7 @@
                 checkout.showContainer();
             }));
             component_Button.xprops.payment().then((function(token) {
-                window.top.location = Object(lib.g)(config.a.checkoutUrl, {
+                window.top.location = Object(lib.h)(config.a.checkoutUrl, {
                     token: token
                 });
             })).catch((function(err) {
@@ -24731,22 +24914,22 @@
                 src_checkout.a.canRenderTo(hacks_top).then((function(result) {
                     canRenderTop = result;
                 }));
-                Object(lib.N)(src_checkout.a, "renderTo", (function(_ref) {
+                Object(lib.O)(src_checkout.a, "renderTo", (function(_ref) {
                     var _ref$args = _ref.args, win = _ref$args[0], props = _ref$args[1], el = _ref$args[2], original = _ref.original, context = _ref.context;
                     canRenderTop || (win = Object(cross_domain_utils_src.n)(window));
                     return original.call(context, win, props, el);
                 }));
             }
         }
-        Object(lib.N)(src_checkout.a, "renderTo", (function(_ref2) {
+        Object(lib.O)(src_checkout.a, "renderTo", (function(_ref2) {
             var callOriginal = _ref2.callOriginal, props = _ref2.args[1];
-            if (Object(lib.m)("allow_full_page_fallback")) {
-                var handleError = Object(lib.L)((function(err) {
+            if (Object(lib.n)("allow_full_page_fallback")) {
+                var handleError = Object(lib.M)((function(err) {
                     try {
                         console.error(err && err.stack);
                     } catch (err2) {}
                     return component_Button.xprops.payment().then((function(token) {
-                        window.top.location = Object(lib.g)(config.a.checkoutUrl, {
+                        window.top.location = Object(lib.h)(config.a.checkoutUrl, {
                             token: token
                         });
                     }));
@@ -24757,14 +24940,14 @@
             return callOriginal();
         }));
         var debounce = !1;
-        Object(lib.N)(src_checkout.a, "renderTo", (function(_ref3) {
+        Object(lib.O)(src_checkout.a, "renderTo", (function(_ref3) {
             var callOriginal = _ref3.callOriginal, props = _ref3.args[1];
             if (debounce) {
                 Object(beaver_logger_client.q)("button_mutliple_click_debounce");
-                return new zalgo_promise_src.a(lib.J);
+                return new zalgo_promise_src.a(lib.K);
             }
             debounce = !0;
-            var _loop = function(_i2, _ref5) {
+            var _loop = function() {
                 var methodName = _ref5[_i2];
                 var original = props[methodName];
                 props[methodName] = function() {
@@ -24772,10 +24955,10 @@
                     if (original) return original.apply(this, arguments);
                 };
             };
-            for (var _i2 = 0, _ref5 = [ "onAuthorize", "onCancel", "onError", "onClose" ]; _i2 < _ref5.length; _i2++) _loop(_i2, _ref5);
+            for (var _i2 = 0, _ref5 = [ "onAuthorize", "onCancel", "onError", "onClose" ]; _i2 < _ref5.length; _i2++) _loop();
             return callOriginal();
         }));
-        Object(lib.N)(rest.payment, "create", (function(_ref6) {
+        Object(lib.O)(rest.payment, "create", (function(_ref6) {
             var _ref6$args = _ref6.args, options = _ref6$args[2];
             options.payment || (options = {
                 payment: options,
@@ -24783,7 +24966,7 @@
             });
             return _ref6.original.call(_ref6.context, _ref6$args[0], _ref6$args[1], options);
         }));
-        Object(lib.N)(component_Button.props.style, "validate", (function(_ref7) {
+        Object(lib.O)(component_Button.props.style, "validate", (function(_ref7) {
             var callOriginal = _ref7.callOriginal, style = _ref7.args[0];
             if (!style) return callOriginal();
             style && "creditblue" === style.color && (style.color = constants.e.DARKBLUE);
@@ -24794,7 +24977,7 @@
             }
             return callOriginal();
         }));
-        Object(lib.N)(component_Button, "render", (function(_ref8) {
+        Object(lib.O)(component_Button, "render", (function(_ref8) {
             var callOriginal = _ref8.callOriginal, props = _ref8.args[0];
             if (props.billingAgreement) {
                 props.payment = props.billingAgreement;
@@ -24802,12 +24985,12 @@
             }
             return callOriginal();
         }));
-        Object(lib.N)(component_Button.props.payment, "decorate", (function(_ref9) {
+        Object(lib.O)(component_Button.props.payment, "decorate", (function(_ref9) {
             var originalPayment = _ref9.args[0];
             return _ref9.original.call(_ref9.context, (function(data, actions) {
                 var _this = this;
                 return new zalgo_promise_src.a((function(resolve, reject) {
-                    Object(lib.N)(actions.payment, "create", (function(_ref10) {
+                    Object(lib.O)(actions.payment, "create", (function(_ref10) {
                         var _ref10$args = _ref10.args, options = _ref10$args[0];
                         options.payment || (options = {
                             payment: options,
@@ -24821,9 +25004,9 @@
                     function rejectActions(err) {
                         reject(err);
                     }
-                    Object(lib.f)(resolveData, data);
-                    Object(lib.f)(resolveData, actions);
-                    Object(lib.f)(rejectActions, actions);
+                    Object(lib.g)(resolveData, data);
+                    Object(lib.g)(resolveData, actions);
+                    Object(lib.g)(rejectActions, actions);
                     var ctx = {
                         props: {
                             env: _this.props.env,
@@ -24864,7 +25047,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.v)();
+                        return Object(lib.w)();
                     },
                     queryParam: !0
                 },
@@ -24877,7 +25060,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.j)();
+                        return Object(lib.k)();
                     },
                     queryParam: !0
                 },
@@ -24903,7 +25086,7 @@
                     queryParam: "locale.x",
                     allowDelegate: !0,
                     def: function() {
-                        var _getBrowserLocale = Object(lib.i)();
+                        var _getBrowserLocale = Object(lib.j)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     }
                 },
@@ -24948,7 +25131,7 @@
                     sendToChild: !1,
                     def: function() {
                         return Object(belter_src.a)(JSON.stringify({
-                            url: Object(lib.l)()
+                            url: Object(lib.m)()
                         }));
                     }
                 },
@@ -24982,14 +25165,14 @@
         zalgo_promise_src.a.onPossiblyUnhandledException((function(err) {
             var _track;
             Object(beaver_logger_client.g)("unhandled_error", {
-                stack: Object(lib.U)(err),
+                stack: Object(lib.V)(err),
                 errtype: {}.toString.call(err)
             });
             Object(beaver_logger_client.p)(((_track = {})[constants.u.KEY.ERROR_CODE] = "checkoutjs_error", 
-            _track[constants.u.KEY.ERROR_DESC] = Object(lib.V)(err), _track));
+            _track[constants.u.KEY.ERROR_DESC] = Object(lib.W)(err), _track));
             return Object(beaver_logger_client.h)().catch((function(err2) {
                 if (window.console) try {
-                    window.console.error ? window.console.error("Error flushing:", Object(lib.U)(err2)) : window.console.log && window.console.log("Error flushing:", Object(lib.U)(err2));
+                    window.console.error ? window.console.error("Error flushing:", Object(lib.V)(err2)) : window.console.log && window.console.log("Error flushing:", Object(lib.V)(err2));
                 } catch (err3) {
                     setTimeout((function() {
                         throw err3;
@@ -24997,16 +25180,17 @@
                 }
             }));
         }));
-        var currentScript = Object(lib.k)();
+        var currentScript = Object(lib.l)();
         var currentProtocol = window.location.protocol.split(":")[0];
-        var init = Object(lib.L)((function(_ref2) {
+        var init = Object(lib.M)((function(_ref2) {
             var precacheRemembered = _ref2.precacheRemembered;
-            Object(lib.B)() || Object(beaver_logger_client.q)("ineligible");
+            Object(lib.C)() || Object(beaver_logger_client.q)("ineligible");
             Object(lib.c)();
-            Object(lib.y)();
+            Object(lib.z)();
+            window.addEventListener("load", lib.d);
             pptm.shouldCreateInitialPptmScript() && pptm.createPptmScript();
-            precacheRemembered && Object(lib.O)();
-            Object(lib.m)("force_bridge") && !Object(lib.G)() && Object(lib.M)(config.a.env);
+            precacheRemembered && Object(lib.P)();
+            Object(lib.n)("force_bridge") && !Object(lib.H)() && Object(lib.N)(config.a.env);
             Object(beaver_logger_client.k)("setup_" + config.a.env);
             Object(beaver_logger_client.f)("current_protocol_" + currentProtocol);
         }));
@@ -25060,7 +25244,7 @@
                     config.a.state = state;
                 }
                 merchantID && (config.a.merchantID = merchantID);
-                logLevel ? Object(lib.T)(logLevel) : Object(lib.T)(config.a.logLevel);
+                logLevel ? Object(lib.U)(logLevel) : Object(lib.U)(config.a.logLevel);
             }(options);
             init(options);
         }
@@ -25069,18 +25253,18 @@
             stage: currentScript.getAttribute("data-stage"),
             apiStage: currentScript.getAttribute("data-api-stage"),
             stageUrl: currentScript.getAttribute("data-stage-url"),
-            localhostUrl: Object(lib.G)() ? currentScript.getAttribute("data-localhost-url") : void 0,
-            checkoutUri: Object(lib.G)() ? currentScript.getAttribute("data-checkout-uri") : void 0,
+            localhostUrl: Object(lib.H)() ? currentScript.getAttribute("data-localhost-url") : void 0,
+            checkoutUri: Object(lib.H)() ? currentScript.getAttribute("data-checkout-uri") : void 0,
             state: currentScript.getAttribute("data-state"),
             logLevel: currentScript.getAttribute("data-log-level"),
             merchantID: currentScript.getAttribute("data-merchant-id"),
             authCode: currentScript.getAttribute("data-auth-code"),
             precacheRemembered: currentScript.hasAttribute("data-precache-remembered-funding")
         }) : setup();
-        if (!Object(lib.G)()) if (currentScript) {
+        if (!Object(lib.H)()) if (currentScript) {
             var setup_track2;
             var scriptProtocol = currentScript.src.split(":")[0];
-            var loadTime = Object(lib.s)(currentScript.src);
+            var loadTime = Object(lib.t)(currentScript.src);
             Object(beaver_logger_client.f)("current_script_protocol_" + scriptProtocol);
             Object(beaver_logger_client.f)("current_script_protocol_" + (currentProtocol === scriptProtocol ? "match" : "mismatch"));
             Object(beaver_logger_client.f)("current_script_version_" + config.a.version.replace(/[^0-9a-zA-Z]+/g, "_"));
@@ -25092,7 +25276,7 @@
             }
             Object(beaver_logger_client.p)(((setup_track2 = {})[constants.u.KEY.STATE] = constants.u.STATE.LOAD, 
             setup_track2[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.SCRIPT_LOAD, setup_track2[constants.u.KEY.TRANSITION_TIME] = loadTime, 
-            setup_track2[constants.u.KEY.FUNDING_REMEMBERED] = Object(lib.r)().join(","), setup_track2));
+            setup_track2[constants.u.KEY.FUNDING_REMEMBERED] = Object(lib.s)().join(","), setup_track2));
         } else {
             var setup_track3;
             Object(beaver_logger_client.f)("no_current_script");
@@ -25108,7 +25292,7 @@
         var interface_version = "4.0.315";
         var interface_checkout;
         var apps;
-        var legacy = __webpack_require__(43);
+        var legacy = __webpack_require__(45);
         interface_checkout = legacy.checkout;
         apps = legacy.apps;
         var interface_Checkout;
@@ -25118,7 +25302,7 @@
         var enableCheckoutIframe;
         var logger;
         var interface_ThreeDomainSecure;
-        if (Object(lib.G)()) {
+        if (Object(lib.H)()) {
             interface_Checkout = src_checkout.a;
             interface_BillingPage = BillingPage;
             interface_ThreeDomainSecure = ThreeDomainSecure;
@@ -25182,13 +25366,13 @@
         };
         var esm_extends = __webpack_require__(11);
         var src = __webpack_require__(2);
-        var form_serialize = __webpack_require__(38);
+        var form_serialize = __webpack_require__(40);
         var form_serialize_default = __webpack_require__.n(form_serialize);
         var checkout = __webpack_require__(16);
         var config = __webpack_require__(4);
         var post_robot_src = __webpack_require__(13);
         function isLegacyEligible() {
-            return !!Object(lib.B)() && !!Object(lib.W)() && !Object(lib.z)();
+            return !!Object(lib.C)() && !!Object(lib.X)() && !Object(lib.A)();
         }
         var warn = Object(client.n)(LOG_PREFIX).warn;
         var DEFAULT_COUNTRY = constants.r.US;
@@ -25218,19 +25402,19 @@
             };
         }
         var button_prefix = Object(client.n)(LOG_PREFIX), info = button_prefix.info, debug = button_prefix.debug, error = button_prefix.error;
-        var loadButtonJS = Object(lib.I)((function() {
+        var loadButtonJS = Object(lib.J)((function() {
             debug("buttonjs_load");
-            return Object(lib.H)(config.a.buttonJSUrl).catch((function(err) {
+            return Object(lib.I)(config.a.buttonJSUrl).catch((function(err) {
                 info("buttonjs_load_error_retry", {
-                    error: Object(lib.U)(err)
+                    error: Object(lib.V)(err)
                 });
-                return Object(lib.H)(config.a.buttonJSUrl);
+                return Object(lib.I)(config.a.buttonJSUrl);
             })).then((function(result) {
                 debug("buttonjs_load_success");
                 return result;
             })).catch((function(err) {
                 error("buttonjs_load_error", {
-                    error: Object(lib.U)(err)
+                    error: Object(lib.V)(err)
                 });
                 throw err;
             }));
@@ -25265,7 +25449,7 @@
                             }).el;
                             container.appendChild(el);
                             try {
-                                info("in_page_button_" + (Object(lib.A)(el) ? "visible" : "not_visible"));
+                                info("in_page_button_" + (Object(lib.B)(el) ? "visible" : "not_visible"));
                             } catch (err) {}
                             return el.childNodes[0];
                         }));
@@ -25318,15 +25502,15 @@
         var redirected = !1;
         function logRedirect(location) {
             redirected && util_warn("multiple_redirects");
-            Object(lib.Y)(location) && (redirected = !0);
+            Object(lib.Z)(location) && (redirected = !0);
             Object(client.h)();
         }
         function redirect(url) {
             return src.a.try((function() {
                 if (!url) throw new Error("Redirect url undefined");
-                if (config.a.env === constants.t.TEST && Object(lib.Y)(url)) return Object(lib.P)(window, "#fullpageRedirect?url=" + url);
+                if (config.a.env === constants.t.TEST && Object(lib.Z)(url)) return Object(lib.Q)(window, "#fullpageRedirect?url=" + url);
                 logRedirect(url);
-                return Object(lib.P)(window, url);
+                return Object(lib.Q)(window, url);
             }));
         }
         var options_prefix = Object(client.n)(LOG_PREFIX), options_info = options_prefix.info, options_warn = options_prefix.warn;
@@ -25381,7 +25565,7 @@
                     });
                     throw new Error('Could not determine url or token from "' + item + '"');
                 }
-                url = Object(lib.g)(config.a.checkoutUrl, {
+                url = Object(lib.h)(config.a.checkoutUrl, {
                     token: paymentToken
                 });
                 interface_debug("startflow_with_token", {
@@ -25428,7 +25612,7 @@
                     }
                     if (method && _url) {
                         event.preventDefault();
-                        Object(lib.R)({
+                        Object(lib.S)({
                             method: method,
                             url: _url,
                             body: body,
@@ -25455,7 +25639,7 @@
                 interface_checkout.initXO = function() {
                     interface_warn("gettoken_initxo");
                 };
-                interface_checkout.startFlow = Object(lib.L)((function(item) {
+                interface_checkout.startFlow = Object(lib.M)((function(item) {
                     interface_debug("gettoken_startflow", {
                         item: item
                     });
@@ -25527,9 +25711,9 @@
                     resolve(data.paymentToken);
                 };
             }));
-            var errorHandler = Object(lib.L)((function(err) {
+            var errorHandler = Object(lib.M)((function(err) {
                 interface_error("component_error", {
-                    error: Object(lib.U)(err)
+                    error: Object(lib.V)(err)
                 });
                 if (hijackTarget) {
                     interface_warn("render_error_hijack_revert_target");
@@ -25541,7 +25725,7 @@
                 }));
                 paymentToken.then((function(token) {
                     interface_warn("render_error_redirect_using_token");
-                    return redirect(Object(lib.g)(config.a.checkoutUrl, {
+                    return redirect(Object(lib.h)(config.a.checkoutUrl, {
                         token: token
                     }));
                 }));
@@ -25574,7 +25758,7 @@
             interface_info("setup", {
                 id: id = id || "merchant",
                 env: options.environment,
-                options: Object(lib.S)(options)
+                options: Object(lib.T)(options)
             });
             setupCalled && interface_debug("setup_called_multiple_times");
             setupCalled = !0;
@@ -25592,7 +25776,7 @@
                     options_info("options_button_single_button_passed");
                     options.button = [ options.button ];
                 }
-                if (options.buttons && Object(lib.o)(options.buttons).length) {
+                if (options.buttons && Object(lib.p)(options.buttons).length) {
                     options_info("options_buttons_with_elements_passed");
                     options.button = options.buttons;
                     delete options.buttons;
@@ -25610,7 +25794,7 @@
                     delete options.container;
                 }
                 if (options.button) {
-                    var button = Object(lib.o)(options.button);
+                    var button = Object(lib.p)(options.button);
                     if (button.length) options.button = button; else {
                         options_warn("options_button_element_not_found", {
                             element: JSON.stringify(options.button)
@@ -25637,7 +25821,7 @@
                                 options: options.container,
                                 button: button.container
                             });
-                            Object(lib.o)(button.container || button.button).forEach((function(element) {
+                            Object(lib.p)(button.container || button.button).forEach((function(element) {
                                 var _buttons$push;
                                 buttons.push(((_buttons$push = {})[button.container ? "container" : "button"] = element, 
                                 _buttons$push.click = button.click || options.click, _buttons$push.condition = button.condition || options.condition, 
@@ -25659,7 +25843,7 @@
                     buttons.length && (options.buttons = buttons);
                 } else if (options.container && !Array.isArray(options.buttons)) {
                     var _buttons = [];
-                    Object(lib.o)(options.container).forEach((function(container, i) {
+                    Object(lib.p)(options.container).forEach((function(container, i) {
                         _buttons.push({
                             container: container,
                             click: options.click,
@@ -25701,7 +25885,7 @@
                 Object(client.f)("setup_post_bridge", {
                     env: env
                 });
-                return Object(lib.M)(env).then(lib.J);
+                return Object(lib.N)(env).then(lib.K);
             }));
             var env;
             return src.a.try((function() {
@@ -25717,7 +25901,7 @@
                             element.addEventListener("click", (function(event) {
                                 tracker();
                                 var eligible = isLegacyEligible();
-                                if (Object(lib.W)()) {
+                                if (Object(lib.X)()) {
                                     interface_debug("click_popups_supported");
                                     eligible || interface_debug("click_popups_supported_but_ineligible");
                                 } else {
@@ -25736,7 +25920,7 @@
                                         clickHandler(event);
                                     } catch (err) {
                                         interface_error("click_handler_error", {
-                                            error: Object(lib.U)(err)
+                                            error: Object(lib.V)(err)
                                         });
                                     }
                                 }(clickHandler, event) : function(event, element) {
@@ -25841,7 +26025,7 @@
                     }
                 };
                 !function(method) {
-                    Object(lib.K)((function() {
+                    Object(lib.L)((function() {
                         ready_debug("paypal_checkout_ready");
                         setTimeout((function() {
                             window.paypal || ready_error("paypal_checkout_ready_no_window_paypal");
@@ -25852,7 +26036,7 @@
                 return oneTimeReady;
             }
         }));
-        Object(lib.K)((function() {
+        Object(lib.L)((function() {
             var buttons = [].slice.call(document.querySelectorAll("[" + ATTRIBUTES.BUTTON + "]"));
             if (buttons && buttons.length) {
                 ready_debug("data_paypal_button", {
