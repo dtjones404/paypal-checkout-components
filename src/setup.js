@@ -8,7 +8,7 @@ import { FPTI } from './constants';
 import { initLogger, checkForCommonErrors, setLogLevel, stringifyError,
     stringifyErrorMessage, getResourceLoadTime, isPayPalDomain, isEligible,
     getDomainSetting, once, openMetaFrame, precacheRememberedFunding,
-    getCurrentScript, noop } from './lib';
+    getCurrentScript, noop, checkForDeprecatedIntegration } from './lib';
 import { Button } from './button';
 import { Checkout } from './checkout';
 import { pptm } from './external';
@@ -150,6 +150,8 @@ export let init = once(({ precacheRemembered }) => {
     checkForCommonErrors();
 
     initLogger();
+
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     if (pptm.shouldCreateInitialPptmScript()) {
         pptm.createPptmScript();
