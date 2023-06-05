@@ -20,7 +20,8 @@ export function checkForDeprecatedIntegration() {
     const scripts = Array.prototype.slice.call(document.getElementsByTagName('script'));
 
     for (const script of scripts) {
-        if (script.attributes.type?.value === 'application/x-component') {
+        if (script.attributes.type && 
+            script.attributes.type.value === 'application/x-component') {
             warn('deprecated_integration_application_xcomponent');
 
             // eslint-disable-next-line no-console
