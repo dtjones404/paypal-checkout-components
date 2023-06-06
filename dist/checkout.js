@@ -38,34 +38,57 @@
     return __webpack_require__(__webpack_require__.s = "./src/load.js");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
-        !function() {
-            var object = "object" === _typeof(exports) && null !== exports && "number" != typeof exports.nodeType ? exports : "undefined" != typeof self ? self : $.global, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = f) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
             InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    if ((charCode = str.charCodeAt(idx += .75)) > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            return {
+                btoa: function(input) {
+                    for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                        o1 = data.charCodeAt(i++);
+                        o2 = data.charCodeAt(i++);
+                        o3 = data.charCodeAt(i++);
+                        if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                        bits = o1 << 16 | o2 << 8 | o3;
+                        acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
+                    }
+                    switch (data.length % 3) {
+                      case 0:
+                        return acc;
+
+                      case 1:
+                        return acc.slice(0, -2) + "==";
+
+                      case 2:
+                        return acc.slice(0, -1) + "=";
+                    }
+                },
+                atob: function(input) {
+                    var str = String(input).replace(/[=]+$/, "");
+                    if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
+                    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
+                    return output;
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
-                var str = String(input).replace(/[=]+$/, "");
-                if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-                for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
-                bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
-                return output;
-            });
-        }();
+            };
+        });
     },
     "./node_modules/beaver-logger/client/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -630,1902 +653,6 @@
             return logLevels;
         });
     },
-    "./node_modules/belter/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        function getUserAgent() {
-            return window.navigator.mockUserAgent || window.navigator.userAgent;
-        }
-        function isDevice() {
-            return !!getUserAgent().match(/Android|webOS|iPhone|iPad|iPod|bada|Symbian|Palm|CriOS|BlackBerry|IEMobile|WindowsMobile|Opera Mini/i);
-        }
-        function isWebView() {
-            var userAgent = getUserAgent();
-            return /(iPhone|iPod|iPad|Macintosh).*AppleWebKit(?!.*Safari)/i.test(userAgent) || /\bwv\b/.test(userAgent) || /Android.*Version\/(\d)\.(\d)/i.test(userAgent);
-        }
-        function isStandAlone() {
-            return !0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
-        }
-        function isFacebookWebView() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return -1 !== ua.indexOf("FBAN") || -1 !== ua.indexOf("FBAV");
-        }
-        function isFirefoxIOS() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /FxiOS/i.test(ua);
-        }
-        function isEdgeIOS() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /EdgiOS/i.test(ua);
-        }
-        function isOperaMini() {
-            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent()).indexOf("Opera Mini") > -1;
-        }
-        function isAndroid() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /Android/.test(ua);
-        }
-        function isIos() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /iPhone|iPod|iPad/.test(ua);
-        }
-        function isGoogleSearchApp() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /\bGSA\b/.test(ua);
-        }
-        function isQQBrowser() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /QQBrowser/.test(ua);
-        }
-        function isIosWebview() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return !!isIos(ua) && (!!isGoogleSearchApp(ua) || /.+AppleWebKit(?!.*Safari)/.test(ua));
-        }
-        function isAndroidWebview() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return !!isAndroid(ua) && (/Version\/[\d.]+/.test(ua) && !isOperaMini(ua));
-        }
-        function device_isIE() {
-            return !!window.document.documentMode || Boolean(window.navigator && window.navigator.userAgent && /Edge|MSIE|rv:11/i.test(window.navigator.userAgent));
-        }
-        function isIECompHeader() {
-            var mHttp = window.document.querySelector('meta[http-equiv="X-UA-Compatible"]'), mContent = window.document.querySelector('meta[content="IE=edge"]');
-            return !(!mHttp || !mContent);
-        }
-        function isElectron() {
-            return !("undefined" == typeof process || !process.versions || !process.versions.electron);
-        }
-        function isIEIntranet() {
-            if (window.document.documentMode) try {
-                var status = window.status;
-                window.status = "testIntranetMode";
-                if ("testIntranetMode" === window.status) {
-                    window.status = status;
-                    return !0;
-                }
-                return !1;
-            } catch (err) {
-                return !1;
-            }
-            return !1;
-        }
-        function isMacOsCna() {
-            var userAgent = getUserAgent();
-            return /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent);
-        }
-        function supportsPopups() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return !(isIosWebview(ua) || isAndroidWebview(ua) || isOperaMini(ua) || isFirefoxIOS(ua) || isEdgeIOS(ua) || isFacebookWebView(ua) || isQQBrowser(ua) || isElectron() || isMacOsCna() || isStandAlone());
-        }
-        var src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), cross_domain_utils_src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), cross_domain_safe_weakmap_src = __webpack_require__("./node_modules/cross-domain-safe-weakmap/src/index.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
-            return typeof obj;
-        } : function(obj) {
-            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-        };
-        function base64encode(str) {
-            if ("function" == typeof btoa) return btoa(str);
-            if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
-            throw new Error("Can not find window.btoa or Buffer");
-        }
-        function base64decode(str) {
-            if ("undefined" != typeof window && "function" == typeof window.atob) return window.atob(str);
-            if ("undefined" != typeof Buffer) return Buffer.from(str, "base64").toString("utf8");
-            throw new Error("Can not find window.atob or Buffer");
-        }
-        function uniqueID() {
-            var chars = "0123456789abcdef";
-            return "xxxxxxxxxx".replace(/./g, function() {
-                return chars.charAt(Math.floor(Math.random() * chars.length));
-            }) + "_" + base64encode(new Date().toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-        }
-        function getGlobal() {
-            if ("undefined" != typeof window) return window;
-            if ("undefined" != typeof global) return global;
-            if ("undefined" != typeof __GLOBAL__) return __GLOBAL__;
-            throw new Error("No global found");
-        }
-        var objectIDs = void 0;
-        function getObjectID(obj) {
-            objectIDs = objectIDs || new cross_domain_safe_weakmap_src.a();
-            if (null === obj || void 0 === obj || "object" !== (void 0 === obj ? "undefined" : _typeof(obj)) && "function" != typeof obj) throw new Error("Invalid object");
-            var uid = objectIDs.get(obj);
-            if (!uid) {
-                uid = (void 0 === obj ? "undefined" : _typeof(obj)) + ":" + uniqueID();
-                objectIDs.set(obj, uid);
-            }
-            return uid;
-        }
-        function serializeArgs(args) {
-            try {
-                return JSON.stringify(Array.prototype.slice.call(args), function(subkey, val) {
-                    return "function" == typeof val ? "memoize[" + getObjectID(val) + "]" : val;
-                });
-            } catch (err) {
-                throw new Error("Arguments not serializable -- can not be used to memoize");
-            }
-        }
-        function memoize(method) {
-            var _this = this, options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, cacheMap = new cross_domain_safe_weakmap_src.a();
-            function memoizedFunction() {
-                for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
-                var cache = cacheMap.getOrSet(options.thisNamespace ? this : method, function() {
-                    return {};
-                }), key = serializeArgs(args), cacheTime = options.time;
-                cache[key] && cacheTime && Date.now() - cache[key].time < cacheTime && delete cache[key];
-                if (cache[key]) return cache[key].value;
-                var time = Date.now(), value = method.apply(this, arguments);
-                cache[key] = {
-                    time: time,
-                    value: value
-                };
-                return cache[key].value;
-            }
-            memoizedFunction.reset = function() {
-                cacheMap.delete(options.thisNamespace ? _this : method);
-            };
-            options.name && (memoizedFunction.displayName = options.name + ":memoized");
-            return memoizedFunction;
-        }
-        function memoizePromise(method) {
-            var cache = {};
-            function memoizedPromiseFunction() {
-                for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
-                var key = serializeArgs(args);
-                if (cache.hasOwnProperty(key)) return cache[key];
-                cache[key] = method.apply(this, arguments).finally(function() {
-                    delete cache[key];
-                });
-                return cache[key];
-            }
-            memoizedPromiseFunction.reset = function() {
-                cache = {};
-            };
-            return memoizedPromiseFunction;
-        }
-        function promisify(method) {
-            var options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-            function promisifiedFunction() {
-                return src.a.try(method, this, arguments);
-            }
-            options.name && (promisifiedFunction.displayName = options.name + ":promisified");
-            return promisifiedFunction;
-        }
-        function inlineMemoize(method, logic) {
-            var args = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : [], cache = method.__inline_memoize_cache__ = method.__inline_memoize_cache__ || {}, key = serializeArgs(args);
-            return cache.hasOwnProperty(key) ? cache[key] : cache[key] = logic.apply(void 0, args);
-        }
-        function noop() {}
-        function once(method) {
-            var called = !1;
-            return function() {
-                if (!called) {
-                    called = !0;
-                    return method.apply(this, arguments);
-                }
-            };
-        }
-        function hashStr(str) {
-            for (var hash = 0, i = 0; i < str.length; i++) hash += str[i].charCodeAt(0) * Math.pow(i % 10 + 1, 5);
-            return Math.floor(Math.pow(Math.sqrt(hash), 5));
-        }
-        function strHashStr(str) {
-            for (var hash = "", i = 0; i < str.length; i++) {
-                var total = str[i].charCodeAt(0) * i;
-                str[i + 1] && (total += str[i + 1].charCodeAt(0) * (i - 1));
-                hash += String.fromCharCode(97 + Math.abs(total) % 26);
-            }
-            return hash;
-        }
-        function match(str, pattern) {
-            var regmatch = str.match(pattern);
-            if (regmatch) return regmatch[1];
-        }
-        function awaitKey(obj, key) {
-            return new src.a(function(resolve) {
-                var value = obj[key];
-                if (value) return resolve(value);
-                delete obj[key];
-                Object.defineProperty(obj, key, {
-                    configurable: !0,
-                    set: function(item) {
-                        (value = item) && resolve(value);
-                    },
-                    get: function() {
-                        return value;
-                    }
-                });
-            });
-        }
-        function stringifyError(err) {
-            var level = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 1;
-            if (level >= 3) return "stringifyError stack overflow";
-            try {
-                if (!err) return "<unknown error: " + Object.prototype.toString.call(err) + ">";
-                if ("string" == typeof err) return err;
-                if (err instanceof Error) {
-                    var stack = err && err.stack, message = err && err.message;
-                    if (stack && message) return -1 !== stack.indexOf(message) ? stack : message + "\n" + stack;
-                    if (stack) return stack;
-                    if (message) return message;
-                }
-                return "function" == typeof err.toString ? err.toString() : Object.prototype.toString.call(err);
-            } catch (newErr) {
-                return "Error while stringifying error: " + stringifyError(newErr, level + 1);
-            }
-        }
-        function stringifyErrorMessage(err) {
-            var defaultMessage = "<unknown error: " + Object.prototype.toString.call(err) + ">";
-            return err ? err instanceof Error ? err.message || defaultMessage : "string" == typeof err.message && err.message || defaultMessage : defaultMessage;
-        }
-        function stringify(item) {
-            return "string" == typeof item ? item : item && "function" == typeof item.toString ? item.toString() : Object.prototype.toString.call(item);
-        }
-        function domainMatches(hostname, domain) {
-            var index = (hostname = hostname.split("://")[1]).indexOf(domain);
-            return -1 !== index && hostname.slice(index) === domain;
-        }
-        function patchMethod(obj, name, handler) {
-            var original = obj[name];
-            obj[name] = function() {
-                var _this2 = this, _arguments = arguments;
-                return handler({
-                    context: this,
-                    args: Array.prototype.slice.call(arguments),
-                    original: original,
-                    callOriginal: function() {
-                        return original.apply(_this2, _arguments);
-                    }
-                });
-            };
-        }
-        function extend(obj, source) {
-            if (!source) return obj;
-            if (Object.assign) return Object.assign(obj, source);
-            for (var key in source) source.hasOwnProperty(key) && (obj[key] = source[key]);
-            return obj;
-        }
-        function values(obj) {
-            var result = [];
-            for (var key in obj) obj.hasOwnProperty(key) && result.push(obj[key]);
-            return result;
-        }
-        function perc(pixels, percentage) {
-            return Math.round(pixels * percentage / 100);
-        }
-        function min() {
-            return Math.min.apply(Math, arguments);
-        }
-        function max() {
-            return Math.max.apply(Math, arguments);
-        }
-        function regexMap(str, regexp, handler) {
-            var results = [];
-            str.replace(regexp, function(item) {
-                results.push(handler ? handler.apply(null, arguments) : item);
-            });
-            return results;
-        }
-        function svgToBase64(svg) {
-            return "data:image/svg+xml;base64," + base64encode(svg);
-        }
-        function objFilter(obj) {
-            var filter = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Boolean, result = {};
-            for (var key in obj) obj.hasOwnProperty(key) && filter(obj[key], key) && (result[key] = obj[key]);
-            return result;
-        }
-        function identity(item) {
-            return item;
-        }
-        function regexTokenize(text, regexp) {
-            var result = [];
-            text.replace(regexp, function(token) {
-                result.push(token);
-                return "";
-            });
-            return result;
-        }
-        function promiseDebounce(method) {
-            var delay = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 50, promise = void 0, timeout = void 0;
-            return function() {
-                timeout && clearTimeout(timeout);
-                var localPromise = promise = promise || new src.a();
-                timeout = setTimeout(function() {
-                    promise = null;
-                    timeout = null;
-                    src.a.try(method).then(function(result) {
-                        localPromise.resolve(result);
-                    }, function(err) {
-                        localPromise.reject(err);
-                    });
-                }, delay);
-                return localPromise;
-            };
-        }
-        function safeInterval(method, time) {
-            var timeout = void 0;
-            !function loop() {
-                timeout = setTimeout(function() {
-                    method();
-                    loop();
-                }, time);
-            }();
-            return {
-                cancel: function() {
-                    clearTimeout(timeout);
-                }
-            };
-        }
-        function isInteger(str) {
-            return Boolean(str.match(/^[0-9]+$/));
-        }
-        function isFloat(str) {
-            return Boolean(str.match(/^[0-9]+\.[0-9]+$/));
-        }
-        function serializePrimitive(value) {
-            return value.toString();
-        }
-        function deserializePrimitive(value) {
-            return "true" === value || "false" !== value && (isInteger(value) ? parseInt(value, 10) : isFloat(value) ? parseFloat(value) : value);
-        }
-        function dotify(obj) {
-            var prefix = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "", newobj = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
-            prefix = prefix ? prefix + "." : prefix;
-            for (var key in obj) obj.hasOwnProperty(key) && void 0 !== obj[key] && null !== obj[key] && "function" != typeof obj[key] && (obj[key] && Array.isArray(obj[key]) && obj[key].length && obj[key].every(function(val) {
-                return "object" !== (void 0 === val ? "undefined" : _typeof(val));
-            }) ? newobj["" + prefix + key + "[]"] = obj[key].join(",") : obj[key] && "object" === _typeof(obj[key]) ? newobj = dotify(obj[key], "" + prefix + key, newobj) : newobj["" + prefix + key] = serializePrimitive(obj[key]));
-            return newobj;
-        }
-        function undotify(obj) {
-            var result = {};
-            for (var key in obj) if (obj.hasOwnProperty(key) && "string" == typeof obj[key]) {
-                var value = obj[key];
-                if (key.match(/^.+\[\]$/)) {
-                    key = key.slice(0, key.length - 2);
-                    value = value.split(",").map(deserializePrimitive);
-                } else value = deserializePrimitive(value);
-                for (var keyResult = result, parts = key.split("."), i = 0; i < parts.length; i++) {
-                    var part = parts[i], isLast = i + 1 === parts.length, isIndex = !isLast && isInteger(parts[i + 1]);
-                    isLast ? keyResult[part] = value : keyResult = keyResult[part] = keyResult[part] || (isIndex ? [] : {});
-                }
-            }
-            return result;
-        }
-        function eventEmitter() {
-            var triggered = {}, handlers = {};
-            return {
-                on: function(eventName, handler) {
-                    var handlerList = handlers[eventName] = handlers[eventName] || [];
-                    handlerList.push(handler);
-                    var cancelled = !1;
-                    return {
-                        cancel: function() {
-                            if (!cancelled) {
-                                cancelled = !0;
-                                handlerList.splice(handlerList.indexOf(handler), 1);
-                            }
-                        }
-                    };
-                },
-                once: function(eventName, handler) {
-                    var listener = this.on(eventName, function() {
-                        listener.cancel();
-                        handler();
-                    });
-                    return listener;
-                },
-                trigger: function(eventName) {
-                    for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) args[_key3 - 1] = arguments[_key3];
-                    var handlerList = handlers[eventName], promises = [];
-                    if (handlerList) for (var _loop = function(_i2, _length2) {
-                        var handler = handlerList[_i2];
-                        promises.push(src.a.try(function() {
-                            return handler.apply(void 0, args);
-                        }));
-                    }, _i2 = 0, _length2 = null == handlerList ? 0 : handlerList.length; _i2 < _length2; _i2++) _loop(_i2);
-                    return src.a.all(promises).then(noop);
-                },
-                triggerOnce: function(eventName) {
-                    if (triggered[eventName]) return src.a.resolve();
-                    triggered[eventName] = !0;
-                    for (var _len4 = arguments.length, args = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) args[_key4 - 1] = arguments[_key4];
-                    return this.trigger.apply(this, [ eventName ].concat(args));
-                }
-            };
-        }
-        function camelToDasherize(string) {
-            return string.replace(/([A-Z])/g, function(g) {
-                return "-" + g.toLowerCase();
-            });
-        }
-        function dasherizeToCamel(string) {
-            return string.replace(/-([a-z])/g, function(g) {
-                return g[1].toUpperCase();
-            });
-        }
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-        }
-        function get(item, path, def) {
-            if (!path) return def;
-            for (var pathParts = path.split("."), i = 0; i < pathParts.length; i++) {
-                if ("object" !== (void 0 === item ? "undefined" : _typeof(item)) || null === item) return def;
-                item = item[pathParts[i]];
-            }
-            return void 0 === item ? def : item;
-        }
-        function safeTimeout(method, time) {
-            var interval = safeInterval(function() {
-                if ((time -= 100) <= 0) {
-                    interval.cancel();
-                    method();
-                }
-            }, 100);
-        }
-        function defineLazyProp(obj, key, getter) {
-            if (Array.isArray(obj)) {
-                if ("number" != typeof key) throw new TypeError("Array key must be number");
-            } else if ("object" === (void 0 === obj ? "undefined" : _typeof(obj)) && null !== obj && "string" != typeof key) throw new TypeError("Object key must be string");
-            Object.defineProperty(obj, key, {
-                configurable: !0,
-                enumerable: !0,
-                get: function() {
-                    delete obj[key];
-                    var value = getter();
-                    obj[key] = value;
-                    return value;
-                },
-                set: function(value) {
-                    delete obj[key];
-                    obj[key] = value;
-                }
-            });
-        }
-        function isObject(item) {
-            return "object" === (void 0 === item ? "undefined" : _typeof(item)) && null !== item;
-        }
-        function isObjectObject(obj) {
-            return isObject(obj) && "[object Object]" === Object.prototype.toString.call(obj);
-        }
-        function isPlainObject(obj) {
-            if (!isObjectObject(obj)) return !1;
-            var constructor = obj.constructor;
-            if ("function" != typeof constructor) return !1;
-            var prototype = constructor.prototype;
-            return !!isObjectObject(prototype) && !!prototype.hasOwnProperty("isPrototypeOf");
-        }
-        function replaceObject(item, replacer) {
-            var fullKey = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "";
-            if (Array.isArray(item)) {
-                for (var _length3 = item.length, result = [], _loop2 = function(i) {
-                    defineLazyProp(result, i, function() {
-                        var itemKey = fullKey ? fullKey + "." + i : "" + i, el = item[i], child = replacer(el, i, itemKey);
-                        (isPlainObject(child) || Array.isArray(child)) && (child = replaceObject(child, replacer, itemKey));
-                        return child;
-                    });
-                }, i = 0; i < _length3; i++) _loop2(i);
-                return result;
-            }
-            if (isPlainObject(item)) {
-                var _result = {}, _loop3 = function(key) {
-                    if (!item.hasOwnProperty(key)) return "continue";
-                    defineLazyProp(_result, key, function() {
-                        var itemKey = fullKey ? fullKey + "." + key : "" + key, el = item[key], child = replacer(el, key, itemKey);
-                        (isPlainObject(child) || Array.isArray(child)) && (child = replaceObject(child, replacer, itemKey));
-                        return child;
-                    });
-                };
-                for (var key in item) _loop3(key);
-                return _result;
-            }
-            throw new Error("Pass an object or array");
-        }
-        function copyProp(source, target, name, def) {
-            if (source.hasOwnProperty(name)) {
-                var descriptor = Object.getOwnPropertyDescriptor(source, name);
-                Object.defineProperty(target, name, descriptor);
-            } else target[name] = def;
-        }
-        function regex(pattern, string) {
-            var start = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0;
-            "string" == typeof pattern && (pattern = new RegExp(pattern));
-            var result = string.slice(start).match(pattern);
-            if (result) {
-                var index = result.index, regmatch = result[0];
-                return {
-                    text: regmatch,
-                    groups: result.slice(1),
-                    start: start + index,
-                    end: start + index + regmatch.length,
-                    length: regmatch.length,
-                    replace: function(text) {
-                        return regmatch ? "" + regmatch.slice(0, start + index) + text + regmatch.slice(index + regmatch.length) : "";
-                    }
-                };
-            }
-        }
-        function regexAll(pattern, string) {
-            for (var matches = [], start = 0; ;) {
-                var regmatch = regex(pattern, string, start);
-                if (!regmatch) break;
-                matches.push(regmatch);
-                start = match.end;
-            }
-            return matches;
-        }
-        function isDefined(value) {
-            return null !== value && void 0 !== value;
-        }
-        function cycle(method) {
-            return src.a.try(method).then(function() {
-                return cycle(method);
-            });
-        }
-        function debounce(method) {
-            var time = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 100, timeout = void 0;
-            return function() {
-                var _this3 = this, _arguments2 = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(function() {
-                    return method.apply(_this3, _arguments2);
-                }, time);
-            };
-        }
-        function isRegex(item) {
-            return "[object RegExp]" === Object.prototype.toString.call(item);
-        }
-        var util_weakMapMemoize = function(method) {
-            var weakmap = new cross_domain_safe_weakmap_src.a();
-            return function(arg) {
-                var _this4 = this;
-                return weakmap.getOrSet(arg, function() {
-                    return method.call(_this4, arg);
-                });
-            };
-        }, util_weakMapMemoizePromise = function(method) {
-            var weakmap = new cross_domain_safe_weakmap_src.a();
-            return function(arg) {
-                var _this5 = this;
-                return weakmap.getOrSet(arg, function() {
-                    return method.call(_this5, arg).finally(function() {
-                        weakmap.delete(arg);
-                    });
-                });
-            };
-        };
-        function getOrSet(obj, key, getter) {
-            if (obj.hasOwnProperty(key)) return obj[key];
-            var val = getter();
-            obj[key] = val;
-            return val;
-        }
-        function cleanup(obj) {
-            var tasks = [], cleaned = !1;
-            return {
-                set: function(name, item) {
-                    if (!cleaned) {
-                        obj[name] = item;
-                        this.register(function() {
-                            delete obj[name];
-                        });
-                    }
-                    return item;
-                },
-                register: function(method) {
-                    cleaned ? method() : tasks.push(once(method));
-                },
-                all: function() {
-                    var results = [];
-                    cleaned = !0;
-                    for (;tasks.length; ) {
-                        var task = tasks.pop();
-                        results.push(task());
-                    }
-                    return src.a.all(results).then(noop);
-                }
-            };
-        }
-        function tryCatch(fn) {
-            var result = void 0, error = void 0;
-            try {
-                result = fn();
-            } catch (err) {
-                error = err;
-            }
-            return {
-                result: result,
-                error: error
-            };
-        }
-        function removeFromArray(arr, item) {
-            var index = arr.indexOf(item);
-            -1 !== index && arr.splice(index, 1);
-        }
-        function assertExists(name, thing) {
-            if (null === thing || void 0 === thing) throw new Error("Expected " + name + " to be present");
-            return thing;
-        }
-        var KEY_CODES = {
-            ENTER: 13
-        }, dom__typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
-            return typeof obj;
-        } : function(obj) {
-            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-        }, _extends = Object.assign || function(target) {
-            for (var i = 1; i < arguments.length; i++) {
-                var source = arguments[i];
-                for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
-            }
-            return target;
-        };
-        function isDocumentReady() {
-            return Boolean(document.body) && "complete" === document.readyState;
-        }
-        function urlEncode(str) {
-            return str.replace(/\?/g, "%3F").replace(/&/g, "%26").replace(/#/g, "%23").replace(/\+/g, "%2B");
-        }
-        function waitForWindowReady() {
-            return inlineMemoize(waitForWindowReady, function() {
-                return new src.a(function(resolve) {
-                    isDocumentReady() && resolve();
-                    window.addEventListener("load", function() {
-                        return resolve();
-                    });
-                });
-            });
-        }
-        function waitForDocumentReady() {
-            return inlineMemoize(waitForDocumentReady, function() {
-                return new src.a(function(resolve) {
-                    if (isDocumentReady()) return resolve();
-                    var interval = setInterval(function() {
-                        if (isDocumentReady()) {
-                            clearInterval(interval);
-                            return resolve();
-                        }
-                    }, 10);
-                });
-            });
-        }
-        function waitForDocumentBody() {
-            return waitForDocumentReady().then(function() {
-                if (document.body) return document.body;
-                throw new Error("Document ready but document.body not present");
-            });
-        }
-        function parseQuery(queryString) {
-            return inlineMemoize(parseQuery, function() {
-                var params = {};
-                if (!queryString) return params;
-                if (-1 === queryString.indexOf("=")) return params;
-                for (var _i2 = 0, _queryString$split2 = queryString.split("&"), _length2 = null == _queryString$split2 ? 0 : _queryString$split2.length; _i2 < _length2; _i2++) {
-                    var pair = _queryString$split2[_i2];
-                    (pair = pair.split("="))[0] && pair[1] && (params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]));
-                }
-                return params;
-            }, [ queryString ]);
-        }
-        function getQueryParam(name) {
-            return parseQuery(window.location.search.slice(1))[name];
-        }
-        function urlWillRedirectPage(url) {
-            return -1 === url.indexOf("#") || 0 !== url.indexOf("#") && url.split("#")[0] !== window.location.href.split("#")[0];
-        }
-        function formatQuery() {
-            var obj = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
-            return Object.keys(obj).filter(function(key) {
-                return "string" == typeof obj[key];
-            }).map(function(key) {
-                return urlEncode(key) + "=" + urlEncode(obj[key]);
-            }).join("&");
-        }
-        function extendQuery(originalQuery) {
-            var props = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-            return props && Object.keys(props).length ? formatQuery(_extends({}, parseQuery(originalQuery), props)) : originalQuery;
-        }
-        function extendUrl(url) {
-            var originalHash, options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, query = options.query || {}, hash = options.hash || {}, originalUrl = void 0, _url$split = url.split("#");
-            originalUrl = _url$split[0];
-            originalHash = _url$split[1];
-            var _originalUrl$split = originalUrl.split("?");
-            originalUrl = _originalUrl$split[0];
-            var queryString = extendQuery(_originalUrl$split[1], query), hashString = extendQuery(originalHash, hash);
-            queryString && (originalUrl = originalUrl + "?" + queryString);
-            hashString && (originalUrl = originalUrl + "#" + hashString);
-            return originalUrl;
-        }
-        function redirect(url) {
-            var win = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : window;
-            return new src.a(function(resolve) {
-                win.location = url;
-                urlWillRedirectPage(url) || resolve();
-            });
-        }
-        function hasMetaViewPort() {
-            var meta = document.querySelector("meta[name=viewport]");
-            return !(isDevice() && window.screen.width < 660 && !meta);
-        }
-        function isElementVisible(el) {
-            return Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
-        }
-        function enablePerformance() {
-            return inlineMemoize(enablePerformance, function() {
-                return Boolean(window.performance && performance.now && performance.timing && performance.timing.connectEnd && performance.timing.navigationStart && Math.abs(performance.now() - Date.now()) > 1e3 && performance.now() - (performance.timing.connectEnd - performance.timing.navigationStart) > 0);
-            });
-        }
-        function getPageRenderTime() {
-            return waitForDocumentReady().then(function() {
-                if (enablePerformance()) {
-                    var timing = window.performance.timing;
-                    return timing.connectEnd && timing.domInteractive ? timing.domInteractive - timing.connectEnd : void 0;
-                }
-            });
-        }
-        function htmlEncode() {
-            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/\//g, "&#x2F;");
-        }
-        function isBrowser() {
-            return "undefined" != typeof window;
-        }
-        function querySelectorAll(selector) {
-            var doc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : window.document;
-            return Array.prototype.slice.call(doc.querySelectorAll(selector));
-        }
-        function onClick(element, handler) {
-            element.addEventListener("touchstart", noop);
-            element.addEventListener("click", handler);
-            element.addEventListener("keypress", function(event) {
-                if (event.keyCode === KEY_CODES.ENTER) return handler(event);
-            });
-        }
-        function getScript(_ref) {
-            var _ref$host = _ref.host, host = void 0 === _ref$host ? window.location.host : _ref$host, path = _ref.path;
-            return inlineMemoize(getScript, function() {
-                for (var url = "" + host + path, scripts = Array.prototype.slice.call(document.getElementsByTagName("script")), _i4 = 0, _length4 = null == scripts ? 0 : scripts.length; _i4 < _length4; _i4++) {
-                    var script = scripts[_i4];
-                    if (script.src) {
-                        if (script.src.replace(/^https?:\/\//, "").split("?")[0] === url) return script;
-                    }
-                }
-            }, [ path ]);
-        }
-        function isLocalStorageEnabled() {
-            return inlineMemoize(isLocalStorageEnabled, function() {
-                try {
-                    if ("undefined" == typeof window) return !1;
-                    if (window.localStorage) {
-                        var value = Math.random().toString();
-                        window.localStorage.setItem("__test__localStorage__", value);
-                        var result = window.localStorage.getItem("__test__localStorage__");
-                        window.localStorage.removeItem("__test__localStorage__");
-                        if (value === result) return !0;
-                    }
-                } catch (err) {}
-                return !1;
-            });
-        }
-        function getBrowserLocales() {
-            var nav = window.navigator, locales = nav.languages ? Array.prototype.slice.apply(nav.languages) : [];
-            nav.language && locales.push(nav.language);
-            nav.userLanguage && locales.push(nav.userLanguage);
-            return locales.map(function(locale) {
-                if (locale && locale.match(/^[a-z]{2}[-_][A-Z]{2}$/)) {
-                    var _locale$split = locale.split(/[-_]/), _lang = _locale$split[0];
-                    return {
-                        country: _locale$split[1],
-                        lang: _lang
-                    };
-                }
-                return locale && locale.match(/^[a-z]{2}$/) ? {
-                    lang: locale
-                } : null;
-            }).filter(Boolean);
-        }
-        function appendChild(container, child) {
-            container.appendChild(child);
-        }
-        function isElement(element) {
-            return element instanceof window.Element || null !== element && "object" === (void 0 === element ? "undefined" : dom__typeof(element)) && 1 === element.nodeType && "object" === dom__typeof(element.style) && "object" === dom__typeof(element.ownerDocument);
-        }
-        function getElementSafe(id) {
-            var doc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : document;
-            return isElement(id) ? id : "string" == typeof id ? doc.querySelector(id) : void 0;
-        }
-        function getElement(id) {
-            var element = getElementSafe(id, arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : document);
-            if (element) return element;
-            throw new Error("Can not find element: " + stringify(id));
-        }
-        function elementReady(id) {
-            return new src.a(function(resolve, reject) {
-                var name = stringify(id), el = getElementSafe(id);
-                if (el) return resolve(el);
-                if (isDocumentReady()) return reject(new Error("Document is ready and element " + name + " does not exist"));
-                var interval = setInterval(function() {
-                    if (el = getElementSafe(id)) {
-                        clearInterval(interval);
-                        return resolve(el);
-                    }
-                    if (isDocumentReady()) {
-                        clearInterval(interval);
-                        return reject(new Error("Document is ready and element " + name + " does not exist"));
-                    }
-                }, 10);
-            });
-        }
-        function PopupOpenError(message) {
-            this.message = message;
-        }
-        PopupOpenError.prototype = Object.create(Error.prototype);
-        function popup(url, options) {
-            var _options = options = options || {}, width = _options.width, height = _options.height, top = 0, left = 0;
-            width && (window.outerWidth ? left = Math.round((window.outerWidth - width) / 2) + window.screenX : window.screen.width && (left = Math.round((window.screen.width - width) / 2)));
-            height && (window.outerHeight ? top = Math.round((window.outerHeight - height) / 2) + window.screenY : window.screen.height && (top = Math.round((window.screen.height - height) / 2)));
-            var name = (options = _extends({
-                top: top,
-                left: left,
-                width: width,
-                height: height,
-                status: 1,
-                toolbar: 0,
-                menubar: 0,
-                resizable: 1,
-                scrollbars: 1
-            }, options)).name || "";
-            delete options.name;
-            var params = Object.keys(options).map(function(key) {
-                if (options[key]) return key + "=" + stringify(options[key]);
-            }).filter(Boolean).join(","), win = void 0;
-            try {
-                win = window.open(url, name, params, !0);
-            } catch (err) {
-                throw new PopupOpenError("Can not open popup window - " + (err.stack || err.message));
-            }
-            if (Object(cross_domain_utils_src.x)(win)) {
-                var err;
-                throw new PopupOpenError("Can not open popup window - blocked");
-            }
-            window.addEventListener("unload", function() {
-                return win.close();
-            });
-            return win;
-        }
-        function writeToWindow(win, html) {
-            try {
-                win.document.open();
-                win.document.write(html);
-                win.document.close();
-            } catch (err) {
-                try {
-                    win.location = "javascript: document.open(); document.write(" + JSON.stringify(html) + "); document.close();";
-                } catch (err2) {}
-            }
-        }
-        function writeElementToWindow(win, el) {
-            var tag = el.tagName.toLowerCase();
-            if ("html" !== tag) throw new Error("Expected element to be html, got " + tag);
-            for (var documentElement = win.document.documentElement; documentElement.children && documentElement.children.length; ) documentElement.removeChild(documentElement.children[0]);
-            for (;el.children.length; ) documentElement.appendChild(el.children[0]);
-        }
-        function setStyle(el, styleText) {
-            var doc = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : window.document;
-            el.styleSheet ? el.styleSheet.cssText = styleText : el.appendChild(doc.createTextNode(styleText));
-        }
-        var awaitFrameLoadPromises = void 0;
-        function awaitFrameLoad(frame) {
-            if ((awaitFrameLoadPromises = awaitFrameLoadPromises || new cross_domain_safe_weakmap_src.a()).has(frame)) {
-                var _promise = awaitFrameLoadPromises.get(frame);
-                if (_promise) return _promise;
-            }
-            var promise = new src.a(function(resolve, reject) {
-                frame.addEventListener("load", function() {
-                    Object(cross_domain_utils_src.y)(frame);
-                    resolve(frame);
-                });
-                frame.addEventListener("error", function(err) {
-                    frame.contentWindow ? resolve(frame) : reject(err);
-                });
-            });
-            awaitFrameLoadPromises.set(frame, promise);
-            return promise;
-        }
-        function awaitFrameWindow(frame) {
-            return awaitFrameLoad(frame).then(function(loadedFrame) {
-                if (!loadedFrame.contentWindow) throw new Error("Could not find window in iframe");
-                return loadedFrame.contentWindow;
-            });
-        }
-        function createElement() {
-            var tag = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "div", options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, container = arguments[2];
-            tag = tag.toLowerCase();
-            var element = document.createElement(tag);
-            options.style && extend(element.style, options.style);
-            options.class && (element.className = options.class.join(" "));
-            options.id && element.setAttribute("id", options.id);
-            if (options.attributes) for (var _i6 = 0, _Object$keys2 = Object.keys(options.attributes), _length6 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i6 < _length6; _i6++) {
-                var key = _Object$keys2[_i6];
-                element.setAttribute(key, options.attributes[key]);
-            }
-            options.styleSheet && setStyle(element, options.styleSheet);
-            container && appendChild(container, element);
-            if (options.html) if ("iframe" === tag) {
-                if (!container || !element.contentWindow) throw new Error("Iframe html can not be written unless container provided and iframe in DOM");
-                writeToWindow(element.contentWindow, options.html);
-            } else element.innerHTML = options.html;
-            return element;
-        }
-        function iframe() {
-            var options = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, container = arguments[1], attributes = options.attributes || {}, style = options.style || {}, frame = createElement("iframe", {
-                attributes: _extends({
-                    allowTransparency: "true"
-                }, attributes),
-                style: _extends({
-                    backgroundColor: "transparent",
-                    border: "none"
-                }, style),
-                html: options.html,
-                class: options.class
-            }), isIE = window.navigator.userAgent.match(/MSIE|Edge/i);
-            frame.hasAttribute("id") || frame.setAttribute("id", uniqueID());
-            awaitFrameLoad(frame);
-            if (container) {
-                getElement(container).appendChild(frame);
-            }
-            (options.url || isIE) && frame.setAttribute("src", options.url || "about:blank");
-            return frame;
-        }
-        function addEventListener(obj, event, handler) {
-            obj.addEventListener(event, handler);
-            return {
-                cancel: function() {
-                    obj.removeEventListener(event, handler);
-                }
-            };
-        }
-        function bindEvents(element, eventNames, handler) {
-            handler = once(handler);
-            for (var _i8 = 0, _length8 = null == eventNames ? 0 : eventNames.length; _i8 < _length8; _i8++) {
-                var eventName = eventNames[_i8];
-                element.addEventListener(eventName, handler);
-            }
-            return {
-                cancel: once(function() {
-                    for (var _i10 = 0, _length10 = null == eventNames ? 0 : eventNames.length; _i10 < _length10; _i10++) {
-                        var _eventName = eventNames[_i10];
-                        element.removeEventListener(_eventName, handler);
-                    }
-                })
-            };
-        }
-        var VENDOR_PREFIXES = [ "webkit", "moz", "ms", "o" ];
-        function setVendorCSS(element, name, value) {
-            element.style[name] = value;
-            for (var capitalizedName = capitalizeFirstLetter(name), _i12 = 0, _length12 = null == VENDOR_PREFIXES ? 0 : VENDOR_PREFIXES.length; _i12 < _length12; _i12++) {
-                var prefix = VENDOR_PREFIXES[_i12];
-                element.style["" + prefix + capitalizedName] = value;
-            }
-        }
-        var ANIMATION_START_EVENTS = [ "animationstart", "webkitAnimationStart", "oAnimationStart", "MSAnimationStart" ], ANIMATION_END_EVENTS = [ "animationend", "webkitAnimationEnd", "oAnimationEnd", "MSAnimationEnd" ];
-        function animate(element, name, clean) {
-            var timeout = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 1e3;
-            return new src.a(function(resolve, reject) {
-                var el = getElement(element);
-                if (!el) return resolve();
-                var hasStarted = !1, startTimeout = void 0, endTimeout = void 0, startEvent = void 0, endEvent = void 0;
-                function cleanUp() {
-                    clearTimeout(startTimeout);
-                    clearTimeout(endTimeout);
-                    startEvent.cancel();
-                    endEvent.cancel();
-                }
-                startEvent = bindEvents(el, ANIMATION_START_EVENTS, function(event) {
-                    if (event.target === el && event.animationName === name) {
-                        clearTimeout(startTimeout);
-                        event.stopPropagation();
-                        startEvent.cancel();
-                        hasStarted = !0;
-                        endTimeout = setTimeout(function() {
-                            cleanUp();
-                            resolve();
-                        }, timeout);
-                    }
-                });
-                endEvent = bindEvents(el, ANIMATION_END_EVENTS, function(event) {
-                    if (event.target === el && event.animationName === name) {
-                        cleanUp();
-                        return "string" == typeof event.animationName && event.animationName !== name ? reject("Expected animation name to be " + name + ", found " + event.animationName) : resolve();
-                    }
-                });
-                setVendorCSS(el, "animationName", name);
-                startTimeout = setTimeout(function() {
-                    if (!hasStarted) {
-                        cleanUp();
-                        return resolve();
-                    }
-                }, 200);
-                clean && clean(cleanUp);
-            });
-        }
-        var STYLE = {
-            DISPLAY: {
-                NONE: "none",
-                BLOCK: "block"
-            },
-            VISIBILITY: {
-                VISIBLE: "visible",
-                HIDDEN: "hidden"
-            },
-            IMPORTANT: "important"
-        };
-        function makeElementVisible(element) {
-            element.style.setProperty("visibility", "");
-        }
-        function makeElementInvisible(element) {
-            element.style.setProperty("visibility", STYLE.VISIBILITY.HIDDEN, STYLE.IMPORTANT);
-        }
-        function showElement(element) {
-            element.style.setProperty("display", "");
-        }
-        function hideElement(element) {
-            element.style.setProperty("display", STYLE.DISPLAY.NONE, STYLE.IMPORTANT);
-        }
-        function destroyElement(element) {
-            element && element.parentNode && element.parentNode.removeChild(element);
-        }
-        function showAndAnimate(element, name, clean) {
-            var animation = animate(element, name, clean);
-            showElement(element);
-            return animation;
-        }
-        function animateAndHide(element, name, clean) {
-            return animate(element, name, clean).then(function() {
-                hideElement(element);
-            });
-        }
-        function addClass(element, name) {
-            element.classList.add(name);
-        }
-        function removeClass(element, name) {
-            element.classList.remove(name);
-        }
-        function isElementClosed(el) {
-            return !el || !el.parentNode;
-        }
-        function watchElementForClose(element, handler) {
-            handler = once(handler);
-            var interval = void 0;
-            isElementClosed(element) ? handler() : interval = safeInterval(function() {
-                if (isElementClosed(element)) {
-                    interval.cancel();
-                    handler();
-                }
-            }, 50);
-            return {
-                cancel: function() {
-                    interval && interval.cancel();
-                }
-            };
-        }
-        function fixScripts(el) {
-            for (var doc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : window.document, _i14 = 0, _querySelectorAll2 = querySelectorAll("script", el), _length14 = null == _querySelectorAll2 ? 0 : _querySelectorAll2.length; _i14 < _length14; _i14++) {
-                var script = _querySelectorAll2[_i14], parentNode = script.parentNode;
-                if (parentNode) {
-                    var newScript = doc.createElement("script");
-                    newScript.text = script.textContent;
-                    parentNode.replaceChild(newScript, script);
-                }
-            }
-        }
-        function onResize(el, handler) {
-            var _ref2 = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, _ref2$width = _ref2.width, width = void 0 === _ref2$width || _ref2$width, _ref2$height = _ref2.height, height = void 0 === _ref2$height || _ref2$height, _ref2$interval = _ref2.interval, interval = void 0 === _ref2$interval ? 100 : _ref2$interval, _ref2$win = _ref2.win, win = void 0 === _ref2$win ? window : _ref2$win, currentWidth = el.offsetWidth, currentHeight = el.offsetHeight;
-            handler({
-                width: currentWidth,
-                height: currentHeight
-            });
-            var check = function() {
-                var newWidth = el.offsetWidth, newHeight = el.offsetHeight;
-                (width && newWidth !== currentWidth || height && newHeight !== currentHeight) && handler({
-                    width: newWidth,
-                    height: newHeight
-                });
-                currentWidth = newWidth;
-                currentHeight = newHeight;
-            }, observer = void 0, timeout = void 0;
-            if (void 0 !== win.ResizeObserver) (observer = new win.ResizeObserver(check)).observe(el); else if (void 0 !== win.MutationObserver) {
-                (observer = new win.MutationObserver(check)).observe(el, {
-                    attributes: !0,
-                    childList: !0,
-                    subtree: !0,
-                    characterData: !1
-                });
-                win.addEventListener("resize", check);
-            } else {
-                !function loop() {
-                    check();
-                    timeout = setTimeout(loop, interval);
-                }();
-            }
-            return {
-                cancel: function() {
-                    observer.disconnect();
-                    window.removeEventListener("resize", check);
-                    clearTimeout(timeout);
-                }
-            };
-        }
-        var DEFAULT_SESSION_STORAGE = 12e5;
-        function getStorage(_ref) {
-            var name = _ref.name, _ref$lifetime = _ref.lifetime, lifetime = void 0 === _ref$lifetime ? DEFAULT_SESSION_STORAGE : _ref$lifetime;
-            return inlineMemoize(getStorage, function() {
-                var STORAGE_KEY = "__" + name + "_storage__", accessedStorage = void 0;
-                function getState(handler) {
-                    var localStorageEnabled = isLocalStorageEnabled(), storage = void 0;
-                    accessedStorage && (storage = accessedStorage);
-                    if (!storage && localStorageEnabled) {
-                        var rawStorage = window.localStorage.getItem(STORAGE_KEY);
-                        rawStorage && (storage = JSON.parse(rawStorage));
-                    }
-                    storage || (storage = getGlobal()[STORAGE_KEY]);
-                    storage || (storage = {
-                        id: uniqueID()
-                    });
-                    storage.id || (storage.id = uniqueID());
-                    accessedStorage = storage;
-                    var result = handler(storage);
-                    localStorageEnabled ? window.localStorage.setItem(STORAGE_KEY, JSON.stringify(storage)) : getGlobal()[STORAGE_KEY] = storage;
-                    accessedStorage = null;
-                    return result;
-                }
-                function getSession(handler) {
-                    return getState(function(storage) {
-                        var session = storage.__session__, now = Date.now();
-                        session && now - session.created > lifetime && (session = null);
-                        session || (session = {
-                            guid: uniqueID(),
-                            created: now
-                        });
-                        storage.__session__ = session;
-                        return handler(session);
-                    });
-                }
-                return {
-                    getState: getState,
-                    getID: function() {
-                        return getState(function(storage) {
-                            return storage.id;
-                        });
-                    },
-                    getSessionState: function(handler) {
-                        return getSession(function(session) {
-                            session.state = session.state || {};
-                            return handler(session.state);
-                        });
-                    },
-                    getSessionID: function() {
-                        return getSession(function(session) {
-                            return session.guid;
-                        });
-                    }
-                };
-            }, [ {
-                name: name,
-                lifetime: lifetime
-            } ]);
-        }
-        function getBelterExperimentStorage() {
-            return getStorage({
-                name: "belter_experiment"
-            });
-        }
-        function isEventUnique(name) {
-            return getBelterExperimentStorage().getSessionState(function(state) {
-                state.loggedBeacons = state.loggedBeacons || [];
-                if (-1 === state.loggedBeacons.indexOf(name)) {
-                    state.loggedBeacons.push(name);
-                    return !0;
-                }
-                return !1;
-            });
-        }
-        var THROTTLE_GROUP = {
-            TEST: "test",
-            CONTROL: "control",
-            THROTTLE: "throttle"
-        };
-        function experiment(_ref) {
-            var name = _ref.name, _ref$sample = _ref.sample, sample = void 0 === _ref$sample ? 50 : _ref$sample, _ref$logTreatment = _ref.logTreatment, logTreatment = void 0 === _ref$logTreatment ? noop : _ref$logTreatment, _ref$logCheckpoint = _ref.logCheckpoint, logCheckpoint = void 0 === _ref$logCheckpoint ? noop : _ref$logCheckpoint, throttle = function(name) {
-                return getBelterExperimentStorage().getState(function(state) {
-                    state.throttlePercentiles = state.throttlePercentiles || {};
-                    state.throttlePercentiles[name] = state.throttlePercentiles[name] || Math.floor(100 * Math.random());
-                    return state.throttlePercentiles[name];
-                });
-            }(name), group = void 0;
-            group = throttle < sample ? THROTTLE_GROUP.TEST : sample >= 50 || sample <= throttle && throttle < 2 * sample ? THROTTLE_GROUP.CONTROL : THROTTLE_GROUP.THROTTLE;
-            var treatment = name + "_" + group, started = !1, forced = !1;
-            try {
-                window.localStorage && window.localStorage.getItem(name) && (forced = !0);
-            } catch (err) {}
-            return {
-                isEnabled: function() {
-                    return group === THROTTLE_GROUP.TEST || forced;
-                },
-                isDisabled: function() {
-                    return group !== THROTTLE_GROUP.TEST && !forced;
-                },
-                getTreatment: function() {
-                    return treatment;
-                },
-                log: function(checkpoint) {
-                    var payload = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-                    if (!started) return this;
-                    isEventUnique(name + "_" + treatment) && logTreatment({
-                        name: name,
-                        treatment: treatment
-                    });
-                    isEventUnique(name + "_" + treatment + "_" + checkpoint) && logCheckpoint({
-                        name: name,
-                        treatment: treatment,
-                        checkpoint: checkpoint,
-                        payload: payload
-                    });
-                    return this;
-                },
-                logStart: function() {
-                    var payload = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
-                    started = !0;
-                    return this.log("start", payload);
-                },
-                logComplete: function() {
-                    var payload = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
-                    return this.log("complete", payload);
-                }
-            };
-        }
-        function getGlobalNameSpace(_ref) {
-            var name = _ref.name, _ref$version = _ref.version, version = void 0 === _ref$version ? "latest" : _ref$version, global = getGlobal(), globalKey = "__" + name + "__" + version + "_global__", namespace = global[globalKey] = global[globalKey] || {};
-            return {
-                get: function(key, defValue) {
-                    defValue = defValue || {};
-                    return namespace[key] = namespace[key] || defValue;
-                }
-            };
-        }
-        var HEADERS = {
-            CONTENT_TYPE: "content-type",
-            ACCEPT: "accept"
-        }, headerBuilders = [];
-        function request(_ref) {
-            var url = _ref.url, _ref$method = _ref.method, method = void 0 === _ref$method ? "get" : _ref$method, _ref$headers = _ref.headers, headers = void 0 === _ref$headers ? {} : _ref$headers, json = _ref.json, data = _ref.data, body = _ref.body, _ref$win = _ref.win, win = void 0 === _ref$win ? window : _ref$win, _ref$timeout = _ref.timeout, timeout = void 0 === _ref$timeout ? 0 : _ref$timeout;
-            return new src.a(function(resolve, reject) {
-                if (json && data || json && body || data && json) throw new Error("Only options.json or options.data or options.body should be passed");
-                for (var normalizedHeaders = {}, _i4 = 0, _Object$keys2 = Object.keys(headers), _length4 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i4 < _length4; _i4++) {
-                    var _key2 = _Object$keys2[_i4];
-                    normalizedHeaders[_key2.toLowerCase()] = headers[_key2];
-                }
-                json ? normalizedHeaders[HEADERS.CONTENT_TYPE] = normalizedHeaders[HEADERS.CONTENT_TYPE] || "application/json" : (data || body) && (normalizedHeaders[HEADERS.CONTENT_TYPE] = normalizedHeaders[HEADERS.CONTENT_TYPE] || "application/x-www-form-urlencoded; charset=utf-8");
-                normalizedHeaders[HEADERS.ACCEPT] = normalizedHeaders[HEADERS.ACCEPT] || "application/json";
-                for (var _i6 = 0, _length6 = null == headerBuilders ? 0 : headerBuilders.length; _i6 < _length6; _i6++) for (var builtHeaders = (0, 
-                headerBuilders[_i6])(), _i8 = 0, _Object$keys4 = Object.keys(builtHeaders), _length8 = null == _Object$keys4 ? 0 : _Object$keys4.length; _i8 < _length8; _i8++) {
-                    var _key3 = _Object$keys4[_i8];
-                    normalizedHeaders[_key3.toLowerCase()] = builtHeaders[_key3];
-                }
-                var xhr = new win.XMLHttpRequest();
-                xhr.addEventListener("load", function() {
-                    var responseHeaders = function() {
-                        for (var result = {}, _i2 = 0, _rawHeaders$trim$spli2 = (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "").trim().split("\n"), _length2 = null == _rawHeaders$trim$spli2 ? 0 : _rawHeaders$trim$spli2.length; _i2 < _length2; _i2++) {
-                            var _line$split = _rawHeaders$trim$spli2[_i2].split(":"), _key = _line$split[0], values = _line$split.slice(1);
-                            result[_key.toLowerCase()] = values.join(":").trim();
-                        }
-                        return result;
-                    }(this.getAllResponseHeaders());
-                    if (!this.status) return reject(new Error("Request to " + method.toLowerCase() + " " + url + " failed: no response status code."));
-                    var contentType = responseHeaders["content-type"], isJSON = contentType && (0 === contentType.indexOf("application/json") || 0 === contentType.indexOf("text/json")), responseBody = this.responseText;
-                    try {
-                        responseBody = JSON.parse(responseBody);
-                    } catch (err) {
-                        if (isJSON) return reject(new Error("Invalid json: " + this.responseText + "."));
-                    }
-                    var res = {
-                        status: this.status,
-                        headers: responseHeaders,
-                        body: responseBody
-                    };
-                    return resolve(res);
-                }, !1);
-                xhr.addEventListener("error", function(evt) {
-                    reject(new Error("Request to " + method.toLowerCase() + " " + url + " failed: " + evt.toString() + "."));
-                }, !1);
-                xhr.open(method, url, !0);
-                for (var _key4 in normalizedHeaders) normalizedHeaders.hasOwnProperty(_key4) && xhr.setRequestHeader(_key4, normalizedHeaders[_key4]);
-                json ? body = JSON.stringify(json) : data && (body = Object.keys(data).map(function(key) {
-                    return encodeURIComponent(key) + "=" + (data ? encodeURIComponent(data[key]) : "");
-                }).join("&"));
-                xhr.timeout = timeout;
-                xhr.ontimeout = function() {
-                    reject(new Error("Request to " + method.toLowerCase() + " " + url + " has timed out"));
-                };
-                xhr.send(body);
-            });
-        }
-        function addHeaderBuilder(method) {
-            headerBuilders.push(method);
-        }
-        function memoized(target, name, descriptor) {
-            descriptor.value = memoize(descriptor.value, {
-                name: name,
-                thisNamespace: !0
-            });
-        }
-        function decorators_promise(target, name, descriptor) {
-            descriptor.value = promisify(descriptor.value, {
-                name: name
-            });
-        }
-        function isPerc(str) {
-            return "string" == typeof str && /^[0-9]+%$/.test(str);
-        }
-        function isPx(str) {
-            return "string" == typeof str && /^[0-9]+px$/.test(str);
-        }
-        function toNum(val) {
-            if ("number" == typeof val) return val;
-            var match = val.match(/^([0-9]+)(px|%)$/);
-            if (!match) throw new Error("Could not match css value from " + val);
-            return parseInt(match[1], 10);
-        }
-        function toPx(val) {
-            return toNum(val) + "px";
-        }
-        function toCSS(val) {
-            return "number" == typeof val ? toPx(val) : isPerc(val) ? val : toPx(val);
-        }
-        function percOf(num, perc) {
-            return parseInt(num * toNum(perc) / 100, 10);
-        }
-        function normalizeDimension(dim, max) {
-            if ("number" == typeof dim) return dim;
-            if (isPerc(dim)) return percOf(max, dim);
-            if (isPx(dim)) return toNum(dim);
-            throw new Error("Can not normalize dimension: " + dim);
-        }
-        function wrapPromise(method) {
-            var _ref$timeout = (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).timeout, expected = [], promises = [], timer = setTimeout(function() {
-                expected && promises.push(src.a.asyncReject(new Error("Expected " + expected[0] + " to be called")));
-            }, void 0 === _ref$timeout ? 5e3 : _ref$timeout), expect = function(name) {
-                var fn = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : noop;
-                expected.push(name);
-                return function() {
-                    for (var _this = this, _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
-                    removeFromArray(expected, name);
-                    var _tryCatch = tryCatch(function() {
-                        return fn.call.apply(fn, [ _this ].concat(args));
-                    }), result = _tryCatch.result, error = _tryCatch.error;
-                    if (error) {
-                        promises.push(src.a.asyncReject(error));
-                        throw error;
-                    }
-                    promises.push(src.a.resolve(result));
-                    return result;
-                };
-            }, avoid = function(name) {
-                var fn = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : noop;
-                return function() {
-                    promises.push(src.a.asyncReject(new Error("Expected " + name + " to not be called")));
-                    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
-                    return fn.call.apply(fn, [ this ].concat(args));
-                };
-            }, expectError = function(name) {
-                var fn = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : noop;
-                expected.push(name);
-                return function() {
-                    for (var _this2 = this, _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) args[_key3] = arguments[_key3];
-                    removeFromArray(expected, name);
-                    var _tryCatch2 = tryCatch(function() {
-                        return fn.call.apply(fn, [ _this2 ].concat(args));
-                    }), result = _tryCatch2.result, error = _tryCatch2.error;
-                    if (error) throw error;
-                    promises.push(src.a.resolve(result).then(function() {
-                        throw new Error("Expected " + name + " to throw an error");
-                    }, noop));
-                    return result;
-                };
-            };
-            promises.push(src.a.try(function() {
-                return method({
-                    expect: expect,
-                    avoid: avoid,
-                    expectError: expectError,
-                    error: avoid
-                });
-            }));
-            return function drain() {
-                return src.a.try(function() {
-                    if (promises.length) return promises.pop();
-                }).then(function() {
-                    return promises.length ? drain() : expected.length ? src.a.delay(10).then(drain) : void 0;
-                });
-            }().then(function() {
-                clearTimeout(timer);
-            });
-        }
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getUserAgent;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isDevice;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isWebView;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isStandAlone;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isFacebookWebView;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isFirefoxIOS;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isEdgeIOS;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isOperaMini;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isAndroid;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isIos;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isGoogleSearchApp;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isQQBrowser;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isIosWebview;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isAndroidWebview;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return device_isIE;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isIECompHeader;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isElectron;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isIEIntranet;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isMacOsCna;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return supportsPopups;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isDocumentReady;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return urlEncode;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return waitForWindowReady;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return waitForDocumentReady;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return waitForDocumentBody;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return parseQuery;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getQueryParam;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return urlWillRedirectPage;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return formatQuery;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return extendQuery;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return extendUrl;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return redirect;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return hasMetaViewPort;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isElementVisible;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return enablePerformance;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getPageRenderTime;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return htmlEncode;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isBrowser;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return querySelectorAll;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return onClick;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getScript;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isLocalStorageEnabled;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getBrowserLocales;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return appendChild;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isElement;
-        });
-        __webpack_require__.d(__webpack_exports__, "a", function() {
-            return getElementSafe;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getElement;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return elementReady;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return PopupOpenError;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return popup;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return writeToWindow;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return writeElementToWindow;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return setStyle;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return awaitFrameLoad;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return awaitFrameWindow;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return createElement;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return iframe;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return addEventListener;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return bindEvents;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return setVendorCSS;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return animate;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return makeElementVisible;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return makeElementInvisible;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return showElement;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return hideElement;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return destroyElement;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return showAndAnimate;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return animateAndHide;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return addClass;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return removeClass;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isElementClosed;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return watchElementForClose;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return fixScripts;
-        });
-        __webpack_require__.d(__webpack_exports__, "b", function() {
-            return onResize;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return experiment;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getGlobalNameSpace;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getStorage;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return base64encode;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return base64decode;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return uniqueID;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getGlobal;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getObjectID;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return memoize;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return memoizePromise;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return promisify;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return inlineMemoize;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return noop;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return once;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return hashStr;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return strHashStr;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return match;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return awaitKey;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return stringifyError;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return stringifyErrorMessage;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return stringify;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return domainMatches;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return patchMethod;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return extend;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return values;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return perc;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return min;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return max;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return regexMap;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return svgToBase64;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return objFilter;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return identity;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return regexTokenize;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return promiseDebounce;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return safeInterval;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isInteger;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isFloat;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return serializePrimitive;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return deserializePrimitive;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return dotify;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return undotify;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return eventEmitter;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return camelToDasherize;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return dasherizeToCamel;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return capitalizeFirstLetter;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return get;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return safeTimeout;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return defineLazyProp;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isObject;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isObjectObject;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isPlainObject;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return replaceObject;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return copyProp;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return regex;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return regexAll;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isDefined;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return cycle;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return debounce;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isRegex;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return util_weakMapMemoize;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return util_weakMapMemoizePromise;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return getOrSet;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return cleanup;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return tryCatch;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return removeFromArray;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return assertExists;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return request;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return addHeaderBuilder;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return !0;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return memoized;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return decorators_promise;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isPerc;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return isPx;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return toNum;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return toPx;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return toCSS;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return percOf;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return normalizeDimension;
-        });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
-            return wrapPromise;
-        });
-    },
     "./node_modules/bowser/bowser.min.js": function(module, exports, __webpack_require__) {
         t = "bowser", n = function() {
             function t(t) {
@@ -2785,10 +912,6 @@
     },
     "./node_modules/cross-domain-safe-weakmap/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var interface_namespaceObject = {};
-        __webpack_require__.d(interface_namespaceObject, "WeakMap", function() {
-            return weakmap_CrossDomainSafeWeakMap;
-        });
         var src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js");
         function safeIndexOf(collection, item) {
             for (var i = 0; i < collection.length; i++) try {
@@ -2796,13 +919,12 @@
             } catch (err) {}
             return -1;
         }
-        var defineProperty = Object.defineProperty, counter = Date.now() % 1e9, weakmap_CrossDomainSafeWeakMap = function() {
+        var weakmap_CrossDomainSafeWeakMap = function() {
             function CrossDomainSafeWeakMap() {
                 !function(instance, Constructor) {
                     if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
                 }(this, CrossDomainSafeWeakMap);
-                counter += 1;
-                this.name = "__weakmap_" + (1e9 * Math.random() >>> 0) + "__" + counter;
+                this.name = "__weakmap_" + (1e9 * Math.random() >>> 0) + "__";
                 if (function() {
                     if ("undefined" == typeof WeakMap) return !1;
                     if (void 0 === Object.freeze) return !1;
@@ -2823,7 +945,7 @@
             CrossDomainSafeWeakMap.prototype._cleanupClosedWindows = function() {
                 for (var weakmap = this.weakmap, keys = this.keys, i = 0; i < keys.length; i++) {
                     var value = keys[i];
-                    if (Object(src.w)(value) && Object(src.x)(value)) {
+                    if (Object(src.x)(value) && Object(src.y)(value)) {
                         if (weakmap) try {
                             weakmap.delete(value);
                         } catch (err) {}
@@ -2834,7 +956,7 @@
                 }
             };
             CrossDomainSafeWeakMap.prototype.isSafeToReadWrite = function(key) {
-                if (Object(src.w)(key)) return !1;
+                if (Object(src.x)(key)) return !1;
                 try {
                     key && key.self;
                     key && key[this.name];
@@ -2851,20 +973,20 @@
                 } catch (err) {
                     delete this.weakmap;
                 }
-                if (this.isSafeToReadWrite(key)) {
+                if (this.isSafeToReadWrite(key)) try {
                     var name = this.name, entry = key[name];
-                    entry && entry[0] === key ? entry[1] = value : defineProperty(key, name, {
+                    entry && entry[0] === key ? entry[1] = value : Object.defineProperty(key, name, {
                         value: [ key, value ],
                         writable: !0
                     });
-                } else {
-                    this._cleanupClosedWindows();
-                    var keys = this.keys, values = this.values, index = safeIndexOf(keys, key);
-                    if (-1 === index) {
-                        keys.push(key);
-                        values.push(value);
-                    } else values[index] = value;
-                }
+                    return;
+                } catch (err) {}
+                this._cleanupClosedWindows();
+                var keys = this.keys, values = this.values, index = safeIndexOf(keys, key);
+                if (-1 === index) {
+                    keys.push(key);
+                    values.push(value);
+                } else values[index] = value;
             };
             CrossDomainSafeWeakMap.prototype.get = function(key) {
                 if (!key) throw new Error("WeakMap expected key");
@@ -2874,14 +996,13 @@
                 } catch (err) {
                     delete this.weakmap;
                 }
-                if (!this.isSafeToReadWrite(key)) {
-                    this._cleanupClosedWindows();
-                    var index = safeIndexOf(this.keys, key);
-                    if (-1 === index) return;
-                    return this.values[index];
-                }
-                var entry = key[this.name];
-                if (entry && entry[0] === key) return entry[1];
+                if (this.isSafeToReadWrite(key)) try {
+                    var entry = key[this.name];
+                    return entry && entry[0] === key ? entry[1] : void 0;
+                } catch (err) {}
+                this._cleanupClosedWindows();
+                var index = safeIndexOf(this.keys, key);
+                if (-1 !== index) return this.values[index];
             };
             CrossDomainSafeWeakMap.prototype.delete = function(key) {
                 if (!key) throw new Error("WeakMap expected key");
@@ -2891,16 +1012,15 @@
                 } catch (err) {
                     delete this.weakmap;
                 }
-                if (this.isSafeToReadWrite(key)) {
+                if (this.isSafeToReadWrite(key)) try {
                     var entry = key[this.name];
                     entry && entry[0] === key && (entry[0] = entry[1] = void 0);
-                } else {
-                    this._cleanupClosedWindows();
-                    var keys = this.keys, index = safeIndexOf(keys, key);
-                    if (-1 !== index) {
-                        keys.splice(index, 1);
-                        this.values.splice(index, 1);
-                    }
+                } catch (err) {}
+                this._cleanupClosedWindows();
+                var keys = this.keys, index = safeIndexOf(keys, key);
+                if (-1 !== index) {
+                    keys.splice(index, 1);
+                    this.values.splice(index, 1);
                 }
             };
             CrossDomainSafeWeakMap.prototype.has = function(key) {
@@ -2911,10 +1031,10 @@
                 } catch (err) {
                     delete this.weakmap;
                 }
-                if (this.isSafeToReadWrite(key)) {
+                if (this.isSafeToReadWrite(key)) try {
                     var entry = key[this.name];
                     return !(!entry || entry[0] !== key);
-                }
+                } catch (err) {}
                 this._cleanupClosedWindows();
                 return -1 !== safeIndexOf(this.keys, key);
             };
@@ -2943,18 +1063,34 @@
             IFRAME: "iframe",
             POPUP: "popup"
         }, IE_WIN_ACCESS_ERROR = "Call was rejected by callee.\r\n";
+        function getActualProtocol() {
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window).location.protocol;
+        }
+        function getProtocol() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
+            if (win.mockDomain) {
+                var protocol = win.mockDomain.split("//")[0];
+                if (protocol) return protocol;
+            }
+            return getActualProtocol(win);
+        }
         function isFileProtocol() {
-            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window).location.protocol === PROTOCOL.FILE;
+            return getProtocol(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window) === PROTOCOL.FILE;
         }
         function isAboutProtocol() {
-            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window).location.protocol === PROTOCOL.ABOUT;
+            return getProtocol(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window) === PROTOCOL.ABOUT;
         }
-        function getParent(win) {
+        function isMockProtocol() {
+            return getProtocol(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window) === PROTOCOL.MOCK;
+        }
+        function getParent() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
             if (win) try {
                 if (win.parent && win.parent !== win) return win.parent;
             } catch (err) {}
         }
-        function getOpener(win) {
+        function getOpener() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
             if (win && !getParent(win)) try {
                 return win.opener;
             } catch (err) {}
@@ -2966,10 +1102,10 @@
             } catch (err) {}
             return !1;
         }
-        function getActualDomain(win) {
-            var location = (win = win || window).location;
+        function getActualDomain() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, location = win.location;
             if (!location) throw new Error("Can not read window location");
-            var protocol = location.protocol;
+            var protocol = getActualProtocol(win);
             if (!protocol) throw new Error("Can not read window protocol");
             if (protocol === PROTOCOL.FILE) return PROTOCOL.FILE + "//";
             if (protocol === PROTOCOL.ABOUT) {
@@ -2980,8 +1116,8 @@
             if (!host) throw new Error("Can not read window host");
             return protocol + "//" + host;
         }
-        function getDomain(win) {
-            var domain = getActualDomain(win = win || window);
+        function getDomain() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, domain = getActualDomain(win);
             return domain && win.mockDomain && 0 === win.mockDomain.indexOf(PROTOCOL.MOCK) ? win.mockDomain : domain;
         }
         function isBlankDomain(win) {
@@ -3001,6 +1137,9 @@
             } catch (err) {}
             try {
                 if (isAboutProtocol(win) && canReadFromWindow(win)) return !0;
+            } catch (err) {}
+            try {
+                if (isMockProtocol(win) && canReadFromWindow(win)) return !0;
             } catch (err) {}
             try {
                 if (getActualDomain(win) === getActualDomain(window)) return !0;
@@ -3082,25 +1221,24 @@
             }
             return result;
         }
-        function getTop(win) {
-            if (win) {
+        function getTop() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
+            try {
+                if (win.top) return win.top;
+            } catch (err) {}
+            if (getParent(win) === win) return win;
+            try {
+                if (isAncestorParent(window, win) && window.top) return window.top;
+            } catch (err) {}
+            try {
+                if (isAncestorParent(win, window) && window.top) return window.top;
+            } catch (err) {}
+            for (var _i7 = 0, _getAllChildFrames4 = getAllChildFrames(win), _length6 = null == _getAllChildFrames4 ? 0 : _getAllChildFrames4.length; _i7 < _length6; _i7++) {
+                var frame = _getAllChildFrames4[_i7];
                 try {
-                    if (win.top) return win.top;
+                    if (frame.top) return frame.top;
                 } catch (err) {}
-                if (getParent(win) === win) return win;
-                try {
-                    if (isAncestorParent(window, win) && window.top) return window.top;
-                } catch (err) {}
-                try {
-                    if (isAncestorParent(win, window) && window.top) return window.top;
-                } catch (err) {}
-                for (var _i7 = 0, _getAllChildFrames4 = getAllChildFrames(win), _length6 = null == _getAllChildFrames4 ? 0 : _getAllChildFrames4.length; _i7 < _length6; _i7++) {
-                    var frame = _getAllChildFrames4[_i7];
-                    try {
-                        if (frame.top) return frame.top;
-                    } catch (err) {}
-                    if (getParent(frame) === frame) return frame;
-                }
+                if (getParent(frame) === frame) return frame;
             }
         }
         function getNextOpener() {
@@ -3114,7 +1252,9 @@
         function getAllFramesInWindow(win) {
             var top = getTop(win);
             if (!top) throw new Error("Can not determine top window");
-            return [].concat(getAllChildFrames(top), [ top ]);
+            var result = [].concat(getAllChildFrames(top), [ top ]);
+            -1 === result.indexOf(win) && (result = [].concat(result, [ win ], getAllChildFrames(win)));
+            return result;
         }
         function getAllWindows() {
             var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, frames = getAllFramesInWindow(win), opener = getNextOpener(win);
@@ -3127,7 +1267,11 @@
             if (!frame.contentWindow) return !0;
             if (!frame.parentNode) return !0;
             var doc = frame.ownerDocument;
-            return !(!doc || !doc.documentElement || doc.documentElement.contains(frame));
+            if (doc && doc.documentElement && !doc.documentElement.contains(frame)) {
+                for (var parent = frame; parent.parentNode && parent.parentNode !== parent; ) parent = parent.parentNode;
+                if (!parent.host || !doc.documentElement.contains(parent.host)) return !0;
+            }
+            return !1;
         }
         var iframeWindows = [], iframeFrames = [];
         function isWindowClosed(win) {
@@ -3209,8 +1353,8 @@
             }
         }
         function findFrameByName(win, name) {
-            var frame;
-            return (frame = getFrameByName(win, name)) ? frame : findChildFrameByName(getTop(win) || win, name);
+            var frame = getFrameByName(win, name);
+            return frame || findChildFrameByName(getTop(win) || win, name);
         }
         function isParent(win, frame) {
             var frameParent = getParent(frame);
@@ -3223,8 +1367,8 @@
         function isOpener(parent, child) {
             return parent === getOpener(child);
         }
-        function getAncestor(win) {
-            var opener = getOpener(win = win || window);
+        function getAncestor() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, opener = getOpener(win = win || window);
             if (opener) return opener;
             var parent = getParent(win);
             return parent || void 0;
@@ -3244,13 +1388,16 @@
             return !1;
         }
         function isPopup() {
-            return Boolean(getOpener(window));
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
+            return Boolean(getOpener(win));
         }
         function isIframe() {
-            return Boolean(getParent(window));
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
+            return Boolean(getParent(win));
         }
         function isFullpage() {
-            return Boolean(!isIframe() && !isPopup());
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
+            return Boolean(!isIframe(win) && !isPopup(win));
         }
         function anyMatch(collection1, collection2) {
             for (var _i17 = 0, _length16 = null == collection1 ? 0 : collection1.length; _i17 < _length16; _i17++) for (var item1 = collection1[_i17], _i19 = 0, _length18 = null == collection2 ? 0 : collection2.length; _i19 < _length18; _i19++) {
@@ -3295,7 +1442,7 @@
             }));
         }
         function stringifyDomainPattern(pattern) {
-            return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() : pattern.toString();
+            return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() + ")" : pattern.toString();
         }
         function getDomainFromUrl(url) {
             return url.match(/^(https?|mock|file):\/\//) ? url.split("/").slice(0, 3).join("/") : getDomain();
@@ -3350,10 +1497,18 @@
                 if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
             }
             try {
-                obj && obj.__cross_domain_utils_window_check__;
+                0;
             } catch (err) {
                 return !0;
             }
+            try {
+                if (obj && "__unlikely_value__" === obj.__cross_domain_utils_window_check__) return !1;
+            } catch (err) {
+                return !0;
+            }
+            try {
+                if ("postMessage" in obj && "self" in obj && "location" in obj) return !0;
+            } catch (err) {}
             return !1;
         }
         function isBrowser() {
@@ -3369,37 +1524,65 @@
             if (!isMockDomain(getDomainFromUrl(url))) return url;
             throw new Error("Mock urls not supported out of test mode");
         }
+        function getFrameForWindow(win) {
+            if (isSameDomain(win)) return assertSameDomain(win).frameElement;
+            for (var _i21 = 0, _document$querySelect2 = document.querySelectorAll("iframe"), _length20 = null == _document$querySelect2 ? 0 : _document$querySelect2.length; _i21 < _length20; _i21++) {
+                var frame = _document$querySelect2[_i21];
+                if (frame && frame.contentWindow && frame.contentWindow === win) return frame;
+            }
+        }
+        function closeWindow(win) {
+            if (isIframe(win)) {
+                var frame = getFrameForWindow(win);
+                if (frame && frame.parentElement) {
+                    frame.parentElement.removeChild(frame);
+                    return;
+                }
+            }
+            try {
+                win.close();
+            } catch (err) {}
+        }
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getActualProtocol;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getProtocol;
+        });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isFileProtocol;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isAboutProtocol;
         });
-        __webpack_require__.d(__webpack_exports__, "l", function() {
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isMockProtocol;
+        });
+        __webpack_require__.d(__webpack_exports__, "m", function() {
             return getParent;
         });
-        __webpack_require__.d(__webpack_exports__, "k", function() {
+        __webpack_require__.d(__webpack_exports__, "l", function() {
             return getOpener;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return canReadFromWindow;
         });
-        __webpack_require__.d(__webpack_exports__, "b", function() {
+        __webpack_require__.d(__webpack_exports__, "c", function() {
             return getActualDomain;
         });
-        __webpack_require__.d(__webpack_exports__, "f", function() {
+        __webpack_require__.d(__webpack_exports__, "g", function() {
             return getDomain;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isBlankDomain;
         });
-        __webpack_require__.d(__webpack_exports__, "o", function() {
+        __webpack_require__.d(__webpack_exports__, "p", function() {
             return isActuallySameDomain;
         });
-        __webpack_require__.d(__webpack_exports__, "t", function() {
+        __webpack_require__.d(__webpack_exports__, "u", function() {
             return isSameDomain;
         });
-        __webpack_require__.d(__webpack_exports__, !1, function() {
+        __webpack_require__.d(__webpack_exports__, "a", function() {
             return assertSameDomain;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
@@ -3408,13 +1591,13 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isAncestorParent;
         });
-        __webpack_require__.d(__webpack_exports__, "i", function() {
+        __webpack_require__.d(__webpack_exports__, "j", function() {
             return getFrames;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return getAllChildFrames;
         });
-        __webpack_require__.d(__webpack_exports__, "m", function() {
+        __webpack_require__.d(__webpack_exports__, "n", function() {
             return getTop;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
@@ -3423,85 +1606,85 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return getUltimateTop;
         });
-        __webpack_require__.d(__webpack_exports__, "c", function() {
+        __webpack_require__.d(__webpack_exports__, "d", function() {
             return getAllFramesInWindow;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return getAllWindows;
         });
-        __webpack_require__.d(__webpack_exports__, "v", function() {
+        __webpack_require__.d(__webpack_exports__, "w", function() {
             return isTop;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isFrameWindowClosed;
         });
-        __webpack_require__.d(__webpack_exports__, "x", function() {
+        __webpack_require__.d(__webpack_exports__, "y", function() {
             return isWindowClosed;
         });
-        __webpack_require__.d(__webpack_exports__, "y", function() {
+        __webpack_require__.d(__webpack_exports__, "z", function() {
             return linkFrameWindow;
         });
-        __webpack_require__.d(__webpack_exports__, "n", function() {
+        __webpack_require__.d(__webpack_exports__, "o", function() {
             return getUserAgent;
         });
-        __webpack_require__.d(__webpack_exports__, "h", function() {
+        __webpack_require__.d(__webpack_exports__, "i", function() {
             return getFrameByName;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return findChildFrameByName;
         });
-        __webpack_require__.d(__webpack_exports__, "a", function() {
+        __webpack_require__.d(__webpack_exports__, "b", function() {
             return findFrameByName;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isParent;
         });
-        __webpack_require__.d(__webpack_exports__, "r", function() {
+        __webpack_require__.d(__webpack_exports__, "s", function() {
             return isOpener;
         });
-        __webpack_require__.d(__webpack_exports__, "d", function() {
+        __webpack_require__.d(__webpack_exports__, "e", function() {
             return getAncestor;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return getAncestors;
         });
-        __webpack_require__.d(__webpack_exports__, "p", function() {
+        __webpack_require__.d(__webpack_exports__, "q", function() {
             return isAncestor;
         });
-        __webpack_require__.d(__webpack_exports__, "s", function() {
+        __webpack_require__.d(__webpack_exports__, "t", function() {
             return isPopup;
         });
-        __webpack_require__.d(__webpack_exports__, "q", function() {
+        __webpack_require__.d(__webpack_exports__, "r", function() {
             return isIframe;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isFullpage;
         });
-        __webpack_require__.d(__webpack_exports__, "e", function() {
+        __webpack_require__.d(__webpack_exports__, "f", function() {
             return getDistanceFromTop;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return getNthParent;
         });
-        __webpack_require__.d(__webpack_exports__, "j", function() {
+        __webpack_require__.d(__webpack_exports__, "k", function() {
             return getNthParentFromTop;
         });
-        __webpack_require__.d(__webpack_exports__, "u", function() {
+        __webpack_require__.d(__webpack_exports__, "v", function() {
             return isSameTopWindow;
         });
-        __webpack_require__.d(__webpack_exports__, "z", function() {
+        __webpack_require__.d(__webpack_exports__, "A", function() {
             return matchDomain;
         });
-        __webpack_require__.d(__webpack_exports__, "B", function() {
+        __webpack_require__.d(__webpack_exports__, "C", function() {
             return stringifyDomainPattern;
         });
-        __webpack_require__.d(__webpack_exports__, "g", function() {
+        __webpack_require__.d(__webpack_exports__, "h", function() {
             return getDomainFromUrl;
         });
-        __webpack_require__.d(__webpack_exports__, "A", function() {
+        __webpack_require__.d(__webpack_exports__, "B", function() {
             return onCloseWindow;
         });
-        __webpack_require__.d(__webpack_exports__, "w", function() {
+        __webpack_require__.d(__webpack_exports__, "x", function() {
             return isWindow;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
@@ -3515,6 +1698,12 @@
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return normalizeMockUrl;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getFrameForWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return closeWindow;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return !0;
@@ -3579,6 +1768,7 @@
                     err.position = position;
                     throw err;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -3658,6 +1848,7 @@
                         }
                         return str;
                     }(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -3767,6 +1958,7 @@
                             return base32Str;
                         }(input) : function(str) {
                             var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                            if ("" === str) return base32Str;
                             do {
                                 blocks[0] = blocks[5];
                                 blocks[1] = blocks[6];
@@ -3849,7 +2041,7 @@
                         deleteTunnelWindow(key);
                         continue;
                     }
-                    Object(cross_domain_utils_src.x)(tunnelWindow.source) && deleteTunnelWindow(key);
+                    Object(cross_domain_utils_src.y)(tunnelWindow.source) && deleteTunnelWindow(key);
                 }
             }();
             global.a.tunnelWindowId += 1;
@@ -3862,7 +2054,7 @@
             return global.a.tunnelWindowId;
         }
         global.a.openTunnelToParent = function(_ref2) {
-            var name = _ref2.name, source = _ref2.source, canary = _ref2.canary, sendMessage = _ref2.sendMessage, parentWindow = Object(cross_domain_utils_src.l)(window);
+            var name = _ref2.name, source = _ref2.source, canary = _ref2.canary, sendMessage = _ref2.sendMessage, parentWindow = Object(cross_domain_utils_src.m)(window);
             if (!parentWindow) throw new Error("No parent window found to open tunnel to");
             var id = addTunnelWindow({
                 name: name,
@@ -3882,7 +2074,7 @@
                         deleteTunnelWindow(id);
                         return;
                     }
-                    if (tunnelWindow && tunnelWindow.source && !Object(cross_domain_utils_src.x)(tunnelWindow.source)) {
+                    if (tunnelWindow && tunnelWindow.source && !Object(cross_domain_utils_src.y)(tunnelWindow.source)) {
                         try {
                             tunnelWindow.canary();
                         } catch (err) {
@@ -3897,15 +2089,15 @@
         };
         var cross_domain_safe_weakmap_src = __webpack_require__("./node_modules/cross-domain-safe-weakmap/src/index.js");
         function needsBridgeForBrowser() {
-            return !!Object(cross_domain_utils_src.n)(window).match(/MSIE|trident|edge\/12|edge\/13/i) || !conf.a.ALLOW_POSTMESSAGE_POPUP;
+            return !!Object(cross_domain_utils_src.o)(window).match(/MSIE|trident|edge\/12|edge\/13/i) || !conf.a.ALLOW_POSTMESSAGE_POPUP;
         }
         function needsBridgeForWin(win) {
-            return !Object(cross_domain_utils_src.u)(window, win);
+            return !Object(cross_domain_utils_src.v)(window, win);
         }
         function needsBridgeForDomain(domain, win) {
             if (domain) {
-                if (Object(cross_domain_utils_src.f)() !== Object(cross_domain_utils_src.g)(domain)) return !0;
-            } else if (win && !Object(cross_domain_utils_src.t)(win)) return !0;
+                if (Object(cross_domain_utils_src.g)() !== Object(cross_domain_utils_src.h)(domain)) return !0;
+            } else if (win && !Object(cross_domain_utils_src.u)(win)) return !0;
             return !1;
         }
         function needsBridge(_ref) {
@@ -3913,11 +2105,11 @@
             return !!needsBridgeForBrowser() && (!(domain && !needsBridgeForDomain(domain, win)) && !(win && !needsBridgeForWin(win)));
         }
         function getBridgeName(domain) {
-            var sanitizedDomain = (domain = domain || Object(cross_domain_utils_src.g)(domain)).replace(/[^a-zA-Z0-9]+/g, "_");
+            var sanitizedDomain = (domain = domain || Object(cross_domain_utils_src.h)(domain)).replace(/[^a-zA-Z0-9]+/g, "_");
             return conf.b.BRIDGE_NAME_PREFIX + "_" + sanitizedDomain;
         }
         function isBridge() {
-            return Boolean(window.name && window.name === getBridgeName(Object(cross_domain_utils_src.f)()));
+            return Boolean(window.name && window.name === getBridgeName(Object(cross_domain_utils_src.g)()));
         }
         var documentBodyReady = new src.a(function(resolve) {
             if (window.document && window.document.body) return resolve(window.document.body);
@@ -3942,7 +2134,7 @@
             if (!remoteWindow) throw new Error("Window not found to register sendMessage to");
             var sendMessageWrapper = function(remoteWin, message, remoteDomain) {
                 if (remoteWin !== win) throw new Error("Remote window does not match window");
-                if (!Object(cross_domain_utils_src.z)(remoteDomain, domain)) throw new Error("Remote domain " + remoteDomain + " does not match domain " + domain);
+                if (!Object(cross_domain_utils_src.A)(remoteDomain, domain)) throw new Error("Remote domain " + remoteDomain + " does not match domain " + domain);
                 sendMessage(message);
             };
             remoteWindow.sendMessagePromise.resolve(sendMessageWrapper);
@@ -3954,7 +2146,7 @@
             remoteWindow.sendMessagePromise.asyncReject(err);
         }
         function sendBridgeMessage(win, message, domain) {
-            var messagingChild = Object(cross_domain_utils_src.r)(window, win), messagingParent = Object(cross_domain_utils_src.r)(win, window);
+            var messagingChild = Object(cross_domain_utils_src.s)(window, win), messagingParent = Object(cross_domain_utils_src.s)(win, window);
             if (!messagingChild && !messagingParent) throw new Error("Can only send messages to and from parent and popup windows");
             var remoteWindow = findRemoteWindow(win);
             if (!remoteWindow) throw new Error("Window not found to send message to");
@@ -3964,21 +2156,21 @@
         }
         var awaitRemoteBridgeForWindow = Object(lib.r)(function(win) {
             return src.a.try(function() {
-                for (var _i2 = 0, _getFrames2 = Object(cross_domain_utils_src.i)(win), _length2 = null == _getFrames2 ? 0 : _getFrames2.length; _i2 < _length2; _i2++) {
+                for (var _i2 = 0, _getFrames2 = Object(cross_domain_utils_src.j)(win), _length2 = null == _getFrames2 ? 0 : _getFrames2.length; _i2 < _length2; _i2++) {
                     var frame = _getFrames2[_i2];
                     try {
-                        if (frame && frame !== window && Object(cross_domain_utils_src.t)(frame) && frame[conf.b.WINDOW_PROPS.POSTROBOT]) return frame;
+                        if (frame && frame !== window && Object(cross_domain_utils_src.u)(frame) && frame[conf.b.WINDOW_PROPS.POSTROBOT]) return frame;
                     } catch (err) {
                         continue;
                     }
                 }
                 try {
-                    var _frame = Object(cross_domain_utils_src.h)(win, getBridgeName(Object(cross_domain_utils_src.f)()));
+                    var _frame = Object(cross_domain_utils_src.i)(win, getBridgeName(Object(cross_domain_utils_src.g)()));
                     if (!_frame) return;
-                    return Object(cross_domain_utils_src.t)(_frame) && _frame[conf.b.WINDOW_PROPS.POSTROBOT] ? _frame : new src.a(function(resolve) {
+                    return Object(cross_domain_utils_src.u)(_frame) && _frame[conf.b.WINDOW_PROPS.POSTROBOT] ? _frame : new src.a(function(resolve) {
                         var interval = void 0, timeout = void 0;
                         interval = setInterval(function() {
-                            if (_frame && Object(cross_domain_utils_src.t)(_frame) && _frame[conf.b.WINDOW_PROPS.POSTROBOT]) {
+                            if (_frame && Object(cross_domain_utils_src.u)(_frame) && _frame[conf.b.WINDOW_PROPS.POSTROBOT]) {
                                 clearInterval(interval);
                                 clearTimeout(timeout);
                                 return resolve(_frame);
@@ -3994,7 +2186,7 @@
         });
         function openTunnelToOpener() {
             return src.a.try(function() {
-                var opener = Object(cross_domain_utils_src.k)(window);
+                var opener = Object(cross_domain_utils_src.l)(window);
                 if (opener && needsBridge({
                     win: opener
                 })) {
@@ -4037,16 +2229,16 @@
         global.a.popupWindowsByWin = global.a.popupWindowsByWin || new cross_domain_safe_weakmap_src.a();
         global.a.popupWindowsByName = global.a.popupWindowsByName || {};
         function hasBridge(url, domain) {
-            domain = domain || Object(cross_domain_utils_src.g)(url);
+            domain = domain || Object(cross_domain_utils_src.h)(url);
             return Boolean(global.a.bridges[domain]);
         }
         function openBridge(url, domain) {
-            domain = domain || Object(cross_domain_utils_src.g)(url);
+            domain = domain || Object(cross_domain_utils_src.h)(url);
             if (global.a.bridges[domain]) return global.a.bridges[domain];
             global.a.bridges[domain] = src.a.try(function() {
-                if (Object(cross_domain_utils_src.f)() === domain) throw new Error("Can not open bridge on the same domain as current domain: " + domain);
+                if (Object(cross_domain_utils_src.g)() === domain) throw new Error("Can not open bridge on the same domain as current domain: " + domain);
                 var name = getBridgeName(domain);
-                if (Object(cross_domain_utils_src.h)(window, name)) throw new Error("Frame with name " + name + " already exists on page");
+                if (Object(cross_domain_utils_src.i)(window, name)) throw new Error("Frame with name " + name + " already exists on page");
                 var iframe = function(name, url) {
                     var iframe = document.createElement("iframe");
                     iframe.setAttribute("name", name);
@@ -4118,13 +2310,13 @@
                 domain = _url$split[0];
                 url = _url$split[1];
             }
-            domain && (domain = Object(cross_domain_utils_src.g)(domain));
+            domain && (domain = Object(cross_domain_utils_src.h)(domain));
             var win = windowOpen.call(this, url, name, options, last);
             if (!win) return win;
             url && registerRemoteWindow(win);
             for (var _i2 = 0, _Object$keys2 = Object.keys(global.a.popupWindowsByName), _length2 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i2 < _length2; _i2++) {
                 var winName = _Object$keys2[_i2];
-                Object(cross_domain_utils_src.x)(global.a.popupWindowsByName[winName].win) && delete global.a.popupWindowsByName[winName];
+                Object(cross_domain_utils_src.y)(global.a.popupWindowsByName[winName].win) && delete global.a.popupWindowsByName[winName];
             }
             if (name && win) {
                 var winOptions = global.a.popupWindowsByWin.get(win) || global.a.popupWindowsByName[name] || {};
@@ -4139,7 +2331,7 @@
         function linkUrl(win, url) {
             var winOptions = global.a.popupWindowsByWin.get(win);
             if (winOptions) {
-                winOptions.domain = Object(cross_domain_utils_src.g)(url);
+                winOptions.domain = Object(cross_domain_utils_src.h)(url);
                 registerRemoteWindow(win);
             }
         }
@@ -4247,7 +2439,7 @@
         });
         var src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), conf = __webpack_require__("./node_modules/post-robot/src/conf/index.js");
         function emulateIERestrictions(sourceWindow, targetWindow) {
-            if (!conf.a.ALLOW_POSTMESSAGE_POPUP && !1 === Object(src.u)(sourceWindow, targetWindow)) throw new Error("Can not send and receive post messages between two different windows (disabled to emulate IE)");
+            if (!conf.a.ALLOW_POSTMESSAGE_POPUP && !1 === Object(src.v)(sourceWindow, targetWindow)) throw new Error("Can not send and receive post messages between two different windows (disabled to emulate IE)");
         }
         __webpack_require__.d(__webpack_exports__, "emulateIERestrictions", function() {
             return emulateIERestrictions;
@@ -4398,8 +2590,8 @@
             (Array.isArray(domain) ? domain : "string" == typeof domain ? [ domain ] : [ conf.b.WILDCARD ]).map(function(dom) {
                 if (0 === dom.indexOf(conf.b.MOCK_PROTOCOL)) {
                     if (window.location.protocol === conf.b.FILE_PROTOCOL) return conf.b.WILDCARD;
-                    if (!Object(src.o)(win)) throw new Error("Attempting to send messsage to mock domain " + dom + ", but window is actually cross-domain");
-                    return Object(src.b)(win);
+                    if (!Object(src.p)(win)) throw new Error("Attempting to send messsage to mock domain " + dom + ", but window is actually cross-domain");
+                    return Object(src.c)(win);
                 }
                 return 0 === dom.indexOf(conf.b.FILE_PROTOCOL) ? conf.b.WILDCARD : dom;
             }).forEach(function(dom) {
@@ -4409,20 +2601,20 @@
         var _require = __webpack_require__("./node_modules/post-robot/src/bridge/index.js"), sendBridgeMessage = _require.sendBridgeMessage, needsBridgeForBrowser = _require.needsBridgeForBrowser, isBridge = _require.isBridge;
         SEND_MESSAGE_STRATEGIES[conf.b.SEND_STRATEGIES.BRIDGE] = function(win, serializedMessage, domain) {
             if (needsBridgeForBrowser() || isBridge()) {
-                if (Object(src.t)(win)) throw new Error("Post message through bridge disabled between same domain windows");
-                if (!1 !== Object(src.u)(window, win)) throw new Error("Can only use bridge to communicate between two different windows, not between frames");
+                if (Object(src.u)(win)) throw new Error("Post message through bridge disabled between same domain windows");
+                if (!1 !== Object(src.v)(window, win)) throw new Error("Can only use bridge to communicate between two different windows, not between frames");
                 return sendBridgeMessage(win, serializedMessage, domain);
             }
         };
         SEND_MESSAGE_STRATEGIES[conf.b.SEND_STRATEGIES.GLOBAL] = function(win, serializedMessage) {
             if (Object(lib.i)()) {
-                if (!Object(src.t)(win)) throw new Error("Post message through global disabled between different domain windows");
-                if (!1 !== Object(src.u)(window, win)) throw new Error("Can only use global to communicate between two different windows, not between frames");
+                if (!Object(src.u)(win)) throw new Error("Post message through global disabled between different domain windows");
+                if (!1 !== Object(src.v)(window, win)) throw new Error("Can only use global to communicate between two different windows, not between frames");
                 var foreignGlobal = win[conf.b.WINDOW_PROPS.POSTROBOT];
                 if (!foreignGlobal) throw new Error("Can not find postRobot global on foreign window");
                 return foreignGlobal.receiveMessage({
                     source: window,
-                    origin: Object(src.f)(),
+                    origin: Object(src.g)(),
                     data: serializedMessage
                 });
             }
@@ -4438,7 +2630,7 @@
             return zalgo_promise_src.a.try(function() {
                 var _jsonStringify;
                 message = function(win, message) {
-                    var options = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, id = Object(lib.q)(), type = Object(lib.c)(), sourceDomain = Object(src.f)(window);
+                    var options = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, id = Object(lib.q)(), type = Object(lib.c)(), sourceDomain = Object(src.g)(window);
                     return _extends({}, message, options, {
                         sourceDomain: sourceDomain,
                         id: message.id || id,
@@ -4450,7 +2642,7 @@
                 });
                 0;
                 if (win === window && !conf.a.ALLOW_SAME_ORIGIN) throw new Error("Attemping to send message to self");
-                if (Object(src.x)(win)) throw new Error("Window is closed");
+                if (Object(src.y)(win)) throw new Error("Window is closed");
                 var messages = [], serializedMessage = Object(lib.g)(((_jsonStringify = {})[conf.b.WINDOW_PROPS.POSTROBOT] = message, 
                 _jsonStringify), null, 2);
                 return zalgo_promise_src.a.map(Object.keys(SEND_MESSAGE_STRATEGIES), function(strategyName) {
@@ -4498,7 +2690,7 @@
                         if (winListeners[domain]) return winListeners[domain];
                         if (winListeners[__DOMAIN_REGEX__]) for (var _i4 = 0, _winListeners$__DOMAI2 = winListeners[__DOMAIN_REGEX__], _length4 = null == _winListeners$__DOMAI2 ? 0 : _winListeners$__DOMAI2.length; _i4 < _length4; _i4++) {
                             var _ref5 = _winListeners$__DOMAI2[_i4], regex = _ref5.regex, listener = _ref5.listener;
-                            if (Object(src.z)(regex, domain)) return listener;
+                            if (Object(src.A)(regex, domain)) return listener;
                         }
                     }
                     if (winListeners[conf.b.WILDCARD]) return winListeners[conf.b.WILDCARD];
@@ -4515,7 +2707,7 @@
             if (!isResponseListenerErrored(message.hash)) {
                 var options = getResponseListener(message.hash);
                 if (!options) throw new Error("No handler found for post message ack for message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
-                if (!Object(src.z)(options.domain, origin)) throw new Error("Ack origin " + origin + " does not match domain " + options.domain.toString());
+                if (!Object(src.A)(options.domain, origin)) throw new Error("Ack origin " + origin + " does not match domain " + options.domain.toString());
                 options.ack = !0;
             }
         }, _RECEIVE_MESSAGE_TYPE[conf.b.POST_MESSAGE_TYPE.REQUEST] = function(source, origin, message) {
@@ -4525,7 +2717,7 @@
                 domain: origin
             });
             function respond(data) {
-                return message.fireAndForget || Object(src.x)(source) ? zalgo_promise_src.a.resolve() : sendMessage(source, types__extends({
+                return message.fireAndForget || Object(src.y)(source) ? zalgo_promise_src.a.resolve() : sendMessage(source, types__extends({
                     target: message.originalSource,
                     hash: message.hash,
                     name: message.name
@@ -4535,7 +2727,7 @@
                 type: conf.b.POST_MESSAGE_TYPE.ACK
             }), zalgo_promise_src.a.try(function() {
                 if (!options) throw new Error("No handler found for post message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
-                if (!Object(src.z)(options.domain, origin)) throw new Error("Request origin " + origin + " does not match domain " + options.domain.toString());
+                if (!Object(src.A)(options.domain, origin)) throw new Error("Request origin " + origin + " does not match domain " + options.domain.toString());
                 var data = message.data;
                 return options.handler({
                     source: source,
@@ -4564,7 +2756,7 @@
             if (!isResponseListenerErrored(message.hash)) {
                 var options = getResponseListener(message.hash);
                 if (!options) throw new Error("No handler found for post message response for message: " + message.name + " from " + origin + " in " + window.location.protocol + "//" + window.location.host + window.location.pathname);
-                if (!Object(src.z)(options.domain, origin)) throw new Error("Response origin " + origin + " does not match domain " + Object(src.B)(options.domain));
+                if (!Object(src.A)(options.domain, origin)) throw new Error("Response origin " + origin + " does not match domain " + Object(src.C)(options.domain));
                 deleteResponseListener(message.hash);
                 if (message.ack === conf.b.POST_MESSAGE_ACK.ERROR) {
                     var err = new Error(message.error);
@@ -4587,29 +2779,30 @@
         };
         global.a.receivedMessages = global.a.receivedMessages || [];
         function receiveMessage(event) {
-            if (!window || window.closed) throw new Error("Message recieved in closed window");
-            try {
-                if (!event.source) return;
-            } catch (err) {
-                return;
-            }
-            var source = event.source, origin = event.origin, message = function(message) {
-                var parsedMessage = void 0;
+            if (window && !window.closed) {
                 try {
-                    parsedMessage = Object(lib.f)(message);
+                    if (!event.source) return;
                 } catch (err) {
                     return;
                 }
-                if (parsedMessage && "object" === (void 0 === parsedMessage ? "undefined" : _typeof(parsedMessage)) && null !== parsedMessage && (parsedMessage = parsedMessage[conf.b.WINDOW_PROPS.POSTROBOT]) && "object" === (void 0 === parsedMessage ? "undefined" : _typeof(parsedMessage)) && null !== parsedMessage && parsedMessage.type && "string" == typeof parsedMessage.type && RECEIVE_MESSAGE_TYPES[parsedMessage.type]) return parsedMessage;
-            }(event.data);
-            if (message) {
-                if (!message.sourceDomain || "string" != typeof message.sourceDomain) throw new Error("Expected message to have sourceDomain");
-                0 !== message.sourceDomain.indexOf(conf.b.MOCK_PROTOCOL) && 0 !== message.sourceDomain.indexOf(conf.b.FILE_PROTOCOL) || (origin = message.sourceDomain);
-                if (-1 === global.a.receivedMessages.indexOf(message.id)) {
-                    global.a.receivedMessages.push(message.id);
-                    if (!Object(src.x)(source) || message.fireAndForget) {
-                        message.data && (message.data = Object(lib.b)(source, origin, message.data));
-                        RECEIVE_MESSAGE_TYPES[message.type](source, origin, message);
+                var source = event.source, origin = event.origin, message = function(message) {
+                    var parsedMessage = void 0;
+                    try {
+                        parsedMessage = Object(lib.f)(message);
+                    } catch (err) {
+                        return;
+                    }
+                    if (parsedMessage && "object" === (void 0 === parsedMessage ? "undefined" : _typeof(parsedMessage)) && null !== parsedMessage && (parsedMessage = parsedMessage[conf.b.WINDOW_PROPS.POSTROBOT]) && "object" === (void 0 === parsedMessage ? "undefined" : _typeof(parsedMessage)) && null !== parsedMessage && parsedMessage.type && "string" == typeof parsedMessage.type && RECEIVE_MESSAGE_TYPES[parsedMessage.type]) return parsedMessage;
+                }(event.data);
+                if (message) {
+                    if (!message.sourceDomain || "string" != typeof message.sourceDomain) throw new Error("Expected message to have sourceDomain");
+                    0 !== message.sourceDomain.indexOf(conf.b.MOCK_PROTOCOL) && 0 !== message.sourceDomain.indexOf(conf.b.FILE_PROTOCOL) || (origin = message.sourceDomain);
+                    if (-1 === global.a.receivedMessages.indexOf(message.id)) {
+                        global.a.receivedMessages.push(message.id);
+                        if (!Object(src.y)(source) || message.fireAndForget) {
+                            message.data && (message.data = Object(lib.b)(source, origin, message.data));
+                            RECEIVE_MESSAGE_TYPES[message.type](source, origin, message);
+                        }
                     }
                 }
             }
@@ -4653,21 +2846,21 @@
                 var win = targetWindow;
                 domain = options.domain || conf.b.WILDCARD;
                 var hash = options.name + "_" + Object(lib.q)();
-                if (Object(src.x)(win)) throw new Error("Target window is closed");
+                if (Object(src.y)(win)) throw new Error("Target window is closed");
                 var hasResult = !1, requestPromises = global.a.requestPromises.get(win);
                 if (!requestPromises) {
                     requestPromises = [];
                     global.a.requestPromises.set(win, requestPromises);
                 }
                 var requestPromise = zalgo_promise_src.a.try(function() {
-                    if (Object(src.p)(window, win)) return Object(lib.k)(win, options.timeout || conf.a.CHILD_WINDOW_TIMEOUT);
+                    if (Object(src.q)(window, win)) return Object(lib.k)(win, options.timeout || conf.a.CHILD_WINDOW_TIMEOUT);
                 }).then(function() {
                     var origin = (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}).origin;
                     if (Object(lib.e)(domain) && !origin) return Object(lib.n)(win);
                 }).then(function() {
                     var origin = (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}).origin;
                     if (Object(lib.e)(domain)) {
-                        if (!Object(src.z)(domain, origin)) throw new Error("Remote window domain " + origin + " does not match regex: " + domain.toString());
+                        if (!Object(src.A)(domain, origin)) throw new Error("Remote window domain " + origin + " does not match regex: " + domain.toString());
                         domain = origin;
                     }
                     if ("string" != typeof domain && !Array.isArray(domain)) throw new TypeError("Expected domain to be a string or array");
@@ -4699,15 +2892,15 @@
                         var ackTimeout = conf.a.ACK_TIMEOUT, resTimeout = options.timeout || conf.a.RES_TIMEOUT, cycleTime = 100;
                         setTimeout(function cycle() {
                             if (!hasResult) {
-                                if (Object(src.x)(win)) return responseListener.ack ? reject(new Error("Window closed for " + name + " before response")) : reject(new Error("Window closed for " + name + " before ack"));
+                                if (Object(src.y)(win)) return responseListener.ack ? reject(new Error("Window closed for " + name + " before response")) : reject(new Error("Window closed for " + name + " before ack"));
                                 ackTimeout = Math.max(ackTimeout - cycleTime, 0);
                                 -1 !== resTimeout && (resTimeout = Math.max(resTimeout - cycleTime, 0));
                                 if (responseListener.ack) {
                                     if (-1 === resTimeout) return;
                                     cycleTime = Math.min(resTimeout, 2e3);
                                 } else {
-                                    if (0 === ackTimeout) return reject(new Error("No ack for postMessage " + name + " in " + Object(src.f)() + " in " + conf.a.ACK_TIMEOUT + "ms"));
-                                    if (0 === resTimeout) return reject(new Error("No response for postMessage " + name + " in " + Object(src.f)() + " in " + (options.timeout || conf.a.RES_TIMEOUT) + "ms"));
+                                    if (0 === ackTimeout) return reject(new Error("No ack for postMessage " + name + " in " + Object(src.g)() + " in " + conf.a.ACK_TIMEOUT + "ms"));
+                                    if (0 === resTimeout) return reject(new Error("No response for postMessage " + name + " in " + Object(src.g)() + " in " + (options.timeout || conf.a.RES_TIMEOUT) + "ms"));
                                 }
                                 setTimeout(cycle, cycleTime);
                             }
@@ -4731,7 +2924,7 @@
             return request(options);
         }
         function sendToParent(name, data, options) {
-            var win = Object(src.d)();
+            var win = Object(src.e)();
             return win ? _send(win, name, data, options) : new zalgo_promise_src.a(function(resolve, reject) {
                 return reject(new Error("Window does not have a parent"));
             });
@@ -4848,7 +3041,7 @@
                 });
             }
             if (listenerOptions.window && options.errorOnClose) var interval = Object(lib.m)(function() {
-                if (win && "object" === (void 0 === win ? "undefined" : server__typeof(win)) && Object(src.x)(win)) {
+                if (win && "object" === (void 0 === win ? "undefined" : server__typeof(win)) && Object(src.y)(win)) {
                     interval.cancel();
                     listenerOptions.handleError(new Error("Post message target window is closed"));
                 }
@@ -4904,7 +3097,7 @@
             delete window[conf.b.WINDOW_PROPS.POSTROBOT];
             window.removeEventListener("message", messageListener);
         }
-        var public_parent = Object(src.d)();
+        var public_parent = Object(src.e)();
         function cleanUpWindow(win) {
             var requestPromises = global.a.requestPromises.get(win);
             if (requestPromises) for (var _i2 = 0, _length2 = null == requestPromises ? 0 : requestPromises.length; _i2 < _length2; _i2++) {
@@ -5077,7 +3270,7 @@
             };
         };
         function getWindowType() {
-            return Object(cross_domain_utils_src.s)() ? conf.b.WINDOW_TYPES.POPUP : Object(cross_domain_utils_src.q)() ? conf.b.WINDOW_TYPES.IFRAME : conf.b.WINDOW_TYPES.FULLPAGE;
+            return Object(cross_domain_utils_src.t)() ? conf.b.WINDOW_TYPES.POPUP : Object(cross_domain_utils_src.r)() ? conf.b.WINDOW_TYPES.IFRAME : conf.b.WINDOW_TYPES.FULLPAGE;
         }
         function jsonStringify(obj, replacer, indent) {
             var objectToJSON = void 0, arrayToJSON = void 0;
@@ -5108,7 +3301,7 @@
             return JSON.parse(item);
         }
         function needsGlobalMessagingForBrowser() {
-            return !!Object(cross_domain_utils_src.n)(window).match(/MSIE|trident|edge\/12|edge\/13/i) || !conf.a.ALLOW_POSTMESSAGE_POPUP;
+            return !!Object(cross_domain_utils_src.o)(window).match(/MSIE|trident|edge\/12|edge\/13/i) || !conf.a.ALLOW_POSTMESSAGE_POPUP;
         }
         var zalgo_promise_src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), global = __webpack_require__("./node_modules/post-robot/src/global.js"), serialize__typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
@@ -5124,7 +3317,7 @@
                 if (!methods) throw new Error("Could not find any methods this window has privileges to call");
                 var meth = methods[data.id];
                 if (!meth) throw new Error("Could not find method with id: " + data.id);
-                if (!Object(cross_domain_utils_src.z)(meth.domain, origin)) throw new Error("Method domain " + meth.domain + " does not match origin " + origin);
+                if (!Object(cross_domain_utils_src.A)(meth.domain, origin)) throw new Error("Method domain " + meth.domain + " does not match origin " + origin);
                 return zalgo_promise_src.a.try(function() {
                     return meth.method.apply({
                         source: source,
@@ -5266,7 +3459,7 @@
                 });
                 global.a.readyPromises.set(source, promise);
             });
-            var parent = Object(cross_domain_utils_src.d)();
+            var parent = Object(cross_domain_utils_src.e)();
             parent && sayHello(parent).catch(noop);
         }
         function onChildWindowReady(win) {
@@ -5406,8 +3599,8 @@
             try {
                 if (!item) return !1;
                 if ("undefined" != typeof Promise && item instanceof Promise) return !0;
-                if ("undefined" != typeof window && window.Window && item instanceof window.Window) return !1;
-                if ("undefined" != typeof window && window.constructor && item instanceof window.constructor) return !1;
+                if ("undefined" != typeof window && "function" == typeof window.Window && item instanceof window.Window) return !1;
+                if ("undefined" != typeof window && "function" == typeof window.constructor && item instanceof window.constructor) return !1;
                 var _toString = {}.toString;
                 if (_toString) {
                     var name = _toString.call(item);
@@ -5509,38 +3702,41 @@
                 return this;
             };
             ZalgoPromise.prototype.dispatch = function() {
-                var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
+                var dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                 if (!dispatching && (resolved || rejected)) {
                     this.dispatching = !0;
                     startActive();
-                    for (var _loop = function(i) {
-                        var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
+                    for (var chain = function(firstPromise, secondPromise) {
+                        return firstPromise.then(function(res) {
+                            secondPromise.resolve(res);
+                        }, function(err) {
+                            secondPromise.reject(err);
+                        });
+                    }, i = 0; i < handlers.length; i++) {
+                        var _handlers$i = handlers[i], _onSuccess = _handlers$i.onSuccess, _onError = _handlers$i.onError, _promise = _handlers$i.promise, _result2 = void 0;
                         if (resolved) try {
-                            result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                            _result2 = _onSuccess ? _onSuccess(this.value) : this.value;
                         } catch (err) {
-                            promise.reject(err);
-                            return "continue";
+                            _promise.reject(err);
+                            continue;
                         } else if (rejected) {
-                            if (!onError) {
-                                promise.reject(_this3.error);
-                                return "continue";
+                            if (!_onError) {
+                                _promise.reject(this.error);
+                                continue;
                             }
                             try {
-                                result = onError(_this3.error);
+                                _result2 = _onError(this.error);
                             } catch (err) {
-                                promise.reject(err);
-                                return "continue";
+                                _promise.reject(err);
+                                continue;
                             }
                         }
-                        if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
-                            result.resolved ? promise.resolve(result.value) : promise.reject(result.error);
-                            result.errorHandled = !0;
-                        } else utils_isPromise(result) ? result instanceof ZalgoPromise && (result.resolved || result.rejected) ? result.resolved ? promise.resolve(result.value) : promise.reject(result.error) : result.then(function(res) {
-                            promise.resolve(res);
-                        }, function(err) {
-                            promise.reject(err);
-                        }) : promise.resolve(result);
-                    }, i = 0; i < handlers.length; i++) _loop(i);
+                        if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
+                            var promiseResult = _result2;
+                            promiseResult.resolved ? _promise.resolve(promiseResult.value) : _promise.reject(promiseResult.error);
+                            promiseResult.errorHandled = !0;
+                        } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? _promise.resolve(_result2.value) : _promise.reject(_result2.error) : chain(_result2, _promise) : _promise.resolve(_result2);
+                    }
                     handlers.length = 0;
                     this.dispatching = !1;
                     endActive();
@@ -5575,10 +3771,10 @@
                 });
             };
             ZalgoPromise.prototype.timeout = function(time, err) {
-                var _this4 = this;
+                var _this3 = this;
                 if (this.resolved || this.rejected) return this;
                 var timeout = setTimeout(function() {
-                    _this4.resolved || _this4.rejected || _this4.reject(err || new Error("Promise timed out after " + time + "ms"));
+                    _this3.resolved || _this3.rejected || _this3.reject(err || new Error("Promise timed out after " + time + "ms"));
                 }, time);
                 return this.then(function(result) {
                     clearTimeout(timeout);
@@ -5589,8 +3785,15 @@
                 if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
                 return Promise.resolve(this);
             };
+            ZalgoPromise.prototype.lazy = function() {
+                this.errorHandled = !0;
+                return this;
+            };
             ZalgoPromise.resolve = function(value) {
-                return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
+                if (value instanceof ZalgoPromise) {
+                    return value;
+                }
+                return utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
                     return value.then(resolve, reject);
                 }) : new ZalgoPromise().resolve(value);
             };
@@ -5601,41 +3804,47 @@
                 return new ZalgoPromise().asyncReject(error);
             };
             ZalgoPromise.all = function(promises) {
-                var promise = new ZalgoPromise(), count = promises.length, results = [];
+                var promise = new ZalgoPromise(), count = promises.length, results = [].slice();
                 if (!count) {
                     promise.resolve(results);
                     return promise;
                 }
-                for (var _loop2 = function(i) {
+                for (var chain = function(i, firstPromise, secondPromise) {
+                    return firstPromise.then(function(res) {
+                        results[i] = res;
+                        0 === (count -= 1) && promise.resolve(results);
+                    }, function(err) {
+                        secondPromise.reject(err);
+                    });
+                }, i = 0; i < promises.length; i++) {
                     var prom = promises[i];
                     if (prom instanceof ZalgoPromise) {
                         if (prom.resolved) {
                             results[i] = prom.value;
                             count -= 1;
-                            return "continue";
+                            continue;
                         }
                     } else if (!utils_isPromise(prom)) {
                         results[i] = prom;
                         count -= 1;
-                        return "continue";
+                        continue;
                     }
-                    ZalgoPromise.resolve(prom).then(function(result) {
-                        results[i] = result;
-                        0 === (count -= 1) && promise.resolve(results);
-                    }, function(err) {
-                        promise.reject(err);
-                    });
-                }, i = 0; i < promises.length; i++) _loop2(i);
+                    chain(i, ZalgoPromise.resolve(prom), promise);
+                }
                 0 === count && promise.resolve(results);
                 return promise;
             };
             ZalgoPromise.hash = function(promises) {
-                var result = {};
-                return ZalgoPromise.all(Object.keys(promises).map(function(key) {
-                    return ZalgoPromise.resolve(promises[key]).then(function(value) {
-                        result[key] = value;
-                    });
-                })).then(function() {
+                var result = {}, awaitPromises = [], _loop = function(key) {
+                    if (promises.hasOwnProperty(key)) {
+                        var value = promises[key];
+                        utils_isPromise(value) ? awaitPromises.push(value.then(function(res) {
+                            result[key] = res;
+                        })) : result[key] = value;
+                    }
+                };
+                for (var key in promises) _loop(key);
+                return ZalgoPromise.all(awaitPromises).then(function() {
                     return result;
                 });
             };
@@ -5684,6 +3893,2052 @@
         }();
         __webpack_require__.d(__webpack_exports__, "a", function() {
             return promise_ZalgoPromise;
+        });
+    },
+    "./node_modules/zoid/node_modules/belter/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function getUserAgent() {
+            return window.navigator.mockUserAgent || window.navigator.userAgent;
+        }
+        function isDevice() {
+            return !!(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent()).match(/Android|webOS|iPhone|iPad|iPod|bada|Symbian|Palm|CriOS|BlackBerry|IEMobile|WindowsMobile|Opera Mini/i);
+        }
+        function isWebView() {
+            var userAgent = getUserAgent();
+            return /(iPhone|iPod|iPad|Macintosh).*AppleWebKit(?!.*Safari)/i.test(userAgent) || /\bwv\b/.test(userAgent) || /Android.*Version\/(\d)\.(\d)/i.test(userAgent);
+        }
+        function isStandAlone() {
+            return !0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+        }
+        function isFacebookWebView() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return -1 !== ua.indexOf("FBAN") || -1 !== ua.indexOf("FBAV");
+        }
+        function isFirefoxIOS() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /FxiOS/i.test(ua);
+        }
+        function isEdgeIOS() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /EdgiOS/i.test(ua);
+        }
+        function isOperaMini() {
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent()).indexOf("Opera Mini") > -1;
+        }
+        function isAndroid() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /Android/.test(ua);
+        }
+        function isIos() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /iPhone|iPod|iPad/.test(ua);
+        }
+        function isGoogleSearchApp() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /\bGSA\b/.test(ua);
+        }
+        function isQQBrowser() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /QQBrowser/.test(ua);
+        }
+        function isIosWebview() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return !!isIos(ua) && (!!isGoogleSearchApp(ua) || /.+AppleWebKit(?!.*Safari)/.test(ua));
+        }
+        function isAndroidWebview() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return !!isAndroid(ua) && (/Version\/[\d.]+/.test(ua) && !isOperaMini(ua));
+        }
+        function device_isIE() {
+            return !!window.document.documentMode || Boolean(window.navigator && window.navigator.userAgent && /Edge|MSIE|rv:11/i.test(window.navigator.userAgent));
+        }
+        function isIECompHeader() {
+            var mHttp = window.document.querySelector('meta[http-equiv="X-UA-Compatible"]'), mContent = window.document.querySelector('meta[content="IE=edge"]');
+            return !(!mHttp || !mContent);
+        }
+        function isElectron() {
+            return !("undefined" == typeof process || !process.versions || !process.versions.electron);
+        }
+        function isIEIntranet() {
+            if (window.document.documentMode) try {
+                var status = window.status;
+                window.status = "testIntranetMode";
+                if ("testIntranetMode" === window.status) {
+                    window.status = status;
+                    return !0;
+                }
+                return !1;
+            } catch (err) {
+                return !1;
+            }
+            return !1;
+        }
+        function isMacOsCna() {
+            var userAgent = getUserAgent();
+            return /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent);
+        }
+        function supportsPopups() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return !(isIosWebview(ua) || isAndroidWebview(ua) || isOperaMini(ua) || isFirefoxIOS(ua) || isEdgeIOS(ua) || isFacebookWebView(ua) || isQQBrowser(ua) || isElectron() || isMacOsCna() || isStandAlone());
+        }
+        function isChrome() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /Chrome|Chromium|CriOS/.test(ua);
+        }
+        function isSafari() {
+            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
+            return /Safari/.test(ua) && !isChrome(ua);
+        }
+        var src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), cross_domain_utils_src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), cross_domain_safe_weakmap_src = __webpack_require__("./node_modules/cross-domain-safe-weakmap/src/index.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        function getFunctionName(fn) {
+            return fn.name || fn.__name__ || fn.displayName || "anonymous";
+        }
+        function setFunctionName(fn, name) {
+            try {
+                delete fn.name;
+                fn.name = name;
+            } catch (err) {}
+            fn.__name__ = fn.displayName = name;
+            return fn;
+        }
+        function base64encode(str) {
+            if ("function" == typeof btoa) return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(m, p1) {
+                return String.fromCharCode(parseInt(p1, 16));
+            }));
+            if ("undefined" != typeof Buffer) return Buffer.from(str, "utf8").toString("base64");
+            throw new Error("Can not find window.btoa or Buffer");
+        }
+        function base64decode(str) {
+            if ("function" == typeof atob) return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(""));
+            if ("undefined" != typeof Buffer) return Buffer.from(str, "base64").toString("utf8");
+            throw new Error("Can not find window.atob or Buffer");
+        }
+        function uniqueID() {
+            var chars = "0123456789abcdef";
+            return "xxxxxxxxxx".replace(/./g, function() {
+                return chars.charAt(Math.floor(Math.random() * chars.length));
+            }) + "_" + base64encode(new Date().toISOString().slice(11, 19).replace("T", ".")).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+        }
+        function getGlobal() {
+            if ("undefined" != typeof window) return window;
+            if ("undefined" != typeof global) return global;
+            if ("undefined" != typeof __GLOBAL__) return __GLOBAL__;
+            throw new Error("No global found");
+        }
+        var objectIDs = void 0;
+        function getObjectID(obj) {
+            objectIDs = objectIDs || new cross_domain_safe_weakmap_src.a();
+            if (null === obj || void 0 === obj || "object" !== (void 0 === obj ? "undefined" : _typeof(obj)) && "function" != typeof obj) throw new Error("Invalid object");
+            var uid = objectIDs.get(obj);
+            if (!uid) {
+                uid = (void 0 === obj ? "undefined" : _typeof(obj)) + ":" + uniqueID();
+                objectIDs.set(obj, uid);
+            }
+            return uid;
+        }
+        function serializeArgs(args) {
+            try {
+                return JSON.stringify(Array.prototype.slice.call(args), function(subkey, val) {
+                    return "function" == typeof val ? "memoize[" + getObjectID(val) + "]" : val;
+                });
+            } catch (err) {
+                throw new Error("Arguments not serializable -- can not be used to memoize");
+            }
+        }
+        var getDefaultMemoizeOptions = function() {
+            return {};
+        }, memoizedFunctions = [];
+        function memoize(method) {
+            var _this = this, options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : getDefaultMemoizeOptions(), cacheMap = new cross_domain_safe_weakmap_src.a(), memoizedFunction = function() {
+                for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
+                var cache = cacheMap.getOrSet(options.thisNamespace ? this : method, function() {
+                    return {};
+                }), key = serializeArgs(args), cacheTime = options.time;
+                cache[key] && cacheTime && Date.now() - cache[key].time < cacheTime && delete cache[key];
+                if (cache[key]) return cache[key].value;
+                var time = Date.now(), value = method.apply(this, arguments);
+                cache[key] = {
+                    time: time,
+                    value: value
+                };
+                return cache[key].value;
+            };
+            memoizedFunction.reset = function() {
+                cacheMap.delete(options.thisNamespace ? _this : method);
+            };
+            memoizedFunctions.push(memoizedFunction);
+            return setFunctionName(memoizedFunction, (options.name || getFunctionName(method)) + "::memoized");
+        }
+        memoize.clear = function() {
+            for (var _i2 = 0, _length2 = null == memoizedFunctions ? 0 : memoizedFunctions.length; _i2 < _length2; _i2++) {
+                memoizedFunctions[_i2].reset();
+            }
+        };
+        function promiseIdentity(item) {
+            return src.a.resolve(item);
+        }
+        function memoizePromise(method) {
+            var cache = {};
+            function memoizedPromiseFunction() {
+                for (var _this2 = this, _arguments = arguments, _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
+                var key = serializeArgs(args);
+                if (cache.hasOwnProperty(key)) return cache[key];
+                cache[key] = src.a.try(function() {
+                    return method.apply(_this2, _arguments);
+                }).finally(function() {
+                    delete cache[key];
+                });
+                return cache[key];
+            }
+            memoizedPromiseFunction.reset = function() {
+                cache = {};
+            };
+            return setFunctionName(memoizedPromiseFunction, getFunctionName(method) + "::promiseMemoized");
+        }
+        var getDefaultPromisifyOptions = function() {
+            return {};
+        };
+        function promisify(method) {
+            var options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : getDefaultPromisifyOptions();
+            function promisifiedFunction() {
+                return src.a.try(method, this, arguments);
+            }
+            options.name && (promisifiedFunction.displayName = options.name + ":promisified");
+            return setFunctionName(promisifiedFunction, getFunctionName(method) + "::promisified");
+        }
+        function inlineMemoize(method, logic) {
+            var args = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : [], cache = method.__inline_memoize_cache__ = method.__inline_memoize_cache__ || {}, key = serializeArgs(args);
+            return cache.hasOwnProperty(key) ? cache[key] : cache[key] = logic.apply(void 0, args);
+        }
+        function noop() {}
+        function once(method) {
+            var called = !1;
+            return setFunctionName(function() {
+                if (!called) {
+                    called = !0;
+                    return method.apply(this, arguments);
+                }
+            }, getFunctionName(method) + "::once");
+        }
+        function hashStr(str) {
+            for (var hash = 0, i = 0; i < str.length; i++) hash += str[i].charCodeAt(0) * Math.pow(i % 10 + 1, 5);
+            return Math.floor(Math.pow(Math.sqrt(hash), 5));
+        }
+        function strHashStr(str) {
+            for (var hash = "", i = 0; i < str.length; i++) {
+                var total = str[i].charCodeAt(0) * i;
+                str[i + 1] && (total += str[i + 1].charCodeAt(0) * (i - 1));
+                hash += String.fromCharCode(97 + Math.abs(total) % 26);
+            }
+            return hash;
+        }
+        function match(str, pattern) {
+            var regmatch = str.match(pattern);
+            if (regmatch) return regmatch[1];
+        }
+        function awaitKey(obj, key) {
+            return new src.a(function(resolve) {
+                var value = obj[key];
+                if (value) return resolve(value);
+                delete obj[key];
+                Object.defineProperty(obj, key, {
+                    configurable: !0,
+                    set: function(item) {
+                        (value = item) && resolve(value);
+                    },
+                    get: function() {
+                        return value;
+                    }
+                });
+            });
+        }
+        function stringifyError(err) {
+            var level = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 1;
+            if (level >= 3) return "stringifyError stack overflow";
+            try {
+                if (!err) return "<unknown error: " + Object.prototype.toString.call(err) + ">";
+                if ("string" == typeof err) return err;
+                if (err instanceof Error) {
+                    var stack = err && err.stack, message = err && err.message;
+                    if (stack && message) return -1 !== stack.indexOf(message) ? stack : message + "\n" + stack;
+                    if (stack) return stack;
+                    if (message) return message;
+                }
+                return err && err.toString && "function" == typeof err.toString ? err.toString() : Object.prototype.toString.call(err);
+            } catch (newErr) {
+                return "Error while stringifying error: " + stringifyError(newErr, level + 1);
+            }
+        }
+        function stringifyErrorMessage(err) {
+            var defaultMessage = "<unknown error: " + Object.prototype.toString.call(err) + ">";
+            return err ? err instanceof Error ? err.message || defaultMessage : "string" == typeof err.message && err.message || defaultMessage : defaultMessage;
+        }
+        function stringify(item) {
+            return "string" == typeof item ? item : item && item.toString && "function" == typeof item.toString ? item.toString() : Object.prototype.toString.call(item);
+        }
+        function domainMatches(hostname, domain) {
+            var index = (hostname = hostname.split("://")[1]).indexOf(domain);
+            return -1 !== index && hostname.slice(index) === domain;
+        }
+        function patchMethod(obj, name, handler) {
+            var original = obj[name];
+            obj[name] = function() {
+                var _this3 = this, _arguments2 = arguments;
+                return handler({
+                    context: this,
+                    args: Array.prototype.slice.call(arguments),
+                    original: original,
+                    callOriginal: function() {
+                        return original.apply(_this3, _arguments2);
+                    }
+                });
+            };
+        }
+        function extend(obj, source) {
+            if (!source) return obj;
+            if (Object.assign) return Object.assign(obj, source);
+            for (var key in source) source.hasOwnProperty(key) && (obj[key] = source[key]);
+            return obj;
+        }
+        function values(obj) {
+            var result = [];
+            for (var key in obj) obj.hasOwnProperty(key) && result.push(obj[key]);
+            return result;
+        }
+        function perc(pixels, percentage) {
+            return Math.round(pixels * percentage / 100);
+        }
+        function min() {
+            return Math.min.apply(Math, arguments);
+        }
+        function max() {
+            return Math.max.apply(Math, arguments);
+        }
+        function regexMap(str, regexp, handler) {
+            var results = [];
+            str.replace(regexp, function(item) {
+                results.push(handler ? handler.apply(null, arguments) : item);
+            });
+            return results;
+        }
+        function svgToBase64(svg) {
+            return "data:image/svg+xml;base64," + base64encode(svg);
+        }
+        function objFilter(obj) {
+            var filter = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : Boolean, result = {};
+            for (var key in obj) obj.hasOwnProperty(key) && filter(obj[key], key) && (result[key] = obj[key]);
+            return result;
+        }
+        function identity(item) {
+            return item;
+        }
+        function regexTokenize(text, regexp) {
+            var result = [];
+            text.replace(regexp, function(token) {
+                result.push(token);
+                return "";
+            });
+            return result;
+        }
+        function promiseDebounce(method) {
+            var delay = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 50, promise = void 0, timeout = void 0;
+            return setFunctionName(function() {
+                timeout && clearTimeout(timeout);
+                var localPromise = promise = promise || new src.a();
+                timeout = setTimeout(function() {
+                    promise = null;
+                    timeout = null;
+                    src.a.try(method).then(function(result) {
+                        localPromise.resolve(result);
+                    }, function(err) {
+                        localPromise.reject(err);
+                    });
+                }, delay);
+                return localPromise;
+            }, getFunctionName(method) + "::promiseDebounced");
+        }
+        function safeInterval(method, time) {
+            var timeout = void 0;
+            !function loop() {
+                timeout = setTimeout(function() {
+                    method();
+                    loop();
+                }, time);
+            }();
+            return {
+                cancel: function() {
+                    clearTimeout(timeout);
+                }
+            };
+        }
+        function isInteger(str) {
+            return Boolean(str.match(/^[0-9]+$/));
+        }
+        function isFloat(str) {
+            return Boolean(str.match(/^[0-9]+\.[0-9]+$/));
+        }
+        function serializePrimitive(value) {
+            return value.toString();
+        }
+        function deserializePrimitive(value) {
+            return "true" === value || "false" !== value && (isInteger(value) ? parseInt(value, 10) : isFloat(value) ? parseFloat(value) : value);
+        }
+        function dotify(obj) {
+            var prefix = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : "", newobj = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
+            prefix = prefix ? prefix + "." : prefix;
+            for (var key in obj) obj.hasOwnProperty(key) && void 0 !== obj[key] && null !== obj[key] && "function" != typeof obj[key] && (obj[key] && Array.isArray(obj[key]) && obj[key].length && obj[key].every(function(val) {
+                return "object" !== (void 0 === val ? "undefined" : _typeof(val));
+            }) ? newobj["" + prefix + key + "[]"] = obj[key].join(",") : obj[key] && "object" === _typeof(obj[key]) ? newobj = dotify(obj[key], "" + prefix + key, newobj) : newobj["" + prefix + key] = serializePrimitive(obj[key]));
+            return newobj;
+        }
+        function undotify(obj) {
+            var result = {};
+            for (var key in obj) if (obj.hasOwnProperty(key) && "string" == typeof obj[key]) {
+                var value = obj[key];
+                if (key.match(/^.+\[\]$/)) {
+                    key = key.slice(0, -2);
+                    value = value.split(",").map(deserializePrimitive);
+                } else value = deserializePrimitive(value);
+                for (var keyResult = result, parts = key.split("."), i = 0; i < parts.length; i++) {
+                    var part = parts[i], isLast = i + 1 === parts.length, isIndex = !isLast && isInteger(parts[i + 1]);
+                    if ("constructor" === part || "prototype" === part || "__proto__" === part) throw new Error("Disallowed key: " + part);
+                    isLast ? keyResult[part] = value : keyResult = keyResult[part] = keyResult[part] || (isIndex ? [] : {});
+                }
+            }
+            return result;
+        }
+        function eventEmitter() {
+            var triggered = {}, handlers = {};
+            return {
+                on: function(eventName, handler) {
+                    var handlerList = handlers[eventName] = handlers[eventName] || [];
+                    handlerList.push(handler);
+                    var cancelled = !1;
+                    return {
+                        cancel: function() {
+                            if (!cancelled) {
+                                cancelled = !0;
+                                handlerList.splice(handlerList.indexOf(handler), 1);
+                            }
+                        }
+                    };
+                },
+                once: function(eventName, handler) {
+                    var listener = this.on(eventName, function() {
+                        listener.cancel();
+                        handler();
+                    });
+                    return listener;
+                },
+                trigger: function(eventName) {
+                    for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) args[_key3 - 1] = arguments[_key3];
+                    var handlerList = handlers[eventName], promises = [];
+                    if (handlerList) for (var _loop = function(_i4, _length4) {
+                        var handler = handlerList[_i4];
+                        promises.push(src.a.try(function() {
+                            return handler.apply(void 0, args);
+                        }));
+                    }, _i4 = 0, _length4 = null == handlerList ? 0 : handlerList.length; _i4 < _length4; _i4++) _loop(_i4);
+                    return src.a.all(promises).then(noop);
+                },
+                triggerOnce: function(eventName) {
+                    if (triggered[eventName]) return src.a.resolve();
+                    triggered[eventName] = !0;
+                    for (var _len4 = arguments.length, args = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) args[_key4 - 1] = arguments[_key4];
+                    return this.trigger.apply(this, [ eventName ].concat(args));
+                },
+                reset: function() {
+                    handlers = {};
+                }
+            };
+        }
+        function camelToDasherize(string) {
+            return string.replace(/([A-Z])/g, function(g) {
+                return "-" + g.toLowerCase();
+            });
+        }
+        function dasherizeToCamel(string) {
+            return string.replace(/-([a-z])/g, function(g) {
+                return g[1].toUpperCase();
+            });
+        }
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+        }
+        function get(item, path, def) {
+            if (!path) return def;
+            for (var pathParts = path.split("."), i = 0; i < pathParts.length; i++) {
+                if ("object" !== (void 0 === item ? "undefined" : _typeof(item)) || null === item) return def;
+                item = item[pathParts[i]];
+            }
+            return void 0 === item ? def : item;
+        }
+        function safeTimeout(method, time) {
+            var interval = safeInterval(function() {
+                if ((time -= 100) <= 0) {
+                    interval.cancel();
+                    method();
+                }
+            }, 100);
+        }
+        function defineLazyProp(obj, key, getter) {
+            if (Array.isArray(obj)) {
+                if ("number" != typeof key) throw new TypeError("Array key must be number");
+            } else if ("object" === (void 0 === obj ? "undefined" : _typeof(obj)) && null !== obj && "string" != typeof key) throw new TypeError("Object key must be string");
+            Object.defineProperty(obj, key, {
+                configurable: !0,
+                enumerable: !0,
+                get: function() {
+                    delete obj[key];
+                    var value = getter();
+                    obj[key] = value;
+                    return value;
+                },
+                set: function(value) {
+                    delete obj[key];
+                    obj[key] = value;
+                }
+            });
+        }
+        function arrayFrom(item) {
+            return Array.prototype.slice.call(item);
+        }
+        function isObject(item) {
+            return "object" === (void 0 === item ? "undefined" : _typeof(item)) && null !== item;
+        }
+        function isObjectObject(obj) {
+            return isObject(obj) && "[object Object]" === Object.prototype.toString.call(obj);
+        }
+        function isPlainObject(obj) {
+            if (!isObjectObject(obj)) return !1;
+            var constructor = obj.constructor;
+            if ("function" != typeof constructor) return !1;
+            var prototype = constructor.prototype;
+            return !!isObjectObject(prototype) && !!prototype.hasOwnProperty("isPrototypeOf");
+        }
+        function replaceObject(item, replacer) {
+            var fullKey = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : "";
+            if (Array.isArray(item)) {
+                for (var _length5 = item.length, result = [], _loop2 = function(i) {
+                    defineLazyProp(result, i, function() {
+                        var itemKey = fullKey ? fullKey + "." + i : "" + i, el = item[i], child = replacer(el, i, itemKey);
+                        (isPlainObject(child) || Array.isArray(child)) && (child = replaceObject(child, replacer, itemKey));
+                        return child;
+                    });
+                }, i = 0; i < _length5; i++) _loop2(i);
+                return result;
+            }
+            if (isPlainObject(item)) {
+                var _result = {}, _loop3 = function(key) {
+                    if (!item.hasOwnProperty(key)) return "continue";
+                    defineLazyProp(_result, key, function() {
+                        var itemKey = fullKey ? fullKey + "." + key : "" + key, el = item[key], child = replacer(el, key, itemKey);
+                        (isPlainObject(child) || Array.isArray(child)) && (child = replaceObject(child, replacer, itemKey));
+                        return child;
+                    });
+                };
+                for (var key in item) _loop3(key);
+                return _result;
+            }
+            throw new Error("Pass an object or array");
+        }
+        function copyProp(source, target, name, def) {
+            if (source.hasOwnProperty(name)) {
+                var descriptor = Object.getOwnPropertyDescriptor(source, name);
+                Object.defineProperty(target, name, descriptor);
+            } else target[name] = def;
+        }
+        function regex(pattern, string) {
+            var start = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 0;
+            "string" == typeof pattern && (pattern = new RegExp(pattern));
+            var result = string.slice(start).match(pattern);
+            if (result) {
+                var index = result.index, regmatch = result[0];
+                return {
+                    text: regmatch,
+                    groups: result.slice(1),
+                    start: start + index,
+                    end: start + index + regmatch.length,
+                    length: regmatch.length,
+                    replace: function(text) {
+                        return regmatch ? "" + regmatch.slice(0, start + index) + text + regmatch.slice(index + regmatch.length) : "";
+                    }
+                };
+            }
+        }
+        function regexAll(pattern, string) {
+            for (var matches = [], start = 0; ;) {
+                var regmatch = regex(pattern, string, start);
+                if (!regmatch) break;
+                matches.push(regmatch);
+                start = match.end;
+            }
+            return matches;
+        }
+        function isDefined(value) {
+            return null !== value && void 0 !== value;
+        }
+        function cycle(method) {
+            return src.a.try(method).then(function() {
+                return cycle(method);
+            });
+        }
+        function debounce(method) {
+            var time = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 100, timeout = void 0;
+            return setFunctionName(function() {
+                var _this4 = this, _arguments3 = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(function() {
+                    return method.apply(_this4, _arguments3);
+                }, time);
+            }, getFunctionName(method) + "::debounced");
+        }
+        function isRegex(item) {
+            return "[object RegExp]" === Object.prototype.toString.call(item);
+        }
+        var util_weakMapMemoize = function(method) {
+            var weakmap = new cross_domain_safe_weakmap_src.a();
+            return function(arg) {
+                var _this5 = this;
+                return weakmap.getOrSet(arg, function() {
+                    return method.call(_this5, arg);
+                });
+            };
+        }, util_weakMapMemoizePromise = function(method) {
+            var weakmap = new cross_domain_safe_weakmap_src.a();
+            return function(arg) {
+                var _this6 = this;
+                return weakmap.getOrSet(arg, function() {
+                    return method.call(_this6, arg).finally(function() {
+                        weakmap.delete(arg);
+                    });
+                });
+            };
+        };
+        function getOrSet(obj, key, getter) {
+            if (obj.hasOwnProperty(key)) return obj[key];
+            var val = getter();
+            obj[key] = val;
+            return val;
+        }
+        function cleanup(obj) {
+            var tasks = [], cleaned = !1;
+            return {
+                set: function(name, item) {
+                    if (!cleaned) {
+                        obj[name] = item;
+                        this.register(function() {
+                            delete obj[name];
+                        });
+                    }
+                    return item;
+                },
+                register: function(method) {
+                    cleaned ? method() : tasks.push(once(method));
+                },
+                all: function() {
+                    var results = [];
+                    cleaned = !0;
+                    for (;tasks.length; ) {
+                        var task = tasks.shift();
+                        results.push(task());
+                    }
+                    return src.a.all(results).then(noop);
+                }
+            };
+        }
+        function tryCatch(fn) {
+            var result = void 0, error = void 0;
+            try {
+                result = fn();
+            } catch (err) {
+                error = err;
+            }
+            return {
+                result: result,
+                error: error
+            };
+        }
+        function removeFromArray(arr, item) {
+            var index = arr.indexOf(item);
+            -1 !== index && arr.splice(index, 1);
+        }
+        function assertExists(name, thing) {
+            if (null === thing || void 0 === thing) throw new Error("Expected " + name + " to be present");
+            return thing;
+        }
+        function unique(arr) {
+            for (var result = {}, _i6 = 0, _length7 = null == arr ? 0 : arr.length; _i6 < _length7; _i6++) {
+                result[arr[_i6]] = !0;
+            }
+            return Object.keys(result);
+        }
+        var KEY_CODES = {
+            ENTER: 13,
+            SPACE: 32
+        }, dom__typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, _extends = Object.assign || function(target) {
+            for (var i = 1; i < arguments.length; i++) {
+                var source = arguments[i];
+                for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
+            }
+            return target;
+        };
+        function isDocumentReady() {
+            return Boolean(document.body) && "complete" === document.readyState;
+        }
+        function urlEncode(str) {
+            return str.replace(/\?/g, "%3F").replace(/&/g, "%26").replace(/#/g, "%23").replace(/\+/g, "%2B");
+        }
+        function waitForWindowReady() {
+            return inlineMemoize(waitForWindowReady, function() {
+                return new src.a(function(resolve) {
+                    isDocumentReady() && resolve();
+                    window.addEventListener("load", function() {
+                        return resolve();
+                    });
+                });
+            });
+        }
+        function waitForDocumentReady() {
+            return inlineMemoize(waitForDocumentReady, function() {
+                return new src.a(function(resolve) {
+                    if (isDocumentReady()) return resolve();
+                    var interval = setInterval(function() {
+                        if (isDocumentReady()) {
+                            clearInterval(interval);
+                            return resolve();
+                        }
+                    }, 10);
+                });
+            });
+        }
+        function waitForDocumentBody() {
+            return waitForDocumentReady().then(function() {
+                if (document.body) return document.body;
+                throw new Error("Document ready but document.body not present");
+            });
+        }
+        function parseQuery(queryString) {
+            return inlineMemoize(parseQuery, function() {
+                var params = {};
+                if (!queryString) return params;
+                if (-1 === queryString.indexOf("=")) return params;
+                for (var _i2 = 0, _queryString$split2 = queryString.split("&"), _length2 = null == _queryString$split2 ? 0 : _queryString$split2.length; _i2 < _length2; _i2++) {
+                    var pair = _queryString$split2[_i2];
+                    (pair = pair.split("="))[0] && pair[1] && (params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]));
+                }
+                return params;
+            }, [ queryString ]);
+        }
+        function getQueryParam(name) {
+            return parseQuery(window.location.search.slice(1))[name];
+        }
+        function urlWillRedirectPage(url) {
+            return -1 === url.indexOf("#") || 0 !== url.indexOf("#") && url.split("#")[0] !== window.location.href.split("#")[0];
+        }
+        function formatQuery() {
+            var obj = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+            return Object.keys(obj).filter(function(key) {
+                return "string" == typeof obj[key];
+            }).map(function(key) {
+                return urlEncode(key) + "=" + urlEncode(obj[key]);
+            }).join("&");
+        }
+        function extendQuery(originalQuery) {
+            var props = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+            return props && Object.keys(props).length ? formatQuery(_extends({}, parseQuery(originalQuery), props)) : originalQuery;
+        }
+        function extendUrl(url, options) {
+            var originalHash, query = options.query || {}, hash = options.hash || {}, originalUrl = void 0, _url$split = url.split("#");
+            originalUrl = _url$split[0];
+            originalHash = _url$split[1];
+            var _originalUrl$split = originalUrl.split("?");
+            originalUrl = _originalUrl$split[0];
+            var queryString = extendQuery(_originalUrl$split[1], query), hashString = extendQuery(originalHash, hash);
+            queryString && (originalUrl = originalUrl + "?" + queryString);
+            hashString && (originalUrl = originalUrl + "#" + hashString);
+            return originalUrl;
+        }
+        function redirect(url) {
+            var win = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : window;
+            return new src.a(function(resolve) {
+                win.location = url;
+                urlWillRedirectPage(url) || resolve();
+            });
+        }
+        function hasMetaViewPort() {
+            var meta = document.querySelector("meta[name=viewport]");
+            return !(isDevice() && window.screen.width < 660 && !meta);
+        }
+        function isElementVisible(el) {
+            return Boolean(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+        }
+        function getPerformance() {
+            return inlineMemoize(getPerformance, function() {
+                var performance = window.performance;
+                if (performance && performance.now && performance.timing && performance.timing.connectEnd && performance.timing.navigationStart && Math.abs(performance.now() - Date.now()) > 1e3 && performance.now() - (performance.timing.connectEnd - performance.timing.navigationStart) > 0) return performance;
+            });
+        }
+        function enablePerformance() {
+            return Boolean(getPerformance());
+        }
+        function getPageRenderTime() {
+            return waitForDocumentReady().then(function() {
+                var performance = getPerformance();
+                if (performance) {
+                    var timing = performance.timing;
+                    return timing.connectEnd && timing.domInteractive ? timing.domInteractive - timing.connectEnd : void 0;
+                }
+            });
+        }
+        function htmlEncode() {
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/\//g, "&#x2F;");
+        }
+        function isBrowser() {
+            return "undefined" != typeof window;
+        }
+        function querySelectorAll(selector) {
+            var doc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : window.document;
+            return Array.prototype.slice.call(doc.querySelectorAll(selector));
+        }
+        function onClick(element, handler) {
+            element.addEventListener("touchstart", noop);
+            element.addEventListener("click", handler);
+            element.addEventListener("keypress", function(event) {
+                if (event.keyCode === KEY_CODES.ENTER || event.keyCode === KEY_CODES.SPACE) return handler(event);
+            });
+        }
+        function getScript(_ref) {
+            var _ref$host = _ref.host, host = void 0 === _ref$host ? window.location.host : _ref$host, path = _ref.path;
+            return inlineMemoize(getScript, function() {
+                for (var url = "" + host + path, scripts = Array.prototype.slice.call(document.getElementsByTagName("script")), _i4 = 0, _length4 = null == scripts ? 0 : scripts.length; _i4 < _length4; _i4++) {
+                    var script = scripts[_i4];
+                    if (script.src) {
+                        if (script.src.replace(/^https?:\/\//, "").split("?")[0] === url) return script;
+                    }
+                }
+            }, [ path ]);
+        }
+        function isLocalStorageEnabled() {
+            return inlineMemoize(isLocalStorageEnabled, function() {
+                try {
+                    if ("undefined" == typeof window) return !1;
+                    if (window.localStorage) {
+                        var value = Math.random().toString();
+                        window.localStorage.setItem("__test__localStorage__", value);
+                        var result = window.localStorage.getItem("__test__localStorage__");
+                        window.localStorage.removeItem("__test__localStorage__");
+                        if (value === result) return !0;
+                    }
+                } catch (err) {}
+                return !1;
+            });
+        }
+        function getBrowserLocales() {
+            var nav = window.navigator, locales = nav.languages ? [].concat(nav.languages) : [];
+            nav.language && locales.push(nav.language);
+            nav.userLanguage && locales.push(nav.userLanguage);
+            return locales.map(function(locale) {
+                if (locale && locale.match(/^[a-z]{2}[-_][A-Z]{2}$/)) {
+                    var _locale$split = locale.split(/[-_]/), _lang = _locale$split[0];
+                    return {
+                        country: _locale$split[1],
+                        lang: _lang
+                    };
+                }
+                return locale && locale.match(/^[a-z]{2}$/) ? {
+                    lang: locale
+                } : null;
+            }).filter(Boolean);
+        }
+        function appendChild(container, child) {
+            container.appendChild(child);
+        }
+        function isElement(element) {
+            return element instanceof window.Element || null !== element && "object" === (void 0 === element ? "undefined" : dom__typeof(element)) && 1 === element.nodeType && "object" === dom__typeof(element.style) && "object" === dom__typeof(element.ownerDocument);
+        }
+        function getElementSafe(id) {
+            var doc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : document;
+            return isElement(id) ? id : "string" == typeof id ? doc.querySelector(id) : void 0;
+        }
+        function getElement(id) {
+            var element = getElementSafe(id, arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : document);
+            if (element) return element;
+            throw new Error("Can not find element: " + stringify(id));
+        }
+        function elementReady(id) {
+            return new src.a(function(resolve, reject) {
+                var name = stringify(id), el = getElementSafe(id);
+                if (el) return resolve(el);
+                if (isDocumentReady()) return reject(new Error("Document is ready and element " + name + " does not exist"));
+                var interval = setInterval(function() {
+                    if (el = getElementSafe(id)) {
+                        clearInterval(interval);
+                        return resolve(el);
+                    }
+                    if (isDocumentReady()) {
+                        clearInterval(interval);
+                        return reject(new Error("Document is ready and element " + name + " does not exist"));
+                    }
+                }, 10);
+            });
+        }
+        function PopupOpenError(message) {
+            this.message = message;
+        }
+        PopupOpenError.prototype = Object.create(Error.prototype);
+        function popup(url, options) {
+            var _options = options = options || {}, width = _options.width, height = _options.height, top = 0, left = 0;
+            width && (window.outerWidth ? left = Math.round((window.outerWidth - width) / 2) + window.screenX : window.screen.width && (left = Math.round((window.screen.width - width) / 2)));
+            height && (window.outerHeight ? top = Math.round((window.outerHeight - height) / 2) + window.screenY : window.screen.height && (top = Math.round((window.screen.height - height) / 2)));
+            width && height && (options = _extends({
+                top: top,
+                left: left,
+                width: width,
+                height: height,
+                status: 1,
+                toolbar: 0,
+                menubar: 0,
+                resizable: 1,
+                scrollbars: 1
+            }, options));
+            var name = options.name || "";
+            delete options.name;
+            var params = Object.keys(options).map(function(key) {
+                if (null !== options[key] && void 0 !== options[key]) return key + "=" + stringify(options[key]);
+            }).filter(Boolean).join(","), win = void 0;
+            try {
+                win = window.open(url, name, params, !0);
+            } catch (err) {
+                throw new PopupOpenError("Can not open popup window - " + (err.stack || err.message));
+            }
+            if (Object(cross_domain_utils_src.y)(win)) {
+                var err;
+                throw new PopupOpenError("Can not open popup window - blocked");
+            }
+            window.addEventListener("unload", function() {
+                return win.close();
+            });
+            return win;
+        }
+        function writeToWindow(win, html) {
+            try {
+                win.document.open();
+                win.document.write(html);
+                win.document.close();
+            } catch (err) {
+                try {
+                    win.location = "javascript: document.open(); document.write(" + JSON.stringify(html) + "); document.close();";
+                } catch (err2) {}
+            }
+        }
+        function writeElementToWindow(win, el) {
+            var tag = el.tagName.toLowerCase();
+            if ("html" !== tag) throw new Error("Expected element to be html, got " + tag);
+            for (var documentElement = win.document.documentElement, _i6 = 0, _arrayFrom2 = arrayFrom(documentElement.children), _length6 = null == _arrayFrom2 ? 0 : _arrayFrom2.length; _i6 < _length6; _i6++) {
+                var child = _arrayFrom2[_i6];
+                documentElement.removeChild(child);
+            }
+            for (var _i8 = 0, _arrayFrom4 = arrayFrom(el.children), _length8 = null == _arrayFrom4 ? 0 : _arrayFrom4.length; _i8 < _length8; _i8++) {
+                var _child = _arrayFrom4[_i8];
+                documentElement.appendChild(_child);
+            }
+        }
+        function setStyle(el, styleText) {
+            var doc = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : window.document;
+            el.styleSheet ? el.styleSheet.cssText = styleText : el.appendChild(doc.createTextNode(styleText));
+        }
+        var awaitFrameLoadPromises = void 0;
+        function awaitFrameLoad(frame) {
+            if ((awaitFrameLoadPromises = awaitFrameLoadPromises || new cross_domain_safe_weakmap_src.a()).has(frame)) {
+                var _promise = awaitFrameLoadPromises.get(frame);
+                if (_promise) return _promise;
+            }
+            var promise = new src.a(function(resolve, reject) {
+                frame.addEventListener("load", function() {
+                    Object(cross_domain_utils_src.z)(frame);
+                    resolve(frame);
+                });
+                frame.addEventListener("error", function(err) {
+                    frame.contentWindow ? resolve(frame) : reject(err);
+                });
+            });
+            awaitFrameLoadPromises.set(frame, promise);
+            return promise;
+        }
+        function awaitFrameWindow(frame) {
+            return awaitFrameLoad(frame).then(function(loadedFrame) {
+                if (!loadedFrame.contentWindow) throw new Error("Could not find window in iframe");
+                return loadedFrame.contentWindow;
+            });
+        }
+        var getDefaultCreateElementOptions = function() {
+            return {};
+        };
+        function createElement() {
+            var tag = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "div", options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : getDefaultCreateElementOptions(), container = arguments[2];
+            tag = tag.toLowerCase();
+            var element = document.createElement(tag);
+            options.style && extend(element.style, options.style);
+            options.class && (element.className = options.class.join(" "));
+            options.id && element.setAttribute("id", options.id);
+            if (options.attributes) for (var _i10 = 0, _Object$keys2 = Object.keys(options.attributes), _length10 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i10 < _length10; _i10++) {
+                var key = _Object$keys2[_i10];
+                element.setAttribute(key, options.attributes[key]);
+            }
+            options.styleSheet && setStyle(element, options.styleSheet);
+            container && appendChild(container, element);
+            if (options.html) if ("iframe" === tag) {
+                if (!container || !element.contentWindow) throw new Error("Iframe html can not be written unless container provided and iframe in DOM");
+                writeToWindow(element.contentWindow, options.html);
+            } else element.innerHTML = options.html;
+            return element;
+        }
+        var getDefaultIframeOptions = function() {
+            return {};
+        }, getDefaultStringMap = function() {
+            return {};
+        };
+        function iframe() {
+            var options = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getDefaultIframeOptions(), container = arguments[1], attributes = options.attributes || getDefaultStringMap(), style = options.style || getDefaultStringMap(), frame = createElement("iframe", {
+                attributes: _extends({
+                    allowTransparency: "true"
+                }, attributes),
+                style: _extends({
+                    backgroundColor: "transparent",
+                    border: "none"
+                }, style),
+                html: options.html,
+                class: options.class
+            }), isIE = window.navigator.userAgent.match(/MSIE|Edge/i);
+            frame.hasAttribute("id") || frame.setAttribute("id", uniqueID());
+            awaitFrameLoad(frame);
+            if (container) {
+                getElement(container).appendChild(frame);
+            }
+            (options.url || isIE) && frame.setAttribute("src", options.url || "about:blank");
+            return frame;
+        }
+        function addEventListener(obj, event, handler) {
+            obj.addEventListener(event, handler);
+            return {
+                cancel: function() {
+                    obj.removeEventListener(event, handler);
+                }
+            };
+        }
+        function bindEvents(element, eventNames, handler) {
+            handler = once(handler);
+            for (var _i12 = 0, _length12 = null == eventNames ? 0 : eventNames.length; _i12 < _length12; _i12++) {
+                var eventName = eventNames[_i12];
+                element.addEventListener(eventName, handler);
+            }
+            return {
+                cancel: once(function() {
+                    for (var _i14 = 0, _length14 = null == eventNames ? 0 : eventNames.length; _i14 < _length14; _i14++) {
+                        var _eventName = eventNames[_i14];
+                        element.removeEventListener(_eventName, handler);
+                    }
+                })
+            };
+        }
+        var VENDOR_PREFIXES = [ "webkit", "moz", "ms", "o" ];
+        function setVendorCSS(element, name, value) {
+            element.style[name] = value;
+            for (var capitalizedName = capitalizeFirstLetter(name), _i16 = 0, _length16 = null == VENDOR_PREFIXES ? 0 : VENDOR_PREFIXES.length; _i16 < _length16; _i16++) {
+                var prefix = VENDOR_PREFIXES[_i16];
+                element.style["" + prefix + capitalizedName] = value;
+            }
+        }
+        var ANIMATION_START_EVENTS = [ "animationstart", "webkitAnimationStart", "oAnimationStart", "MSAnimationStart" ], ANIMATION_END_EVENTS = [ "animationend", "webkitAnimationEnd", "oAnimationEnd", "MSAnimationEnd" ];
+        function animate(element, name, clean) {
+            var timeout = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 1e3;
+            return new src.a(function(resolve, reject) {
+                var el = getElement(element);
+                if (!el) return resolve();
+                var hasStarted = !1, startTimeout = void 0, endTimeout = void 0, startEvent = void 0, endEvent = void 0;
+                function cleanUp() {
+                    clearTimeout(startTimeout);
+                    clearTimeout(endTimeout);
+                    startEvent.cancel();
+                    endEvent.cancel();
+                }
+                startEvent = bindEvents(el, ANIMATION_START_EVENTS, function(event) {
+                    if (event.target === el && event.animationName === name) {
+                        clearTimeout(startTimeout);
+                        event.stopPropagation();
+                        startEvent.cancel();
+                        hasStarted = !0;
+                        endTimeout = setTimeout(function() {
+                            cleanUp();
+                            resolve();
+                        }, timeout);
+                    }
+                });
+                endEvent = bindEvents(el, ANIMATION_END_EVENTS, function(event) {
+                    if (event.target === el && event.animationName === name) {
+                        cleanUp();
+                        return "string" == typeof event.animationName && event.animationName !== name ? reject("Expected animation name to be " + name + ", found " + event.animationName) : resolve();
+                    }
+                });
+                setVendorCSS(el, "animationName", name);
+                startTimeout = setTimeout(function() {
+                    if (!hasStarted) {
+                        cleanUp();
+                        return resolve();
+                    }
+                }, 200);
+                clean && clean(cleanUp);
+            });
+        }
+        function makeElementVisible(element) {
+            element.style.setProperty("visibility", "");
+        }
+        function makeElementInvisible(element) {
+            element.style.setProperty("visibility", "hidden", "important");
+        }
+        function showElement(element) {
+            element.style.setProperty("display", "");
+        }
+        function hideElement(element) {
+            element.style.setProperty("display", "none", "important");
+        }
+        function destroyElement(element) {
+            element && element.parentNode && element.parentNode.removeChild(element);
+        }
+        function showAndAnimate(element, name, clean) {
+            var animation = animate(element, name, clean);
+            showElement(element);
+            return animation;
+        }
+        function animateAndHide(element, name, clean) {
+            return animate(element, name, clean).then(function() {
+                hideElement(element);
+            });
+        }
+        function addClass(element, name) {
+            element.classList.add(name);
+        }
+        function removeClass(element, name) {
+            element.classList.remove(name);
+        }
+        function isElementClosed(el) {
+            return !el || !el.parentNode;
+        }
+        function watchElementForClose(element, handler) {
+            handler = once(handler);
+            var interval = void 0;
+            isElementClosed(element) ? handler() : interval = safeInterval(function() {
+                if (isElementClosed(element)) {
+                    interval.cancel();
+                    handler();
+                }
+            }, 50);
+            return {
+                cancel: function() {
+                    interval && interval.cancel();
+                }
+            };
+        }
+        function fixScripts(el) {
+            for (var doc = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : window.document, _i18 = 0, _querySelectorAll2 = querySelectorAll("script", el), _length18 = null == _querySelectorAll2 ? 0 : _querySelectorAll2.length; _i18 < _length18; _i18++) {
+                var script = _querySelectorAll2[_i18], parentNode = script.parentNode;
+                if (parentNode) {
+                    var newScript = doc.createElement("script");
+                    newScript.text = script.textContent;
+                    parentNode.replaceChild(newScript, script);
+                }
+            }
+        }
+        function onResize(el, handler) {
+            var _ref2 = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, _ref2$width = _ref2.width, width = void 0 === _ref2$width || _ref2$width, _ref2$height = _ref2.height, height = void 0 === _ref2$height || _ref2$height, _ref2$interval = _ref2.interval, interval = void 0 === _ref2$interval ? 100 : _ref2$interval, _ref2$win = _ref2.win, win = void 0 === _ref2$win ? window : _ref2$win, currentWidth = el.offsetWidth, currentHeight = el.offsetHeight;
+            handler({
+                width: currentWidth,
+                height: currentHeight
+            });
+            var check = function() {
+                var newWidth = el.offsetWidth, newHeight = el.offsetHeight;
+                (width && newWidth !== currentWidth || height && newHeight !== currentHeight) && handler({
+                    width: newWidth,
+                    height: newHeight
+                });
+                currentWidth = newWidth;
+                currentHeight = newHeight;
+            }, observer = void 0, timeout = void 0;
+            if (void 0 !== win.ResizeObserver) (observer = new win.ResizeObserver(check)).observe(el); else if (void 0 !== win.MutationObserver) {
+                (observer = new win.MutationObserver(check)).observe(el, {
+                    attributes: !0,
+                    childList: !0,
+                    subtree: !0,
+                    characterData: !1
+                });
+                win.addEventListener("resize", check);
+            } else {
+                !function loop() {
+                    check();
+                    timeout = setTimeout(loop, interval);
+                }();
+            }
+            return {
+                cancel: function() {
+                    observer.disconnect();
+                    window.removeEventListener("resize", check);
+                    clearTimeout(timeout);
+                }
+            };
+        }
+        function getResourceLoadTime(url) {
+            var performance = getPerformance();
+            if (performance && "function" == typeof performance.getEntries) for (var entries = performance.getEntries(), i = 0; i < entries.length; i++) {
+                var entry = entries[i];
+                if (entry && entry.name && 0 === entry.name.indexOf(url) && "number" == typeof entry.duration) return Math.floor(entry.duration);
+            }
+        }
+        function isShadowElement(element) {
+            for (;element.parentNode; ) element = element.parentNode;
+            return "[object ShadowRoot]" === element.toString();
+        }
+        function getShadowRoot(element) {
+            for (;element.parentNode; ) element = element.parentNode;
+            if (isShadowElement(element)) return element;
+        }
+        function getShadowHost(element) {
+            var shadowRoot = getShadowRoot(element);
+            if (shadowRoot.host) return shadowRoot.host;
+        }
+        function insertShadowSlot(element) {
+            var shadowHost = getShadowHost(element);
+            if (!shadowHost) throw new Error("Element is not in shadow dom");
+            if (isShadowElement(shadowHost)) throw new Error("Host element is also in shadow dom");
+            var slotName = "shadow-slot-" + uniqueID(), slot = document.createElement("slot");
+            slot.setAttribute("name", slotName);
+            element.appendChild(slot);
+            var slotProvider = document.createElement("div");
+            slotProvider.setAttribute("slot", slotName);
+            shadowHost.appendChild(slotProvider);
+            return slotProvider;
+        }
+        function preventClickFocus(el) {
+            var onFocus = function onFocus(event) {
+                el.removeEventListener("focus", onFocus);
+                event.preventDefault();
+                el.blur();
+                return !1;
+            };
+            el.addEventListener("mousedown", function() {
+                el.addEventListener("focus", onFocus);
+                setTimeout(function() {
+                    el.removeEventListener("focus", onFocus);
+                }, 1);
+            });
+        }
+        var DEFAULT_SESSION_STORAGE = 12e5;
+        function getStorage(_ref) {
+            var name = _ref.name, _ref$lifetime = _ref.lifetime, lifetime = void 0 === _ref$lifetime ? DEFAULT_SESSION_STORAGE : _ref$lifetime;
+            return inlineMemoize(getStorage, function() {
+                var STORAGE_KEY = "__" + name + "_storage__", accessedStorage = void 0;
+                function getState(handler) {
+                    var localStorageEnabled = isLocalStorageEnabled(), storage = void 0;
+                    accessedStorage && (storage = accessedStorage);
+                    if (!storage && localStorageEnabled) {
+                        var rawStorage = window.localStorage.getItem(STORAGE_KEY);
+                        rawStorage && (storage = JSON.parse(rawStorage));
+                    }
+                    storage || (storage = getGlobal()[STORAGE_KEY]);
+                    storage || (storage = {
+                        id: uniqueID()
+                    });
+                    storage.id || (storage.id = uniqueID());
+                    accessedStorage = storage;
+                    var result = handler(storage);
+                    localStorageEnabled ? window.localStorage.setItem(STORAGE_KEY, JSON.stringify(storage)) : getGlobal()[STORAGE_KEY] = storage;
+                    accessedStorage = null;
+                    return result;
+                }
+                function getSession(handler) {
+                    return getState(function(storage) {
+                        var session = storage.__session__, now = Date.now();
+                        session && now - session.created > lifetime && (session = null);
+                        session || (session = {
+                            guid: uniqueID(),
+                            created: now
+                        });
+                        storage.__session__ = session;
+                        return handler(session);
+                    });
+                }
+                return {
+                    getState: getState,
+                    getID: function() {
+                        return getState(function(storage) {
+                            return storage.id;
+                        });
+                    },
+                    getSessionState: function(handler) {
+                        return getSession(function(session) {
+                            session.state = session.state || {};
+                            return handler(session.state);
+                        });
+                    },
+                    getSessionID: function() {
+                        return getSession(function(session) {
+                            return session.guid;
+                        });
+                    }
+                };
+            }, [ {
+                name: name,
+                lifetime: lifetime
+            } ]);
+        }
+        function getBelterExperimentStorage() {
+            return getStorage({
+                name: "belter_experiment"
+            });
+        }
+        function isEventUnique(name) {
+            return getBelterExperimentStorage().getSessionState(function(state) {
+                state.loggedBeacons = state.loggedBeacons || [];
+                if (-1 === state.loggedBeacons.indexOf(name)) {
+                    state.loggedBeacons.push(name);
+                    return !0;
+                }
+                return !1;
+            });
+        }
+        var THROTTLE_GROUP = {
+            TEST: "test",
+            CONTROL: "control",
+            THROTTLE: "throttle"
+        };
+        function experiment(_ref) {
+            var name = _ref.name, _ref$sample = _ref.sample, sample = void 0 === _ref$sample ? 50 : _ref$sample, _ref$logTreatment = _ref.logTreatment, logTreatment = void 0 === _ref$logTreatment ? noop : _ref$logTreatment, _ref$logCheckpoint = _ref.logCheckpoint, logCheckpoint = void 0 === _ref$logCheckpoint ? noop : _ref$logCheckpoint, throttle = function(name) {
+                return getBelterExperimentStorage().getState(function(state) {
+                    state.throttlePercentiles = state.throttlePercentiles || {};
+                    state.throttlePercentiles[name] = state.throttlePercentiles[name] || Math.floor(100 * Math.random());
+                    return state.throttlePercentiles[name];
+                });
+            }(name), group = void 0;
+            group = throttle < sample ? THROTTLE_GROUP.TEST : sample >= 50 || sample <= throttle && throttle < 2 * sample ? THROTTLE_GROUP.CONTROL : THROTTLE_GROUP.THROTTLE;
+            var treatment = name + "_" + group, started = !1, forced = !1;
+            try {
+                window.localStorage && window.localStorage.getItem(name) && (forced = !0);
+            } catch (err) {}
+            return {
+                isEnabled: function() {
+                    return group === THROTTLE_GROUP.TEST || forced;
+                },
+                isDisabled: function() {
+                    return group !== THROTTLE_GROUP.TEST && !forced;
+                },
+                getTreatment: function() {
+                    return treatment;
+                },
+                log: function(checkpoint) {
+                    var payload = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+                    if (!started) return this;
+                    isEventUnique(name + "_" + treatment + "_" + JSON.stringify(payload)) && logTreatment({
+                        name: name,
+                        treatment: treatment,
+                        payload: payload
+                    });
+                    isEventUnique(name + "_" + treatment + "_" + checkpoint + "_" + JSON.stringify(payload)) && logCheckpoint({
+                        name: name,
+                        treatment: treatment,
+                        checkpoint: checkpoint,
+                        payload: payload
+                    });
+                    return this;
+                },
+                logStart: function() {
+                    var payload = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+                    started = !0;
+                    return this.log("start", payload);
+                },
+                logComplete: function() {
+                    var payload = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+                    return this.log("complete", payload);
+                }
+            };
+        }
+        function getGlobalNameSpace(_ref) {
+            var name = _ref.name, _ref$version = _ref.version, version = void 0 === _ref$version ? "latest" : _ref$version, global = getGlobal(), globalKey = "__" + name + "__" + version + "_global__", namespace = global[globalKey] = global[globalKey] || {};
+            return {
+                get: function(key, defValue) {
+                    defValue = defValue || {};
+                    return namespace[key] = namespace[key] || defValue;
+                }
+            };
+        }
+        var HEADERS = {
+            CONTENT_TYPE: "content-type",
+            ACCEPT: "accept"
+        }, headerBuilders = [];
+        function request(_ref) {
+            var url = _ref.url, _ref$method = _ref.method, method = void 0 === _ref$method ? "get" : _ref$method, _ref$headers = _ref.headers, headers = void 0 === _ref$headers ? {} : _ref$headers, json = _ref.json, data = _ref.data, body = _ref.body, _ref$win = _ref.win, win = void 0 === _ref$win ? window : _ref$win, _ref$timeout = _ref.timeout, timeout = void 0 === _ref$timeout ? 0 : _ref$timeout;
+            return new src.a(function(resolve, reject) {
+                if (json && data || json && body || data && json) throw new Error("Only options.json or options.data or options.body should be passed");
+                for (var normalizedHeaders = {}, _i4 = 0, _Object$keys2 = Object.keys(headers), _length4 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i4 < _length4; _i4++) {
+                    var _key2 = _Object$keys2[_i4];
+                    normalizedHeaders[_key2.toLowerCase()] = headers[_key2];
+                }
+                json ? normalizedHeaders[HEADERS.CONTENT_TYPE] = normalizedHeaders[HEADERS.CONTENT_TYPE] || "application/json" : (data || body) && (normalizedHeaders[HEADERS.CONTENT_TYPE] = normalizedHeaders[HEADERS.CONTENT_TYPE] || "application/x-www-form-urlencoded; charset=utf-8");
+                normalizedHeaders[HEADERS.ACCEPT] = normalizedHeaders[HEADERS.ACCEPT] || "application/json";
+                for (var _i6 = 0, _length6 = null == headerBuilders ? 0 : headerBuilders.length; _i6 < _length6; _i6++) for (var builtHeaders = (0, 
+                headerBuilders[_i6])(), _i8 = 0, _Object$keys4 = Object.keys(builtHeaders), _length8 = null == _Object$keys4 ? 0 : _Object$keys4.length; _i8 < _length8; _i8++) {
+                    var _key3 = _Object$keys4[_i8];
+                    normalizedHeaders[_key3.toLowerCase()] = builtHeaders[_key3];
+                }
+                var xhr = new win.XMLHttpRequest();
+                xhr.addEventListener("load", function() {
+                    var responseHeaders = function() {
+                        for (var result = {}, _i2 = 0, _rawHeaders$trim$spli2 = (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "").trim().split("\n"), _length2 = null == _rawHeaders$trim$spli2 ? 0 : _rawHeaders$trim$spli2.length; _i2 < _length2; _i2++) {
+                            var _line$split = _rawHeaders$trim$spli2[_i2].split(":"), _key = _line$split[0], values = _line$split.slice(1);
+                            result[_key.toLowerCase()] = values.join(":").trim();
+                        }
+                        return result;
+                    }(this.getAllResponseHeaders());
+                    if (!this.status) return reject(new Error("Request to " + method.toLowerCase() + " " + url + " failed: no response status code."));
+                    var contentType = responseHeaders["content-type"], isJSON = contentType && (0 === contentType.indexOf("application/json") || 0 === contentType.indexOf("text/json")), responseBody = this.responseText;
+                    try {
+                        responseBody = JSON.parse(responseBody);
+                    } catch (err) {
+                        if (isJSON) return reject(new Error("Invalid json: " + this.responseText + "."));
+                    }
+                    var res = {
+                        status: this.status,
+                        headers: responseHeaders,
+                        body: responseBody
+                    };
+                    return resolve(res);
+                }, !1);
+                xhr.addEventListener("error", function(evt) {
+                    reject(new Error("Request to " + method.toLowerCase() + " " + url + " failed: " + evt.toString() + "."));
+                }, !1);
+                xhr.open(method, url, !0);
+                for (var _key4 in normalizedHeaders) normalizedHeaders.hasOwnProperty(_key4) && xhr.setRequestHeader(_key4, normalizedHeaders[_key4]);
+                json ? body = JSON.stringify(json) : data && (body = Object.keys(data).map(function(key) {
+                    return encodeURIComponent(key) + "=" + (data ? encodeURIComponent(data[key]) : "");
+                }).join("&"));
+                xhr.timeout = timeout;
+                xhr.ontimeout = function() {
+                    reject(new Error("Request to " + method.toLowerCase() + " " + url + " has timed out"));
+                };
+                xhr.send(body);
+            });
+        }
+        function addHeaderBuilder(method) {
+            headerBuilders.push(method);
+        }
+        function memoized(target, name, descriptor) {
+            descriptor.value = memoize(descriptor.value, {
+                name: name,
+                thisNamespace: !0
+            });
+        }
+        function decorators_promise(target, name, descriptor) {
+            descriptor.value = promisify(descriptor.value, {
+                name: name
+            });
+        }
+        function isPerc(str) {
+            return "string" == typeof str && /^[0-9]+%$/.test(str);
+        }
+        function isPx(str) {
+            return "string" == typeof str && /^[0-9]+px$/.test(str);
+        }
+        function toNum(val) {
+            if ("number" == typeof val) return val;
+            var match = val.match(/^([0-9]+)(px|%)$/);
+            if (!match) throw new Error("Could not match css value from " + val);
+            return parseInt(match[1], 10);
+        }
+        function toPx(val) {
+            return toNum(val) + "px";
+        }
+        function toCSS(val) {
+            return "number" == typeof val ? toPx(val) : isPerc(val) ? val : toPx(val);
+        }
+        function percOf(num, perc) {
+            return parseInt(num * toNum(perc) / 100, 10);
+        }
+        function normalizeDimension(dim, max) {
+            if ("number" == typeof dim) return dim;
+            if (isPerc(dim)) return percOf(max, dim);
+            if (isPx(dim)) return toNum(dim);
+            throw new Error("Can not normalize dimension: " + dim);
+        }
+        function wrapPromise(method) {
+            var _ref$timeout = (arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).timeout, expected = [], promises = [], timer = setTimeout(function() {
+                expected.length && promises.push(src.a.asyncReject(new Error("Expected " + expected[0] + " to be called")));
+            }, void 0 === _ref$timeout ? 5e3 : _ref$timeout), expect = function(name) {
+                var fn = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : noop;
+                expected.push(name);
+                return function() {
+                    for (var _this = this, _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) args[_key] = arguments[_key];
+                    removeFromArray(expected, name);
+                    var _tryCatch = tryCatch(function() {
+                        return fn.call.apply(fn, [ _this ].concat(args));
+                    }), result = _tryCatch.result, error = _tryCatch.error;
+                    if (error) {
+                        promises.push(src.a.asyncReject(error));
+                        throw error;
+                    }
+                    promises.push(src.a.resolve(result));
+                    return result;
+                };
+            }, avoid = function(name) {
+                var fn = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : noop;
+                return function() {
+                    promises.push(src.a.asyncReject(new Error("Expected " + name + " to not be called")));
+                    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) args[_key2] = arguments[_key2];
+                    return fn.call.apply(fn, [ this ].concat(args));
+                };
+            }, expectError = function(name) {
+                var fn = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : noop;
+                expected.push(name);
+                return function() {
+                    for (var _this2 = this, _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) args[_key3] = arguments[_key3];
+                    removeFromArray(expected, name);
+                    var _tryCatch2 = tryCatch(function() {
+                        return fn.call.apply(fn, [ _this2 ].concat(args));
+                    }), result = _tryCatch2.result, error = _tryCatch2.error;
+                    if (error) throw error;
+                    promises.push(src.a.resolve(result).then(function() {
+                        throw new Error("Expected " + name + " to throw an error");
+                    }, noop));
+                    return result;
+                };
+            }, wait = function wait() {
+                return src.a.try(function() {
+                    if (promises.length) return promises.pop();
+                }).then(function() {
+                    return promises.length ? wait() : expected.length ? src.a.delay(10).then(wait) : void 0;
+                });
+            };
+            promises.push(src.a.try(function() {
+                return method({
+                    expect: expect,
+                    avoid: avoid,
+                    expectError: expectError,
+                    error: avoid,
+                    wait: wait
+                });
+            }));
+            return wait().then(function() {
+                clearTimeout(timer);
+            });
+        }
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getUserAgent;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isDevice;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isWebView;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isStandAlone;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isFacebookWebView;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isFirefoxIOS;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isEdgeIOS;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isOperaMini;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isAndroid;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isIos;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isGoogleSearchApp;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isQQBrowser;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isIosWebview;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isAndroidWebview;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return device_isIE;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isIECompHeader;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isElectron;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isIEIntranet;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isMacOsCna;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return supportsPopups;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isChrome;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isSafari;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isDocumentReady;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return urlEncode;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return waitForWindowReady;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return waitForDocumentReady;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return waitForDocumentBody;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return parseQuery;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getQueryParam;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return urlWillRedirectPage;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return formatQuery;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return extendQuery;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return extendUrl;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return redirect;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return hasMetaViewPort;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isElementVisible;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getPerformance;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return enablePerformance;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getPageRenderTime;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return htmlEncode;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isBrowser;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return querySelectorAll;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return onClick;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getScript;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isLocalStorageEnabled;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getBrowserLocales;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return appendChild;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isElement;
+        });
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return getElementSafe;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getElement;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return elementReady;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return PopupOpenError;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return popup;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return writeToWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return writeElementToWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return setStyle;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return awaitFrameLoad;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return awaitFrameWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return createElement;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return iframe;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return addEventListener;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return bindEvents;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return setVendorCSS;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return animate;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return makeElementVisible;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return makeElementInvisible;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return showElement;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return hideElement;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return destroyElement;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return showAndAnimate;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return animateAndHide;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return addClass;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return removeClass;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isElementClosed;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return watchElementForClose;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return fixScripts;
+        });
+        __webpack_require__.d(__webpack_exports__, "d", function() {
+            return onResize;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getResourceLoadTime;
+        });
+        __webpack_require__.d(__webpack_exports__, "c", function() {
+            return isShadowElement;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getShadowRoot;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getShadowHost;
+        });
+        __webpack_require__.d(__webpack_exports__, "b", function() {
+            return insertShadowSlot;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return preventClickFocus;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return experiment;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getGlobalNameSpace;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getStorage;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getFunctionName;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return setFunctionName;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return base64encode;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return base64decode;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return uniqueID;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getGlobal;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getObjectID;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return memoize;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return promiseIdentity;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return memoizePromise;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return promisify;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return inlineMemoize;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return noop;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return once;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return hashStr;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return strHashStr;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return match;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return awaitKey;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return stringifyError;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return stringifyErrorMessage;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return stringify;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return domainMatches;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return patchMethod;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return extend;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return values;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return perc;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return min;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return max;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return regexMap;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return svgToBase64;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return objFilter;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return identity;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return regexTokenize;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return promiseDebounce;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return safeInterval;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isInteger;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isFloat;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return serializePrimitive;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return deserializePrimitive;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return dotify;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return undotify;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return eventEmitter;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return camelToDasherize;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return dasherizeToCamel;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return capitalizeFirstLetter;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return get;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return safeTimeout;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return defineLazyProp;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return arrayFrom;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isObject;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isObjectObject;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isPlainObject;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return replaceObject;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return copyProp;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return regex;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return regexAll;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isDefined;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return cycle;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return debounce;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isRegex;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return util_weakMapMemoize;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return util_weakMapMemoizePromise;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getOrSet;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return cleanup;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return tryCatch;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return removeFromArray;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return assertExists;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return unique;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return request;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return addHeaderBuilder;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return !0;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return memoized;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return decorators_promise;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isPerc;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isPx;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return toNum;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return toPx;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return toCSS;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return percOf;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return normalizeDimension;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return wrapPromise;
         });
     },
     "./node_modules/zoid/src/component/base.js": function(module, __webpack_exports__, __webpack_require__) {
@@ -5795,7 +6050,7 @@
     },
     "./node_modules/zoid/src/component/child/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var client = __webpack_require__("./node_modules/beaver-logger/client/index.js"), src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), post_robot_src = __webpack_require__("./node_modules/post-robot/src/index.js"), zalgo_promise_src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), belter_src = __webpack_require__("./node_modules/belter/src/index.js"), base = __webpack_require__("./node_modules/zoid/src/component/base.js"), component_window = __webpack_require__("./node_modules/zoid/src/component/window.js"), lib = __webpack_require__("./node_modules/zoid/src/lib/index.js"), constants = __webpack_require__("./node_modules/zoid/src/constants.js"), src_error = __webpack_require__("./node_modules/zoid/src/error.js");
+        var client = __webpack_require__("./node_modules/beaver-logger/client/index.js"), src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), post_robot_src = __webpack_require__("./node_modules/post-robot/src/index.js"), zalgo_promise_src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), belter_src = __webpack_require__("./node_modules/zoid/node_modules/belter/src/index.js"), base = __webpack_require__("./node_modules/zoid/src/component/base.js"), component_window = __webpack_require__("./node_modules/zoid/src/component/window.js"), lib = __webpack_require__("./node_modules/zoid/src/lib/index.js"), constants = __webpack_require__("./node_modules/zoid/src/constants.js"), src_error = __webpack_require__("./node_modules/zoid/src/error.js");
         function normalizeChildProp(component, props, key, value) {
             var prop = component.getProp(key);
             return prop ? "function" == typeof prop.childDecorate ? prop.childDecorate(value) : value : component.looseProps ? value : void 0;
@@ -5878,7 +6133,7 @@
                 return _this;
             }
             ChildComponent.prototype.hasValidParentDomain = function() {
-                return Object(src.z)(this.component.allowedParentDomains, this.getParentDomain());
+                return Object(src.A)(this.component.allowedParentDomains, this.getParentDomain());
             };
             ChildComponent.prototype.init = function() {
                 return this.onInit;
@@ -5900,9 +6155,9 @@
                 if (props.type === constants.INITIAL_PROPS.RAW) props = props.value; else {
                     if (props.type !== constants.INITIAL_PROPS.UID) throw new Error("Unrecognized props type: " + props.type);
                     var parentComponentWindow = Object(component_window.c)();
-                    if (!Object(src.t)(parentComponentWindow)) {
+                    if (!Object(src.u)(parentComponentWindow)) {
                         if ("file:" === window.location.protocol) throw new Error("Can not get props from file:// domain");
-                        throw new Error("Parent component window is on a different domain - expected " + Object(src.f)() + " - can not retrieve props");
+                        throw new Error("Parent component window is on a different domain - expected " + Object(src.g)() + " - can not retrieve props");
                     }
                     var global = Object(lib.v)(parentComponentWindow);
                     if (!global) throw new Error("Can not find global for parent component - can not retrieve props");
@@ -5924,7 +6179,7 @@
                 var normalizedProps = function(component, props, origin) {
                     for (var required = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3], result = {}, _i2 = 0, _Object$keys2 = Object.keys(props), _length2 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i2 < _length2; _i2++) {
                         var key = _Object$keys2[_i2], prop = component.getProp(key), value = props[key];
-                        if (!prop || !prop.sameDomain || origin === Object(src.f)(window)) {
+                        if (!prop || !prop.sameDomain || origin === Object(src.g)(window)) {
                             result[key] = normalizeChildProp(component, 0, key, value);
                             prop && prop.alias && !result[prop.alias] && (result[prop.alias] = value);
                         }
@@ -5990,7 +6245,7 @@
                 var _this4 = this, _getAutoResize = this.getAutoResize(), width = _getAutoResize.width, height = _getAutoResize.height, element = _getAutoResize.element;
                 if ((width || height) && this.context !== constants.CONTEXT_TYPES.POPUP && !this.watchingForResize) {
                     this.watchingForResize = !0;
-                    Object(belter_src.b)(element, function(_ref8) {
+                    Object(belter_src.d)(element, function(_ref8) {
                         var newWidth = _ref8.width, newHeight = _ref8.height;
                         _this4.resize(width ? newWidth : void 0, height ? newHeight : void 0);
                     }, {
@@ -6123,7 +6378,9 @@
                     _this.component.getProp(propName).allowDelegate && (_this.props[propName] = options.props[propName]);
                 }
                 _this.focus = function() {
-                    return options.overrides.focus.call(_this);
+                    return zalgo_promise_src.a.all([ _this.isWindowClosed().then(function(closed) {
+                        closed || window.open("", _this.childWindowName);
+                    }), options.overrides.focus.call(_this) ]).then(lib.E);
                 };
                 _this.clean.register("destroyFocusOverride", function() {
                     _this.focus = lib.E;
@@ -6137,12 +6394,13 @@
                     _this[key] = component_parent.a.prototype[key];
                 }
                 _this.childWindowName = options.childWindowName;
+                _this.isWindowClosed = options.isWindowClosed;
                 component_parent.a.prototype.registerActiveComponent.call(_this);
                 _this.watchForClose();
                 return _this;
             }
             DelegateComponent.prototype.watchForClose = function() {
-                var _this2 = this, closeWindowListener = Object(cross_domain_utils_src.A)(this.source, function() {
+                var _this2 = this, closeWindowListener = Object(cross_domain_utils_src.B)(this.source, function() {
                     return _this2.destroy();
                 }, 3e3);
                 this.clean.register("destroyCloseWindowListener", closeWindowListener.cancel);
@@ -6173,7 +6431,7 @@
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         function validate(options) {
-            if (!options) throw new Error("Expecred options to be passed");
+            if (!options) throw new Error("Expected options to be passed");
             if (!options.tag || !options.tag.match(/^[a-z0-9-]+$/)) throw new Error("Invalid options.tag: " + options.tag);
             !function(options) {
                 if (options.props && "object" !== _typeof(options.props)) throw new Error("Expected options.props to be an object");
@@ -6327,6 +6585,11 @@
                         promise: !0,
                         sendToChild: !1
                     },
+                    win: {
+                        type: "object",
+                        required: !1,
+                        sendToChild: !1
+                    },
                     dimensions: {
                         type: "object",
                         required: !1
@@ -6372,6 +6635,20 @@
                         noop: !0,
                         once: !0,
                         promisify: !0,
+                        sendToChild: !1
+                    },
+                    onDestroy: {
+                        type: "function",
+                        required: !1,
+                        noop: !0,
+                        once: !0,
+                        promisify: !0,
+                        sendToChild: !1
+                    },
+                    onResize: {
+                        type: "function",
+                        required: !1,
+                        noop: !0,
                         sendToChild: !1
                     },
                     onTimeout: {
@@ -6470,7 +6747,7 @@
                 Object(src.on)(constants.POST_MESSAGE.DELEGATE + "_" + this.name, function(_ref) {
                     var source = _ref.source, origin = _ref.origin, data = _ref.data, domain = _this3.getDomain(null, data.env || _this3.defaultEnv);
                     if (!domain) throw new Error("Could not determine domain to allow remote render");
-                    if (!Object(cross_domain_utils_src.z)(domain, origin)) throw new Error("Can not render from " + origin + " - expected " + domain.toString());
+                    if (!Object(cross_domain_utils_src.A)(domain, origin)) throw new Error("Can not render from " + origin + " - expected " + domain.toString());
                     var delegate = _this3.delegate(source, data.options);
                     return {
                         overrides: delegate.getOverrides(data.context),
@@ -6489,7 +6766,7 @@
             };
             Component.prototype.getValidDomain = function(url) {
                 if (url) {
-                    var domain = Object(cross_domain_utils_src.g)(url);
+                    var domain = Object(cross_domain_utils_src.h)(url);
                     if ("string" == typeof this.domain && domain === this.domain) return domain;
                     var domains = this.domain;
                     if (domains && "object" === (void 0 === domains ? "undefined" : component__typeof(domains)) && !(domains instanceof RegExp)) for (var _i6 = 0, _Object$keys6 = Object.keys(domains), _length6 = null == _Object$keys6 ? 0 : _Object$keys6.length; _i6 < _length6; _i6++) {
@@ -6503,7 +6780,7 @@
                 if (domain) return domain;
                 if (domain = this.getValidDomain(url)) return domain;
                 var envUrl = this.getForEnv(this.url, env);
-                return envUrl ? Object(cross_domain_utils_src.g)(envUrl) : url ? Object(cross_domain_utils_src.g)(url) : void 0;
+                return envUrl ? Object(cross_domain_utils_src.h)(envUrl) : url ? Object(cross_domain_utils_src.h)(url) : void 0;
             };
             Component.prototype.getBridgeUrl = function(env) {
                 return this.getForEnv(this.bridgeUrl, env);
@@ -6519,7 +6796,7 @@
                 var bridgeDomain = this.getForEnv(this.bridgeDomain, env);
                 if (bridgeDomain) return bridgeDomain;
                 var bridgeUrl = this.getBridgeUrl(env);
-                return bridgeUrl ? Object(cross_domain_utils_src.g)(bridgeUrl) : void 0;
+                return bridgeUrl ? Object(cross_domain_utils_src.h)(bridgeUrl) : void 0;
             };
             Component.prototype.getUrl = function(env, props) {
                 var url = this.getForEnv(this.url, env);
@@ -6531,7 +6808,9 @@
                 return Object(component_window.g)();
             };
             Component.prototype.isChild = function() {
-                return Object(component_window.g)() && Object(component_window.b)().tag === this.tag;
+                if (!Object(component_window.g)()) return !1;
+                var _getComponentMeta = Object(component_window.b)(), tag = _getComponentMeta.tag, childDomain = _getComponentMeta.childDomain;
+                return (!childDomain || childDomain === Object(cross_domain_utils_src.g)()) && tag === this.tag;
             };
             Component.prototype.createError = function(message, tag) {
                 return new Error("[" + (tag || this.tag) + "] " + message);
@@ -6751,7 +7030,7 @@
                     return function() {
                         var _this4 = this;
                         return override.apply(this, arguments).then(function() {
-                            _this4.clean.set("window", Object(__WEBPACK_IMPORTED_MODULE_2_cross_domain_utils_src__.a)(Object(__WEBPACK_IMPORTED_MODULE_5__window__.c)(), _this4.childWindowName));
+                            _this4.clean.set("window", Object(__WEBPACK_IMPORTED_MODULE_2_cross_domain_utils_src__.b)(Object(__WEBPACK_IMPORTED_MODULE_5__window__.c)(), _this4.childWindowName));
                             if (!_this4.window) throw new Error("Unable to find parent component iframe window");
                         });
                     };
@@ -6848,7 +7127,7 @@
                 getOutlet: __WEBPACK_IMPORTED_MODULE_4__constants__.DELEGATE.CALL_ORIGINAL
             },
             loadUrl: function(url) {
-                if (Object(__WEBPACK_IMPORTED_MODULE_2_cross_domain_utils_src__.t)(this.window)) try {
+                if (Object(__WEBPACK_IMPORTED_MODULE_2_cross_domain_utils_src__.u)(this.window)) try {
                     if (this.window.location && this.window.location.replace) {
                         this.window.location.replace(url);
                         return;
@@ -6860,7 +7139,7 @@
     },
     "./node_modules/zoid/src/component/parent/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var client = __webpack_require__("./node_modules/beaver-logger/client/index.js"), src = __webpack_require__("./node_modules/post-robot/src/index.js"), cross_domain_utils_src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), zalgo_promise_src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), belter_src = __webpack_require__("./node_modules/belter/src/index.js"), base = __webpack_require__("./node_modules/zoid/src/component/base.js"), component_window = __webpack_require__("./node_modules/zoid/src/component/window.js"), lib = __webpack_require__("./node_modules/zoid/src/lib/index.js"), constants = __webpack_require__("./node_modules/zoid/src/constants.js"), src_error = __webpack_require__("./node_modules/zoid/src/error.js"), drivers = __webpack_require__("./node_modules/zoid/src/component/parent/drivers.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+        var client = __webpack_require__("./node_modules/beaver-logger/client/index.js"), src = __webpack_require__("./node_modules/post-robot/src/index.js"), cross_domain_utils_src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), zalgo_promise_src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), belter_src = __webpack_require__("./node_modules/zoid/node_modules/belter/src/index.js"), base = __webpack_require__("./node_modules/zoid/src/component/base.js"), component_window = __webpack_require__("./node_modules/zoid/src/component/window.js"), lib = __webpack_require__("./node_modules/zoid/src/lib/index.js"), constants = __webpack_require__("./node_modules/zoid/src/constants.js"), src_error = __webpack_require__("./node_modules/zoid/src/error.js"), drivers = __webpack_require__("./node_modules/zoid/src/component/parent/drivers.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
@@ -6873,10 +7152,12 @@
                         if ("function" != typeof value) throw new TypeError("Prop is not of type function: " + key);
                     } else if ("string" === prop.type) {
                         if ("string" != typeof value) throw new TypeError("Prop is not of type string: " + key);
-                    } else if ("object" === prop.type) try {
-                        JSON.stringify(value);
-                    } catch (err) {
-                        throw new Error("Unable to serialize prop: " + key);
+                    } else if ("object" === prop.type) {
+                        if (!1 !== prop.sendToChild) try {
+                            JSON.stringify(value);
+                        } catch (err) {
+                            throw new Error("Unable to serialize prop: " + key);
+                        }
                     } else if ("number" === prop.type && isNaN(parseInt(value, 10))) throw new TypeError("Prop is not a number: " + key);
                     "function" == typeof prop.validate && value && prop.validate(value, props);
                 }
@@ -7085,8 +7366,11 @@
                     tasks.open = _this2.driver.openOnClick ? _this2.open() : tasks.openContainer.then(function() {
                         return _this2.open();
                     });
-                    tasks.listen = zalgo_promise_src.a.all([ tasks.getDomain, tasks.open ]).then(function(_ref2) {
-                        var domain = _ref2[0];
+                    tasks.listen = zalgo_promise_src.a.hash({
+                        domain: tasks.getDomain,
+                        open: tasks.open
+                    }).then(function(_ref2) {
+                        var domain = _ref2.domain;
                         _this2.listen(_this2.window, domain);
                     });
                     tasks.watchForClose = tasks.open.then(function() {
@@ -7133,14 +7417,14 @@
                 return outlet;
             };
             ParentComponent.prototype.validateParentDomain = function() {
-                var domain = Object(cross_domain_utils_src.f)();
-                if (!Object(cross_domain_utils_src.z)(this.component.allowedParentDomains, domain)) throw new src_error.c("Can not be rendered by domain: " + domain);
+                var domain = Object(cross_domain_utils_src.g)();
+                if (!Object(cross_domain_utils_src.A)(this.component.allowedParentDomains, domain)) throw new src_error.c("Can not be rendered by domain: " + domain);
             };
             ParentComponent.prototype.renderTo = function(win, element) {
                 var _this3 = this;
                 return this.tryInit(function() {
                     if (win === window) return _this3.render(element);
-                    if (!Object(cross_domain_utils_src.u)(window, win)) throw new Error("Can only renderTo an adjacent frame");
+                    if (!Object(cross_domain_utils_src.v)(window, win)) throw new Error("Can only renderTo an adjacent frame");
                     if (element && "string" != typeof element) throw new Error("Element passed to renderTo must be a string selector, got " + (void 0 === element ? "undefined" : parent__typeof(element)) + " " + element);
                     _this3.checkAllowRenderTo(win);
                     _this3.component.log("render_" + _this3.context + "_to_win", {
@@ -7175,10 +7459,10 @@
             };
             ParentComponent.prototype.checkAllowRenderTo = function(win) {
                 if (!win) throw this.component.createError("Must pass window to renderTo");
-                if (!Object(cross_domain_utils_src.t)(win)) {
-                    var origin = Object(cross_domain_utils_src.f)(), domain = this.component.getDomain(null, this.props.env);
+                if (!Object(cross_domain_utils_src.u)(win)) {
+                    var origin = Object(cross_domain_utils_src.g)(), domain = this.component.getDomain(null, this.props.env);
                     if (!domain) throw new Error("Could not determine domain to allow remote render");
-                    if (!Object(cross_domain_utils_src.z)(domain, origin)) throw new Error("Can not render remotely to " + domain.toString() + " - can only render to " + origin);
+                    if (!Object(cross_domain_utils_src.A)(domain, origin)) throw new Error("Can not render remotely to " + domain.toString() + " - can only render to " + origin);
                 }
             };
             ParentComponent.prototype.registerActiveComponent = function() {
@@ -7189,29 +7473,30 @@
                 });
             };
             ParentComponent.prototype.getComponentParentRef = function() {
-                var renderToWindow = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
-                if (this.context === constants.CONTEXT_TYPES.POPUP) return {
+                if (this.component.getDomain(null, this.props.env) === Object(cross_domain_utils_src.g)(window)) {
+                    var _uid = Object(lib.T)();
+                    lib.u.windows = lib.u.windows || {};
+                    lib.u.windows[_uid] = window;
+                    this.clean.register(function() {
+                        delete lib.u.windows[_uid];
+                    });
+                    return {
+                        ref: constants.WINDOW_REFERENCES.GLOBAL,
+                        uid: _uid
+                    };
+                }
+                return this.context === constants.CONTEXT_TYPES.POPUP ? {
                     ref: constants.WINDOW_REFERENCES.OPENER
-                };
-                if (renderToWindow === window) return Object(cross_domain_utils_src.v)(window) ? {
+                } : Object(cross_domain_utils_src.w)(window) ? {
                     ref: constants.WINDOW_REFERENCES.TOP
                 } : {
                     ref: constants.WINDOW_REFERENCES.PARENT,
-                    distance: Object(cross_domain_utils_src.e)(window)
-                };
-                var uid = Object(lib.T)();
-                lib.u.windows[uid] = window;
-                this.clean.register(function() {
-                    delete lib.u.windows[uid];
-                });
-                return {
-                    ref: constants.WINDOW_REFERENCES.GLOBAL,
-                    uid: uid
+                    distance: Object(cross_domain_utils_src.f)(window)
                 };
             };
             ParentComponent.prototype.getRenderParentRef = function() {
                 var renderToWindow = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
-                if (renderToWindow === window) return this.getComponentParentRef(renderToWindow);
+                if (renderToWindow === window) return this.getComponentParentRef();
                 var uid = Object(lib.T)();
                 lib.u.windows[uid] = renderToWindow;
                 this.clean.register(function() {
@@ -7223,7 +7508,7 @@
                 };
             };
             ParentComponent.prototype.buildChildWindowName = function() {
-                var _ref6$renderTo = (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}).renderTo, renderTo = void 0 === _ref6$renderTo ? window : _ref6$renderTo, sameDomain = Object(cross_domain_utils_src.t)(renderTo), uid = Object(lib.T)(), tag = this.component.tag, sProps = Object(lib.M)(this.getPropsForChild()), componentParent = this.getComponentParentRef(renderTo), renderParent = this.getRenderParentRef(renderTo), props = !sameDomain && !this.component.unsafeRenderTo ? {
+                var _ref6$renderTo = (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}).renderTo, renderTo = void 0 === _ref6$renderTo ? window : _ref6$renderTo, childDomain = this.component.getDomain(null, this.props.env), sameDomain = Object(cross_domain_utils_src.u)(renderTo), uid = Object(lib.T)(), tag = this.component.tag, sProps = Object(lib.M)(this.getPropsForChild()), componentParent = this.getComponentParentRef(), renderParent = this.getRenderParentRef(renderTo), props = !sameDomain && !this.component.unsafeRenderTo ? {
                     type: constants.INITIAL_PROPS.UID,
                     uid: uid
                 } : {
@@ -7241,7 +7526,8 @@
                     tag: tag,
                     componentParent: componentParent,
                     renderParent: renderParent,
-                    props: props
+                    props: props,
+                    childDomain: childDomain
                 });
             };
             ParentComponent.prototype.sendToParent = function(name, data) {
@@ -7368,7 +7654,16 @@
                     _this11.component.log("open_" + _this11.context, {
                         windowName: _this11.childWindowName
                     });
-                    return _this11.driver.open.call(_this11);
+                    var win = _this11.props.win;
+                    if (!win) return _this11.driver.open.call(_this11);
+                    _this11.clean.set("window", win);
+                    window.addEventListener("beforeunload", function() {
+                        return win.close();
+                    });
+                    window.addEventListener("unload", function() {
+                        return win.close();
+                    });
+                    Object(cross_domain_utils_src.a)(_this11.window).name = _this11.childWindowName;
                 });
             };
             ParentComponent.prototype.openPrerender = function() {
@@ -7404,6 +7699,9 @@
                     options: {
                         context: this.context,
                         childWindowName: this.childWindowName,
+                        isWindowClosed: function() {
+                            return Object(cross_domain_utils_src.y)(_this14.window);
+                        },
                         props: props,
                         overrides: {
                             focus: function() {
@@ -7445,7 +7743,7 @@
                 }, _i6 = 0, _Object$keys4 = Object.keys(overrides), _length6 = null == _Object$keys4 ? 0 : _Object$keys4.length; _i6 < _length6; _i6++) _loop(_i6, _Object$keys4);
             };
             ParentComponent.prototype.watchForClose = function() {
-                var _this16 = this, closeWindowListener = Object(cross_domain_utils_src.A)(this.window, function() {
+                var _this16 = this, closeWindowListener = Object(cross_domain_utils_src.B)(this.window, function() {
                     _this16.component.log("detect_close_child");
                     return zalgo_promise_src.a.try(function() {
                         return _this16.props.onClose(constants.CLOSE_REASONS.CLOSE_DETECTED);
@@ -7531,6 +7829,7 @@
                         width: Object(lib.Q)(width)
                     });
                     _this21.driver.resize.call(_this21, width, height);
+                    _this21.props.onResize && _this21.props.onResize();
                 });
             };
             ParentComponent.prototype.hide = function() {
@@ -7542,7 +7841,7 @@
                 return this.driver.show.call(this);
             };
             ParentComponent.prototype.checkClose = function() {
-                var _this22 = this, closeWindowListener = Object(cross_domain_utils_src.A)(this.window, function() {
+                var _this22 = this, closeWindowListener = Object(cross_domain_utils_src.B)(this.window, function() {
                     _this22.userClose();
                 }, 50, 500);
                 this.clean.register(closeWindowListener.cancel);
@@ -7594,7 +7893,7 @@
                 }).then(function() {
                     return _this26.destroyComponent();
                 }).then(function() {
-                    _this26.childExports && _this26.context === constants.CONTEXT_TYPES.POPUP && !Object(cross_domain_utils_src.x)(win) && _this26.childExports.close().catch(lib.E);
+                    _this26.childExports && _this26.context === constants.CONTEXT_TYPES.POPUP && !Object(cross_domain_utils_src.y)(win) && _this26.childExports.close().catch(lib.E);
                 });
             };
             ParentComponent.prototype.destroyComponent = function() {
@@ -7632,7 +7931,7 @@
                 });
             };
             ParentComponent.prototype.focus = function() {
-                if (!this.window || Object(cross_domain_utils_src.x)(this.window)) throw new Error("No window to focus");
+                if (!this.window || Object(cross_domain_utils_src.y)(this.window)) throw new Error("No window to focus");
                 this.component.log("focus");
                 this.window.focus();
             };
@@ -7672,7 +7971,7 @@
                             console.error(err.stack ? err.stack : err);
                         }
                         var _ref10 = "object" === parent__typeof(_this31.component.autoResize) && null !== _this31.component.autoResize ? _this31.component.autoResize : {}, _ref10$width = _ref10.width, width = void 0 !== _ref10$width && _ref10$width, _ref10$height = _ref10.height, height = void 0 !== _ref10$height && _ref10$height, _ref10$element = _ref10.element, element = void 0 === _ref10$element ? "body" : _ref10$element;
-                        (element = Object(belter_src.a)(element, doc)) && (width || height) && Object(belter_src.b)(element, function(_ref11) {
+                        (element = Object(belter_src.a)(element, doc)) && (width || height) && Object(belter_src.d)(element, function(_ref11) {
                             var newWidth = _ref11.width, newHeight = _ref11.height;
                             _this31.resize(width ? newWidth : void 0, height ? newHeight : void 0);
                         }, {
@@ -7719,6 +8018,7 @@
                 return zalgo_promise_src.a.try(function() {
                     var el = void 0;
                     if (!(el = element ? Object(lib.t)(element) : document.body)) throw new Error("Could not find element to open container into");
+                    Object(belter_src.c)(el) && (el = Object(belter_src.b)(el));
                     if (_this33.component.containerTemplate) {
                         var container = _this33.renderTemplate(_this33.component.containerTemplate, {
                             container: el
@@ -7750,6 +8050,8 @@
                         Object(client.h)();
                         return _this34.clean.all();
                     }
+                }).then(function() {
+                    if (_this34.props && _this34.props.onDestroy) return _this34.props.onDestroy();
                 });
             };
             ParentComponent.prototype.tryInit = function(method) {
@@ -7814,7 +8116,7 @@
         __webpack_exports__.a = function(name, version) {
             var options = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
             options.id = Object(__WEBPACK_IMPORTED_MODULE_2__lib__.T)();
-            options.domain = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.f)(window);
+            options.domain = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.g)(window);
             var encodedName = normalize(name), encodedVersion = normalize(version), encodedOptions = (str = JSON.stringify(options), 
             __WEBPACK_IMPORTED_MODULE_1_hi_base32___default.a.encode(str).replace(/\=/g, "").toLowerCase());
             var str;
@@ -7868,10 +8170,10 @@
         });
         function getWindowByRef(_ref) {
             var ref = _ref.ref, uid = _ref.uid, distance = _ref.distance, result = void 0;
-            ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.OPENER ? result = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.k)(window) : ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.TOP ? result = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.m)(window) : ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.PARENT && (result = distance ? Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.j)(window, distance) : Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.l)(window));
+            ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.OPENER ? result = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.l)(window) : ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.TOP ? result = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.n)(window) : ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.PARENT && (result = distance ? Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.k)(window, distance) : Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.m)(window));
             if (ref === __WEBPACK_IMPORTED_MODULE_3__constants__.WINDOW_REFERENCES.GLOBAL) {
-                var ancestor = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.d)(window);
-                if (ancestor) for (var _i2 = 0, _getAllFramesInWindow2 = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.c)(ancestor), _length2 = null == _getAllFramesInWindow2 ? 0 : _getAllFramesInWindow2.length; _i2 < _length2; _i2++) {
+                var ancestor = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.e)(window);
+                if (ancestor) for (var _i2 = 0, _getAllFramesInWindow2 = Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.d)(ancestor), _length2 = null == _getAllFramesInWindow2 ? 0 : _getAllFramesInWindow2.length; _i2 < _length2; _i2++) {
                     var frame = _getAllFramesInWindow2[_i2], global = Object(__WEBPACK_IMPORTED_MODULE_2__lib__.v)(frame);
                     if (global && global.windows && global.windows[uid]) {
                         result = global.windows[uid];
@@ -8294,16 +8596,13 @@
             global: function() {
                 return window.document;
             },
-            register: function register(component, document) {
+            register: function(component, document) {
                 function render(element) {
                     if (element && element.tagName && "script" === element.tagName.toLowerCase() && element.attributes.type && "application/x-component" === element.attributes.type.value && element.parentNode) {
                         var tag = element.getAttribute("data-component");
                         if (tag && tag === component.tag) {
-                            component.log("instantiate_script_component");
-                            var props = element.innerText ? eval("(" + element.innerText + ")") : {}, container = document.createElement("div");
-                            if (!element.parentNode) throw new Error("Element has no parent");
-                            element.parentNode.replaceChild(container, element);
-                            component.render(props, container);
+                            component.log("instantiate_script_component_error");
+                            throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                         }
                     }
                 }
@@ -8831,7 +9130,7 @@
             } catch (err) {
                 throw new error.b("Can not open popup window - " + (err.stack || err.message));
             }
-            if (Object(src.x)(win)) {
+            if (Object(src.y)(win)) {
                 var err;
                 throw new error.b("Can not open popup window - blocked");
             }
@@ -8884,7 +9183,7 @@
             }
             var promise = new zalgo_promise_src.a(function(resolve, reject) {
                 frame.addEventListener("load", function() {
-                    Object(src.y)(frame);
+                    Object(src.z)(frame);
                     resolve(frame);
                 });
                 frame.addEventListener("error", function(err) {
@@ -9375,7 +9674,7 @@
         }
         var constants = __webpack_require__("./node_modules/zoid/src/constants.js");
         function globalFor(win) {
-            if (Object(src.t)(win)) {
+            if (Object(src.u)(win)) {
                 win[constants.__ZOID__] || (win[constants.__ZOID__] = {});
                 return win[constants.__ZOID__];
             }
@@ -9703,7 +10002,7 @@
             if (regmatch) return regmatch[1];
         }
         var onAuthorize = void 0;
-        Object(lib.H)() && Object(post_robot_src.on)("onLegacyPaymentAuthorize", {
+        Object(lib.I)() && Object(post_robot_src.on)("onLegacyPaymentAuthorize", {
             window: window.parent
         }, function(_ref) {
             var data = _ref.data;
@@ -9712,14 +10011,14 @@
         function onLegacyPaymentAuthorize(method) {
             onAuthorize = method;
             return src.a.try(function() {
-                if (post_robot_src.bridge && !Object(lib.H)()) return post_robot_src.bridge.openBridge(Object(lib.h)(config.a.postBridgeUrl, {
-                    version: Object(lib.v)()
+                if (post_robot_src.bridge && !Object(lib.I)()) return post_robot_src.bridge.openBridge(Object(lib.i)(config.a.postBridgeUrl, {
+                    version: Object(lib.w)()
                 }), config.a.postBridgeDomain).then(function(postBridge) {
                     return Object(post_robot_src.send)(postBridge, "onLegacyPaymentAuthorize", {
                         method: method
                     }, {
                         domain: config.a.paypalDomain
-                    }).then(lib.K);
+                    }).then(lib.L);
                 });
             });
         }
@@ -9752,7 +10051,7 @@
                                     win.PAYPAL && win.PAYPAL.Checkout && win.PAYPAL.Checkout.XhrResponse && win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES && Object.defineProperty(win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES, "Redirect", {
                                         value: Math.random().toString()
                                     });
-                                    win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady && (win.mob.Xhr.prototype._xhrOnReady = lib.K);
+                                    win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady && (win.mob.Xhr.prototype._xhrOnReady = lib.L);
                                 }
                             } catch (err) {
                                 return;
@@ -9811,14 +10110,14 @@
                 return config.a.paypalDomains;
             },
             contexts: {
-                iframe: !Object(lib.Y)(),
+                iframe: !Object(lib.Z)(),
                 popup: !0
             },
             get version() {
-                return Object(lib.v)();
+                return Object(lib.w)();
             },
             validate: function() {
-                Object(lib.C)() || Object(beaver_logger_client.q)("checkout_render_ineligible");
+                Object(lib.D)() || Object(beaver_logger_client.q)("checkout_render_ineligible");
             },
             prerenderTemplate: template.a,
             containerTemplate: template.b,
@@ -9827,7 +10126,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.w)();
+                        return Object(lib.x)();
                     },
                     queryParam: !0
                 },
@@ -9835,7 +10134,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.k)();
+                        return Object(lib.l)();
                     },
                     queryParam: !0
                 },
@@ -9881,7 +10180,7 @@
                     queryParam: "locale.x",
                     allowDelegate: !0,
                     def: function() {
-                        var _getBrowserLocale = Object(lib.j)();
+                        var _getBrowserLocale = Object(lib.k)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     }
                 },
@@ -9912,8 +10211,8 @@
                         return payment();
                     },
                     childDecorate: function(payment) {
-                        var token = Object(lib.r)("token");
-                        return token ? Object(lib.J)(function() {
+                        var token = Object(lib.s)("token");
+                        return token ? Object(lib.K)(function() {
                             return src.a.resolve(token);
                         }) : payment;
                     },
@@ -9980,12 +10279,12 @@
                                     return _this.closeComponent();
                                 });
                             }, redirect = function(win, url) {
-                                return src.a.all([ Object(lib.R)(win || window.top, url || data.returnUrl), close() ]);
+                                return src.a.all([ Object(lib.S)(win || window.top, url || data.returnUrl), close() ]);
                             };
                             return src.a.try(function() {
                                 try {
                                     var isButton = -1 !== window.location.href.indexOf("/webapps/hermes/button"), isGuest = -1 !== _this.window.location.href.indexOf("/webapps/xoonboarding");
-                                    if (isButton && isGuest) return Object(lib.T)({
+                                    if (isButton && isGuest) return Object(lib.U)({
                                         win: _this.window,
                                         method: "get",
                                         url: "/webapps/xoonboarding/api/auth"
@@ -10043,7 +10342,7 @@
                                     return _this2.closeComponent();
                                 });
                             }, redirect = function(win, url) {
-                                return src.a.all([ Object(lib.R)(win || window.top, url || data.cancelUrl), close() ]);
+                                return src.a.all([ Object(lib.S)(win || window.top, url || data.cancelUrl), close() ]);
                             };
                             return src.a.try(function() {
                                 return original.call(_this2, data, _extends({}, actions, {
@@ -10114,7 +10413,7 @@
                             Object(beaver_logger_client.q)("fallback", {
                                 url: url
                             });
-                            if (Object(lib.n)("allow_full_page_fallback")) {
+                            if (Object(lib.o)("allow_full_page_fallback")) {
                                 window.top.location = url;
                                 return this.close();
                             }
@@ -10151,13 +10450,13 @@
                     sendToChild: !1,
                     def: function() {
                         return btoa(JSON.stringify({
-                            url: Object(lib.m)()
+                            url: Object(lib.n)()
                         }));
                     }
                 }
             },
             get dimensions() {
-                return Object(lib.A)() ? {
+                return Object(lib.B)() ? {
                     width: "100%",
                     height: "535px"
                 } : {
@@ -10167,9 +10466,9 @@
             }
         });
         if (Checkout.isChild() && Checkout.xchild && Checkout.xprops) {
-            Checkout.xprops && Checkout.xprops.logLevel && Object(lib.V)(Checkout.xprops.logLevel);
+            Checkout.xprops && Checkout.xprops.logLevel && Object(lib.W)(Checkout.xprops.logLevel);
             Checkout.xchild.onProps(function(xprops) {
-                Object(lib.O)(xprops, "onAuthorize", function(_ref) {
+                Object(lib.P)(xprops, "onAuthorize", function(_ref) {
                     var callOriginal = _ref.callOriginal, data = _ref.args[0];
                     if (data && !data.intent) {
                         Object(beaver_logger_client.q)("hermes_authorize_no_intent", {
@@ -10190,21 +10489,21 @@
                 });
             });
         }
-        Object(lib.O)(Checkout, "init", function(_ref2) {
+        Object(lib.P)(Checkout, "init", function(_ref2) {
             var _ref2$args = _ref2.args, props = _ref2$args[0], _context = _ref2$args[1], original = _ref2.original, context = _ref2.context;
             return original.call(context, props, _context, "body");
         });
-        Object(lib.O)(Checkout, "render", function(_ref3) {
+        Object(lib.P)(Checkout, "render", function(_ref3) {
             var props = _ref3.args[0], original = _ref3.original, context = _ref3.context;
             return original.call(context, props, "body");
         });
-        Object(lib.O)(Checkout, "renderTo", function(_ref4) {
+        Object(lib.P)(Checkout, "renderTo", function(_ref4) {
             var _ref4$args = _ref4.args, win = _ref4$args[0], props = _ref4$args[1], original = _ref4.original, context = _ref4.context, payment = props.payment();
             props.payment = function() {
                 return payment;
             };
             return original.call(context, win, props, "body").catch(function(err) {
-                if (err instanceof zoid_src.b && Object(lib.H)()) {
+                if (err instanceof zoid_src.b && Object(lib.I)()) {
                     Checkout.contexts.iframe = !0;
                     return original.call(context, win, props, "body");
                 }
@@ -10252,7 +10551,7 @@
             function focus(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                Object(lib.G)() ? window.alert("Please switch tabs to reactivate the PayPal window") : src.a.try(actions.focus).catch(actions.close);
+                Object(lib.H)() ? window.alert("Please switch tabs to reactivate the PayPal window") : src.a.try(actions.focus).catch(actions.close);
             }
             var overlayColor = (props.style || {}).overlayColor || constants.q.BLACK, logoColor = LOGO_COLOR[overlayColor], ppLogo = "function" == typeof resources.b.pp ? resources.b.pp({
                 logoColor: logoColor
@@ -11697,13 +11996,13 @@
             return constants.o;
         });
         __webpack_require__.d(interface_namespaceObject, "request", function() {
-            return lib.T;
+            return lib.U;
         });
         __webpack_require__.d(interface_namespaceObject, "isEligible", function() {
-            return lib.C;
+            return lib.D;
         });
         __webpack_require__.d(interface_namespaceObject, "isFundingRemembered", function() {
-            return lib.D;
+            return lib.E;
         });
         __webpack_require__.d(interface_namespaceObject, "forceIframe", function() {
             return lib.a;
@@ -11777,7 +12076,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.w)();
+                        return Object(lib.x)();
                     },
                     queryParam: !0
                 },
@@ -11790,7 +12089,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.k)();
+                        return Object(lib.l)();
                     },
                     queryParam: !0
                 },
@@ -11816,7 +12115,7 @@
                     queryParam: "locale.x",
                     allowDelegate: !0,
                     def: function() {
-                        var _getBrowserLocale = Object(lib.j)();
+                        var _getBrowserLocale = Object(lib.k)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     }
                 },
@@ -11850,7 +12149,7 @@
                     sendToChild: !1,
                     def: function() {
                         return btoa(JSON.stringify({
-                            url: Object(lib.m)()
+                            url: Object(lib.n)()
                         }));
                     }
                 }
@@ -11866,7 +12165,7 @@
                 function focus(event) {
                     event.preventDefault();
                     event.stopPropagation();
-                    Object(lib.G)() ? window.alert("Please switch tabs to reactivate the PayPal window") : actions.focus();
+                    Object(lib.H)() ? window.alert("Please switch tabs to reactivate the PayPal window") : actions.focus();
                 }
                 var overlayColor = (props.style || {}).overlayColor || constants.q.BLACK, logoColor = LOGO_COLOR[overlayColor], ppLogo = "function" == typeof resources.b.pp ? resources.b.pp({
                     logoColor: logoColor
@@ -11934,8 +12233,8 @@
         }), cross_domain_utils_src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js");
         function shouldCreateInitialPptmScript() {
             if (!window.location.hostname) return !1;
-            if (Object(lib.H)()) return !1;
-            var existingScript = Object(lib.o)(constants.C);
+            if (Object(lib.I)()) return !1;
+            var existingScript = Object(lib.p)(constants.C);
             if (Boolean(existingScript)) {
                 Object(beaver_logger_client.k)("pptm_tried_loading_twice");
                 return !1;
@@ -11943,7 +12242,7 @@
             return !0;
         }
         function removePptm() {
-            var script = Object(lib.o)(constants.C);
+            var script = Object(lib.p)(constants.C);
             script && script.parentNode.removeChild(script);
         }
         var noContentFoundInContainer, callback, listener, obj, pptm = (noContentFoundInContainer = !1, 
@@ -11984,8 +12283,8 @@
                     source: "checkoutjs"
                 };
                 clientId ? params.client_id = clientId : delete params.client_id;
-                var fullUrl = Object(lib.h)(config.a.pptmUrl, params);
-                Object(lib.I)(fullUrl, 0, {
+                var fullUrl = Object(lib.i)(config.a.pptmUrl, params);
+                Object(lib.J)(fullUrl, 0, {
                     async: !0,
                     id: constants.C
                 }).then(function() {
@@ -11995,13 +12294,13 @@
                     _track2[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.PPTM_LOADED, _track2));
                 }).catch(function(err) {
                     Object(beaver_logger_client.k)("pptm_script_error", {
-                        error: Object(lib.W)(err)
+                        error: Object(lib.X)(err)
                     });
                 });
             },
             shouldCreateInitialPptmScript: shouldCreateInitialPptmScript,
             shouldReloadPptmScript: function(clientId) {
-                return !1 !== noContentFoundInContainer && !Object(lib.H)() && !config.a.merchantID && !!clientId;
+                return !1 !== noContentFoundInContainer && !Object(lib.I)() && !config.a.merchantID && !!clientId;
             },
             removePptm: removePptm
         }), hacks__extends = Object.assign || function(target) {
@@ -12054,8 +12353,8 @@
         function mergePaymentDetails(id, payment) {
             payments[id] = payments[id] || {};
             var details = payments[id].details || {}, result = {};
-            Object(lib.g)(result, payment);
-            Object(lib.e)(result, details);
+            Object(lib.h)(result, payment);
+            Object(lib.f)(result, details);
             return result;
         }
         var rest__extends = Object.assign || function(target) {
@@ -12064,13 +12363,13 @@
                 for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
             }
             return target;
-        }, proxyRest = {}, createAccessToken = Object(lib.J)(function(env, client) {
+        }, proxyRest = {}, createAccessToken = Object(lib.K)(function(env, client) {
             Object(beaver_logger_client.k)("rest_api_create_access_token");
             var clientID = client[env = env || config.a.env];
             if (!clientID) throw new Error("Client ID not found for env: " + env);
             if (proxyRest.createAccessToken && !proxyRest.createAccessToken.source.closed) return proxyRest.createAccessToken(env, client);
             var basicAuth = Object(base64.btoa)(clientID + ":");
-            return Object(lib.T)({
+            return Object(lib.U)({
                 method: "post",
                 url: config.a.authApiUrls[env],
                 headers: {
@@ -12086,7 +12385,7 @@
             });
         }, {
             time: 6e5
-        }), createExperienceProfile = Object(lib.J)(function(env, client) {
+        }), createExperienceProfile = Object(lib.K)(function(env, client) {
             var experienceDetails = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
             Object(beaver_logger_client.k)("rest_api_create_experience_profile");
             if (!client[env = env || config.a.env]) throw new Error("Client ID not found for env: " + env);
@@ -12094,7 +12393,7 @@
             experienceDetails.temporary = !0;
             experienceDetails.name = experienceDetails.name ? experienceDetails.name + "_" + Math.random().toString() : Math.random().toString();
             return createAccessToken(env, client).then(function(accessToken) {
-                return Object(lib.T)({
+                return Object(lib.U)({
                     method: "post",
                     url: config.a.experienceApiUrls[env],
                     headers: {
@@ -12167,12 +12466,12 @@
                     return zalgo_promise_src.a.try(function() {
                         if (tracking) return zalgo_promise_src.a.resolve(function(env, client, merchantID, trackingData) {
                             if (!client[env = env || config.a.env]) throw new Error("Client ID not found for env: " + env);
-                            var trackingID = Object(lib.Z)();
+                            var trackingID = Object(lib._0)();
                             return createAccessToken(env, client).then(function(accessToken) {
                                 var headers = {
                                     Authorization: "Bearer " + accessToken
                                 };
-                                return Object(lib.T)({
+                                return Object(lib.U)({
                                     method: "put",
                                     url: config.a.trackingApiUrls[env] + "/" + merchantID + "/" + trackingID,
                                     headers: headers,
@@ -12192,7 +12491,7 @@
                         };
                         trackingID && (headers["Paypal-Client-Metadata-Id"] = trackingID);
                         meta && meta.partner_attribution_id && (headers["PayPal-Partner-Attribution-Id"] = meta.partner_attribution_id);
-                        return Object(lib.T)({
+                        return Object(lib.U)({
                             method: "post",
                             url: config.a.paymentApiUrls[env],
                             headers: headers,
@@ -12236,7 +12535,7 @@
                     Authorization: "Bearer " + accessToken
                 };
                 meta && meta.partner_attribution_id && (headers["PayPal-Partner-Attribution-Id"] = meta.partner_attribution_id);
-                return Object(lib.T)({
+                return Object(lib.U)({
                     method: "post",
                     url: config.a.orderApiUrls[env],
                     headers: headers,
@@ -12264,7 +12563,7 @@
                     if (experienceDetails) return zalgo_promise_src.a.resolve(createExperienceProfile(env, client, experienceDetails));
                 }).then(function(experienceID) {
                     experienceID && (billingDetails.experience_profile_id = experienceID);
-                    return Object(lib.T)({
+                    return Object(lib.U)({
                         method: "post",
                         url: config.a.billingApiUrls[env],
                         headers: {
@@ -12291,23 +12590,23 @@
             experience: {
                 create: createExperienceProfile
             }
-        }, parentWin = Object(cross_domain_utils_src.d)();
+        }, parentWin = Object(cross_domain_utils_src.e)();
         Object(post_robot_src.on)("proxy_rest", {
             domain: config.a.paypal_domain_regex
         }, function(_ref) {
             var data = _ref.data;
             proxyRest = data;
         });
-        parentWin && Object(lib.H)() && !Object(cross_domain_utils_src.t)(parentWin) && Object(post_robot_src.send)(parentWin, "proxy_rest", {
+        parentWin && Object(lib.I)() && !Object(cross_domain_utils_src.u)(parentWin) && Object(post_robot_src.send)(parentWin, "proxy_rest", {
             createAccessToken: createAccessToken,
             createExperienceProfile: createExperienceProfile,
             createPayment: createPayment,
             createBillingAgreement: createBillingAgreement,
             createOrder: createOrder
         }).catch(function() {});
-        var onAuthorizeListener = Object(lib.f)();
+        var onAuthorizeListener = Object(lib.g)();
         function log(experiment, treatment, token, state) {
-            Object(lib.x)(function(session) {
+            Object(lib.y)(function(session) {
                 var event = experiment + "_" + treatment + "_" + state, loggedEvents = session.loggedExperimentEvents = session.loggedExperimentEvents || [];
                 if (-1 !== loggedEvents.indexOf(event)) Object(beaver_logger_client.k)("duplicate_" + event); else {
                     var _track;
@@ -12327,7 +12626,7 @@
         function logExperimentTreatment(_ref) {
             var experiment = _ref.experiment, treatment = _ref.treatment, state = _ref.state, token = _ref.token;
             if (experiment && treatment) {
-                Object(lib.x)(function(session) {
+                Object(lib.y)(function(session) {
                     session.externalExperiment = experiment;
                     session.externalExperimentTreatment = treatment;
                     token && (session.externalExperimentToken = token);
@@ -12336,7 +12635,7 @@
             }
         }
         function logReturn(token) {
-            var _getSessionState = Object(lib.x)(function(session) {
+            var _getSessionState = Object(lib.y)(function(session) {
                 return session;
             }), externalExperiment = _getSessionState.externalExperiment, externalExperimentTreatment = _getSessionState.externalExperimentTreatment, externalExperimentToken = _getSessionState.externalExperimentToken;
             externalExperiment && externalExperimentTreatment && externalExperimentToken === token ? log(externalExperiment, externalExperimentTreatment, token, "complete") : Object(beaver_logger_client.k)("experiment_mismatch", {
@@ -12346,14 +12645,14 @@
                 externalExperimentToken: externalExperimentToken
             });
         }
-        if (Object(lib.n)("log_authorize")) {
+        if (Object(lib.o)("log_authorize")) {
             onAuthorizeListener.once(function(_ref2) {
                 var paymentToken = _ref2.paymentToken;
                 setTimeout(function() {
                     logReturn(paymentToken);
                 }, 1);
             });
-            var returnToken = Object(lib.u)();
+            var returnToken = Object(lib.v)();
             returnToken && setTimeout(function() {
                 returnToken && logReturn(returnToken);
             }, 1);
@@ -12387,7 +12686,7 @@
                     }).then(function(token) {
                         var _extendUrl;
                         if (!token) throw new Error("Expected props.payment to return a payment id or token");
-                        return Object(lib.h)(Object(integrations_checkout.b)(env, constants.v.PAYPAL, token), ((_extendUrl = {})[Object(integrations_checkout.a)(token)] = token, 
+                        return Object(lib.i)(Object(integrations_checkout.b)(env, constants.v.PAYPAL, token), ((_extendUrl = {})[Object(integrations_checkout.a)(token)] = token, 
                         _extendUrl.useraction = props.commit ? "commit" : "", _extendUrl.native_xo = "1", 
                         _extendUrl));
                     });
@@ -12412,10 +12711,10 @@
                     }, opType = query.opType, return_uri = query.return_uri, cancel_uri = query.cancel_uri;
                     opType === OPTYPE.PAYMENT ? actions.redirect = function() {
                         var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, redirectUrl = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : return_uri;
-                        return Object(lib.R)(win, redirectUrl);
+                        return Object(lib.S)(win, redirectUrl);
                     } : opType === OPTYPE.CANCEL && (actions.redirect = function() {
                         var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, redirectUrl = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : cancel_uri;
-                        return Object(lib.R)(win, redirectUrl);
+                        return Object(lib.S)(win, redirectUrl);
                     });
                     return actions;
                 }(payload.queryItems);
@@ -12443,7 +12742,7 @@
                                     err.code = CONTINGENCY.PAYMENT_CANCELLED;
                                     return reject(err);
                                 };
-                                popupBridge.open(Object(lib.h)(url, {
+                                popupBridge.open(Object(lib.i)(url, {
                                     redirect_uri: popupBridge.getReturnUrlPrefix()
                                 }));
                             });
@@ -13531,8 +13830,8 @@
             return target;
         };
         pptm.listenForLoadWithNoContent();
-        var isDomainAllowed = Object(lib.J)(function() {
-            var domain = Object(cross_domain_utils_src.f)().replace(/^https?:\/\//, "").replace(/^www\./, "");
+        var isDomainAllowed = Object(lib.K)(function() {
+            var domain = Object(cross_domain_utils_src.g)().replace(/^https?:\/\//, "").replace(/^www\./, "");
             return !!config.a.apmTestDomains.some(function(allowDomain) {
                 var regex = new RegExp("[^a-zA-Z\\d\\-]*" + allowDomain.replace(/\./g, "\\.") + "$");
                 return null !== domain.match(regex);
@@ -13585,7 +13884,7 @@
                 });
                 template.addEventListener("click", function() {
                     Object(beaver_logger_client.q)("button_pre_template_click");
-                    if (Object(lib.F)()) {
+                    if (Object(lib.G)()) {
                         var _track;
                         Object(beaver_logger_client.q)("button_pre_template_click_intranet_mode");
                         Object(beaver_logger_client.p)(((_track = {})[constants.u.KEY.STATE] = constants.u.STATE.BUTTON, 
@@ -13595,10 +13894,10 @@
                         Object(beaver_logger_client.h)();
                         alert("IE Intranet mode is not supported by PayPal. Please disable intranet mode, or continue in an alternate browser.");
                     }
-                    if (Object(lib.n)("allow_full_page_fallback")) {
+                    if (Object(lib.o)("allow_full_page_fallback")) {
                         Object(beaver_logger_client.k)("pre_template_force_full_page");
                         _this.props.payment().then(function(token) {
-                            window.top.location = Object(lib.h)(config.a.checkoutUrl, {
+                            window.top.location = Object(lib.i)(config.a.checkoutUrl, {
                                 token: token
                             });
                         });
@@ -13607,7 +13906,7 @@
                 return jsxDom("html", null, jsxDom("body", null, template));
             },
             get version() {
-                return Object(lib.v)();
+                return Object(lib.w)();
             },
             get domain() {
                 return config.a.paypalDomains;
@@ -13618,7 +13917,7 @@
                 }
             },
             validate: function() {
-                Object(lib.C)() || Object(beaver_logger_client.q)("button_render_ineligible");
+                Object(lib.D)() || Object(beaver_logger_client.q)("button_render_ineligible");
             },
             props: {
                 domain: {
@@ -13633,7 +13932,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.w)();
+                        return Object(lib.x)();
                     },
                     queryParam: !0
                 },
@@ -13641,7 +13940,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.Z)();
+                        return Object(lib._0)();
                     },
                     queryParam: !0
                 },
@@ -13734,7 +14033,7 @@
                     decorate: function(original) {
                         return function() {
                             var _this2 = this, actions = {
-                                request: lib.T,
+                                request: lib.U,
                                 payment: {
                                     create: function(options) {
                                         return _this2.props.braintree ? _this2.props.braintree.then(function(client) {
@@ -13760,7 +14059,7 @@
                                     }
                                 }
                             };
-                            if (Object(lib.n)("memoize_payment") && this.memoizedToken) return this.memoizedToken;
+                            if (Object(lib.o)("memoize_payment") && this.memoizedToken) return this.memoizedToken;
                             this.memoizedToken = zalgo_promise_src.a.try(original, this, [ {}, actions ]);
                             this.memoizedToken = this.memoizedToken.then(function(token) {
                                 var _track2;
@@ -13824,7 +14123,7 @@
                         }));
                         (function(props) {
                             var _normalizeProps = normalizeProps(props, {
-                                locale: Object(lib.j)()
+                                locale: Object(lib.k)()
                             }), label = _normalizeProps.label, funding = _normalizeProps.funding, layout = _normalizeProps.layout, locale = _normalizeProps.locale, max = _normalizeProps.max, sources = _normalizeProps.sources, allowed = funding.allowed, country = locale.country;
                             if (allowed && -1 !== allowed.indexOf(constants.v.CREDIT)) return !1;
                             if (layout !== constants.g.HORIZONTAL) return !1;
@@ -13842,22 +14141,22 @@
                                 layout: layout
                             })) return !1;
                             if (-1 !== sources.indexOf(constants.v.CREDIT)) return !1;
-                            var domain = Object(cross_domain_utils_src.f)().replace(/^https?:\/\//, "").replace(/^www\./, "");
+                            var domain = Object(cross_domain_utils_src.g)().replace(/^https?:\/\//, "").replace(/^www\./, "");
                             return -1 !== config.a.creditTestDomains.indexOf(domain);
-                        })(props) && (creditThrottle = Object(lib.y)("dual_credit_automatic", 50)).isEnabled() && (allowed = [].concat(allowed, [ constants.v.CREDIT ]));
+                        })(props) && (creditThrottle = Object(lib.z)("dual_credit_automatic", 50)).isEnabled() && (allowed = [].concat(allowed, [ constants.v.CREDIT ]));
                         var apmFunding = [ constants.v.IDEAL, constants.v.SOFORT, constants.v.GIROPAY, constants.v.BANCONTACT, constants.v.P24, constants.v.MYBANK, constants.v.ZIMPLER, constants.v.EPS ].filter(function(source) {
                             return function(source, props) {
                                 var locale = normalizeProps(props, {
-                                    locale: Object(lib.j)()
+                                    locale: Object(lib.k)()
                                 }).locale;
                                 return -1 !== getFundingConfig(source, "allowedCountries", [ locale.country ]).indexOf(locale.country) && isDomainAllowed();
                             }(source, props);
                         });
                         allowed = allowed.concat(apmFunding);
-                        var remembered = Object(lib.s)(function(sources) {
+                        var remembered = Object(lib.t)(function(sources) {
                             return sources;
                         });
-                        if (!Object(lib.A)() || Object(lib.n)("disable_venmo")) {
+                        if (!Object(lib.B)() || Object(lib.o)("disable_venmo")) {
                             remembered && -1 !== remembered.indexOf(constants.v.VENMO) && (remembered = remembered.filter(function(source) {
                                 return source !== constants.v.VENMO;
                             }));
@@ -13868,7 +14167,7 @@
                             disallowed: disallowed,
                             remembered: remembered,
                             remember: function(sources) {
-                                Object(lib.S)(sources);
+                                Object(lib.T)(sources);
                             }
                         };
                     }
@@ -13888,8 +14187,8 @@
                     noop: !0,
                     decorate: function(original) {
                         return function() {
-                            var _track3, _getBrowser = Object(lib.i)(), _getBrowser$browser = _getBrowser.browser, browser = void 0 === _getBrowser$browser ? "unrecognized" : _getBrowser$browser, _getBrowser$version = _getBrowser.version, version = void 0 === _getBrowser$version ? "unrecognized" : _getBrowser$version;
-                            Object(beaver_logger_client.k)("button_render_browser_" + browser + "_" + (Object(lib.A)() ? "mobile" : "desktop") + "_" + version);
+                            var _track3, _getBrowser = Object(lib.j)(), _getBrowser$browser = _getBrowser.browser, browser = void 0 === _getBrowser$browser ? "unrecognized" : _getBrowser$browser, _getBrowser$version = _getBrowser.version, version = void 0 === _getBrowser$version ? "unrecognized" : _getBrowser$version;
+                            Object(beaver_logger_client.k)("button_render_browser_" + browser + "_" + (Object(lib.B)() ? "mobile" : "desktop") + "_" + version);
                             var style = this.props.style || {};
                             Object(beaver_logger_client.k)("button_render");
                             Object(beaver_logger_client.k)("button_render_color_" + (style.color || "default"));
@@ -13904,7 +14203,7 @@
                             _track3[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.BUTTON_RENDER, _track3[constants.u.KEY.BUTTON_TYPE] = constants.u.BUTTON_TYPE.IFRAME, 
                             _track3[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, _track3[constants.u.KEY.BUTTON_SOURCE] = this.props.source, 
                             _track3));
-                            if (Object(lib.F)()) {
+                            if (Object(lib.G)()) {
                                 var _track4;
                                 Object(beaver_logger_client.q)("button_render_intranet_mode");
                                 Object(beaver_logger_client.p)(((_track4 = {})[constants.u.KEY.STATE] = constants.u.STATE.LOAD, 
@@ -13936,9 +14235,9 @@
                             Object(beaver_logger_client.p)(((_track5 = {})[constants.u.KEY.STATE] = constants.u.STATE.CHECKOUT, 
                             _track5[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.CHECKOUT_AUTHORIZE, 
                             _track5[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, _track5));
-                            Object(lib.F)() && Object(beaver_logger_client.q)("button_authorize_intranet_mode");
-                            Object(lib.C)() || Object(beaver_logger_client.k)("button_authorize_ineligible");
-                            Object(lib.d)("authorize");
+                            Object(lib.G)() && Object(beaver_logger_client.q)("button_authorize_intranet_mode");
+                            Object(lib.D)() || Object(beaver_logger_client.k)("button_authorize_ineligible");
+                            Object(lib.e)("authorize");
                             Object(beaver_logger_client.h)();
                             var restart = actions.restart;
                             actions.restart = function() {
@@ -13950,10 +14249,10 @@
                                 return zalgo_promise_src.a.try(function() {
                                     return actions.close();
                                 }).then(function() {
-                                    return Object(lib.R)(win || window.top, url || data.returnUrl);
+                                    return Object(lib.S)(win || window.top, url || data.returnUrl);
                                 });
                             };
-                            actions.payment.tokenize = Object(lib.J)(function() {
+                            actions.payment.tokenize = Object(lib.K)(function() {
                                 if (!_this3.props.braintree) throw new Error("Must pass in Braintree client to tokenize payment");
                                 return _this3.props.braintree.then(function(client) {
                                     return client.tokenizePayment(data);
@@ -13979,7 +14278,7 @@
                                     return mergePaymentDetails(result.id, result);
                                 });
                             };
-                            actions.request = lib.T;
+                            actions.request = lib.U;
                             onAuthorizeListener.trigger({
                                 paymentToken: data.paymentToken
                             });
@@ -14026,7 +14325,7 @@
                                 });
                                 return zalgo_promise_src.a.try(function() {
                                     if (itemListPatches.length) return id = data.paymentID, patch = itemListPatches, 
-                                    options = getPaymentOptions(id), void addPaymentOptions(id, Object(lib.P)(options, patch));
+                                    options = getPaymentOptions(id), void addPaymentOptions(id, Object(lib.Q)(options, patch));
                                     var id, patch, options;
                                 }).then(function() {
                                     return patch(patchObject);
@@ -14057,7 +14356,7 @@
                     once: !0,
                     def: function() {
                         return function(err) {
-                            if (Object(lib.F)()) {
+                            if (Object(lib.G)()) {
                                 Object(beaver_logger_client.q)("button_error_intranet_mode");
                                 Object(beaver_logger_client.h)();
                                 alert("IE Intranet mode is not supported by PayPal. Please disable intranet mode, or continue in an alternate browser.");
@@ -14082,7 +14381,7 @@
                             Object(beaver_logger_client.h)();
                             return original.call(this, data, component__extends({}, actions, {
                                 redirect: function(win, url) {
-                                    return zalgo_promise_src.a.all([ Object(lib.R)(win || window.top, url || data.cancelUrl), actions.close() ]);
+                                    return zalgo_promise_src.a.all([ Object(lib.S)(win || window.top, url || data.cancelUrl), actions.close() ]);
                                 }
                             }));
                         };
@@ -14100,7 +14399,7 @@
                             _track8[constants.u.KEY.TRANSITION] = constants.u.TRANSITION.BUTTON_CLICK, _track8[constants.u.KEY.BUTTON_TYPE] = constants.u.BUTTON_TYPE.IFRAME, 
                             _track8[constants.u.KEY.BUTTON_SESSION_UID] = this.props.buttonSessionID, _track8[constants.u.KEY.CHOSEN_FUNDING] = data && (data.card || data.fundingSource), 
                             _track8));
-                            if (Object(lib.F)()) {
+                            if (Object(lib.G)()) {
                                 var _track9;
                                 Object(beaver_logger_client.q)("button_click_intranet_mode");
                                 Object(beaver_logger_client.p)(((_track9 = {})[constants.u.KEY.STATE] = constants.u.STATE.BUTTON, 
@@ -14128,7 +14427,7 @@
                     required: !1,
                     queryParam: "locale.x",
                     def: function() {
-                        var _getBrowserLocale = Object(lib.j)();
+                        var _getBrowserLocale = Object(lib.k)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     },
                     validate: validateButtonLocale
@@ -14177,7 +14476,7 @@
                     sendToChild: !1,
                     def: function() {
                         return btoa(JSON.stringify({
-                            url: Object(lib.m)()
+                            url: Object(lib.n)()
                         }));
                     }
                 },
@@ -14222,7 +14521,7 @@
                 function doRender(props, original) {
                     return popupBridge ? renderThroughPopupBridge(props, popupBridge).catch(function(err) {
                         Object(beaver_logger_client.g)("popup_bridge_error", {
-                            err: Object(lib.W)(err)
+                            err: Object(lib.X)(err)
                         });
                         return original();
                     }) : original();
@@ -14249,7 +14548,7 @@
                     });
                 };
             }(src_checkout.a, ButtonComponent);
-            Object(lib.q)().then(function(pageRenderTime) {
+            Object(lib.r)().then(function(pageRenderTime) {
                 var _track, fundingSources = Array.prototype.slice.call(document.querySelectorAll("[" + constants.c.FUNDING_SOURCE + "]")).map(function(el) {
                     return el.getAttribute(constants.c.CARD) || el.getAttribute(constants.c.FUNDING_SOURCE);
                 }).filter(function(source) {
@@ -14268,13 +14567,13 @@
                 Object(beaver_logger_client.h)();
             });
             var xprops = ButtonComponent.xprops || src_checkout.a.xprops;
-            xprops && xprops.logLevel && Object(lib.V)(xprops.logLevel);
+            xprops && xprops.logLevel && Object(lib.W)(xprops.logLevel);
         }(component_Button);
-        Object(lib.E)() && Object(lib.n)("ie_full_page") && (src_checkout.a.renderTo = function(win) {
+        Object(lib.F)() && Object(lib.o)("ie_full_page") && (src_checkout.a.renderTo = function(win) {
             Object(beaver_logger_client.k)("force_ie_full_page");
             Object(beaver_logger_client.h)();
             var checkout = src_checkout.a.init({
-                onAuthorize: lib.K
+                onAuthorize: lib.L
             });
             checkout.delegate(win);
             checkout.openContainer().then(function() {
@@ -14282,36 +14581,36 @@
                 checkout.showContainer();
             });
             component_Button.xprops.payment().then(function(token) {
-                window.top.location = Object(lib.h)(config.a.checkoutUrl, {
+                window.top.location = Object(lib.i)(config.a.checkoutUrl, {
                     token: token
                 });
             }).catch(function(err) {
                 checkout.error(err);
             });
         });
-        var hacks_parent = Object(cross_domain_utils_src.l)(window), hacks_top = Object(cross_domain_utils_src.m)(window);
+        var hacks_parent = Object(cross_domain_utils_src.m)(window), hacks_top = Object(cross_domain_utils_src.n)(window);
         if (hacks_top && hacks_parent) {
             var canRenderTop = hacks_top === hacks_parent;
             if (!canRenderTop) {
                 src_checkout.a.canRenderTo(hacks_top).then(function(result) {
                     canRenderTop = result;
                 });
-                Object(lib.O)(src_checkout.a, "renderTo", function(_ref) {
+                Object(lib.P)(src_checkout.a, "renderTo", function(_ref) {
                     var _ref$args = _ref.args, win = _ref$args[0], props = _ref$args[1], el = _ref$args[2], original = _ref.original, context = _ref.context;
-                    canRenderTop || (win = Object(cross_domain_utils_src.l)(window));
+                    canRenderTop || (win = Object(cross_domain_utils_src.m)(window));
                     return original.call(context, win, props, el);
                 });
             }
         }
-        Object(lib.O)(src_checkout.a, "renderTo", function(_ref2) {
+        Object(lib.P)(src_checkout.a, "renderTo", function(_ref2) {
             var callOriginal = _ref2.callOriginal, props = _ref2.args[1];
-            if (Object(lib.n)("allow_full_page_fallback")) {
-                var handleError = Object(lib.M)(function(err) {
+            if (Object(lib.o)("allow_full_page_fallback")) {
+                var handleError = Object(lib.N)(function(err) {
                     try {
                         console.error(err && err.stack);
                     } catch (err2) {}
                     return component_Button.xprops.payment().then(function(token) {
-                        window.top.location = Object(lib.h)(config.a.checkoutUrl, {
+                        window.top.location = Object(lib.i)(config.a.checkoutUrl, {
                             token: token
                         });
                     });
@@ -14322,11 +14621,11 @@
             return callOriginal();
         });
         var debounce = !1;
-        Object(lib.O)(src_checkout.a, "renderTo", function(_ref3) {
+        Object(lib.P)(src_checkout.a, "renderTo", function(_ref3) {
             var callOriginal = _ref3.callOriginal, props = _ref3.args[1];
             if (debounce) {
                 Object(beaver_logger_client.q)("button_mutliple_click_debounce");
-                return new zalgo_promise_src.a(lib.K);
+                return new zalgo_promise_src.a(lib.L);
             }
             debounce = !0;
             for (var _loop = function(_i2, _ref5, _length2) {
@@ -14338,7 +14637,7 @@
             }, _i2 = 0, _ref5 = [ "onAuthorize", "onCancel", "onError", "onClose" ], _length2 = null == _ref5 ? 0 : _ref5.length; _i2 < _length2; _i2++) _loop(_i2, _ref5);
             return callOriginal();
         });
-        Object(lib.O)(rest.payment, "create", function(_ref6) {
+        Object(lib.P)(rest.payment, "create", function(_ref6) {
             var createOriginal = _ref6.original, createContext = _ref6.context, _ref6$args = _ref6.args, env = _ref6$args[0], client = _ref6$args[1], options = _ref6$args[2], experience = _ref6$args[3];
             options.payment || (options = {
                 payment: options,
@@ -14346,7 +14645,7 @@
             });
             return createOriginal.call(createContext, env, client, options);
         });
-        Object(lib.O)(component_Button.props.style, "validate", function(_ref7) {
+        Object(lib.P)(component_Button.props.style, "validate", function(_ref7) {
             var callOriginal = _ref7.callOriginal, style = _ref7.args[0];
             if (!style) return callOriginal();
             style && "creditblue" === style.color && (style.color = constants.e.DARKBLUE);
@@ -14357,7 +14656,7 @@
             }
             return callOriginal();
         });
-        Object(lib.O)(component_Button, "render", function(_ref8) {
+        Object(lib.P)(component_Button, "render", function(_ref8) {
             var callOriginal = _ref8.callOriginal, props = _ref8.args[0];
             if (props.billingAgreement) {
                 props.payment = props.billingAgreement;
@@ -14365,12 +14664,12 @@
             }
             return callOriginal();
         });
-        Object(lib.O)(component_Button.props.payment, "decorate", function(_ref9) {
+        Object(lib.P)(component_Button.props.payment, "decorate", function(_ref9) {
             var original = _ref9.original, context = _ref9.context, originalPayment = _ref9.args[0];
             return original.call(context, function(data, actions) {
                 var _this = this;
                 return new zalgo_promise_src.a(function(resolve, reject) {
-                    Object(lib.O)(actions.payment, "create", function(_ref10) {
+                    Object(lib.P)(actions.payment, "create", function(_ref10) {
                         var createOriginal = _ref10.original, createContext = _ref10.context, _ref10$args = _ref10.args, options = _ref10$args[0], experience = _ref10$args[1];
                         options.payment || (options = {
                             payment: options,
@@ -14384,9 +14683,9 @@
                     function rejectActions(err) {
                         reject(err);
                     }
-                    Object(lib.g)(resolveData, data);
-                    Object(lib.g)(resolveData, actions);
-                    Object(lib.g)(rejectActions, actions);
+                    Object(lib.h)(resolveData, data);
+                    Object(lib.h)(resolveData, actions);
+                    Object(lib.h)(rejectActions, actions);
                     var ctx = {
                         props: {
                             env: _this.props.env,
@@ -14427,7 +14726,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.w)();
+                        return Object(lib.x)();
                     },
                     queryParam: !0
                 },
@@ -14440,7 +14739,7 @@
                     type: "string",
                     required: !1,
                     def: function() {
-                        return Object(lib.k)();
+                        return Object(lib.l)();
                     },
                     queryParam: !0
                 },
@@ -14466,7 +14765,7 @@
                     queryParam: "locale.x",
                     allowDelegate: !0,
                     def: function() {
-                        var _getBrowserLocale = Object(lib.j)();
+                        var _getBrowserLocale = Object(lib.k)();
                         return _getBrowserLocale.lang + "_" + _getBrowserLocale.country;
                     }
                 },
@@ -14511,7 +14810,7 @@
                     sendToChild: !1,
                     def: function() {
                         return btoa(JSON.stringify({
-                            url: Object(lib.m)()
+                            url: Object(lib.n)()
                         }));
                     }
                 },
@@ -14544,14 +14843,14 @@
         zalgo_promise_src.a.onPossiblyUnhandledException(function(err) {
             var _track;
             Object(beaver_logger_client.g)("unhandled_error", {
-                stack: Object(lib.W)(err),
+                stack: Object(lib.X)(err),
                 errtype: {}.toString.call(err)
             });
             Object(beaver_logger_client.p)(((_track = {})[constants.u.KEY.ERROR_CODE] = "checkoutjs_error", 
-            _track[constants.u.KEY.ERROR_DESC] = Object(lib.X)(err), _track));
+            _track[constants.u.KEY.ERROR_DESC] = Object(lib.Y)(err), _track));
             return Object(beaver_logger_client.h)().catch(function(err2) {
                 if (window.console) try {
-                    window.console.error ? window.console.error("Error flushing:", Object(lib.W)(err2)) : window.console.log && window.console.log("Error flushing:", Object(lib.W)(err2));
+                    window.console.error ? window.console.error("Error flushing:", Object(lib.X)(err2)) : window.console.log && window.console.log("Error flushing:", Object(lib.X)(err2));
                 } catch (err3) {
                     setTimeout(function() {
                         throw err3;
@@ -14559,15 +14858,16 @@
                 }
             });
         });
-        var currentScript = Object(lib.l)(), currentProtocol = window.location.protocol.split(":")[0];
-        var init = Object(lib.M)(function(_ref2) {
+        var currentScript = Object(lib.m)(), currentProtocol = window.location.protocol.split(":")[0];
+        var init = Object(lib.N)(function(_ref2) {
             var precacheRemembered = _ref2.precacheRemembered;
-            Object(lib.C)() || Object(beaver_logger_client.q)("ineligible");
+            Object(lib.D)() || Object(beaver_logger_client.q)("ineligible");
             Object(lib.c)();
-            Object(lib.z)();
+            Object(lib.A)();
+            window.addEventListener("load", lib.d);
             pptm.shouldCreateInitialPptmScript() && pptm.createPptmScript();
-            precacheRemembered && Object(lib.Q)();
-            Object(lib.n)("force_bridge") && !Object(lib.H)() && Object(lib.N)(config.a.env);
+            precacheRemembered && Object(lib.R)();
+            Object(lib.o)("force_bridge") && !Object(lib.I)() && Object(lib.O)(config.a.env);
             Object(beaver_logger_client.k)("setup_" + config.a.env);
             Object(beaver_logger_client.f)("current_protocol_" + currentProtocol);
         });
@@ -14615,7 +14915,7 @@
                     config.a.state = state;
                 }
                 merchantID && (config.a.merchantID = merchantID);
-                logLevel ? Object(lib.V)(logLevel) : Object(lib.V)(config.a.logLevel);
+                logLevel ? Object(lib.W)(logLevel) : Object(lib.W)(config.a.logLevel);
             }(options);
             init(options);
         }
@@ -14629,8 +14929,8 @@
             merchantID: currentScript.getAttribute("data-merchant-id"),
             precacheRemembered: currentScript.hasAttribute("data-precache-remembered-funding")
         }) : setup();
-        if (!Object(lib.H)()) if (currentScript) {
-            var setup__track2, scriptProtocol = currentScript.src.split(":")[0], loadTime = Object(lib.t)(currentScript.src);
+        if (!Object(lib.I)()) if (currentScript) {
+            var setup__track2, scriptProtocol = currentScript.src.split(":")[0], loadTime = Object(lib.u)(currentScript.src);
             Object(beaver_logger_client.f)("current_script_protocol_" + scriptProtocol);
             Object(beaver_logger_client.f)("current_script_protocol_" + (currentProtocol === scriptProtocol ? "match" : "mismatch"));
             Object(beaver_logger_client.f)("current_script_version_" + config.a.version.replace(/[^0-9a-zA-Z]+/g, "_"));
@@ -14673,7 +14973,7 @@
                     Object(beaver_logger_client.k)("apple_pay_" + applePay);
                     Object(beaver_logger_client.k)("payment_request_" + paymentRequest);
                     Object(beaver_logger_client.h)();
-                }).catch(lib.K);
+                }).catch(lib.L);
             } catch (err) {}
         } else {
             var setup__track3;
@@ -14690,7 +14990,7 @@
         interface_checkout = legacy.checkout;
         apps = legacy.apps;
         var interface_Checkout = void 0, interface_BillingPage = void 0, PayPalCheckout = void 0, destroyAll = void 0, enableCheckoutIframe = void 0, logger = void 0;
-        if (Object(lib.H)()) {
+        if (Object(lib.I)()) {
             interface_Checkout = src_checkout.a;
             interface_BillingPage = BillingPage;
             PayPalCheckout = src_checkout.a;
@@ -14747,13 +15047,13 @@
             return constants.o;
         });
         __webpack_require__.d(__webpack_exports__, "request", function() {
-            return lib.T;
+            return lib.U;
         });
         __webpack_require__.d(__webpack_exports__, "isEligible", function() {
-            return lib.C;
+            return lib.D;
         });
         __webpack_require__.d(__webpack_exports__, "isFundingRemembered", function() {
-            return lib.D;
+            return lib.E;
         });
         __webpack_require__.d(__webpack_exports__, "forceIframe", function() {
             return lib.a;
@@ -14934,7 +15234,7 @@
             HIDDEN_BUTTON: "paypal-button-hidden"
         }, src = __webpack_require__("./node_modules/zalgo-promise/src/index.js"), checkout = __webpack_require__("./src/checkout/index.js"), config = __webpack_require__("./src/config/index.js"), post_robot_src = __webpack_require__("./node_modules/post-robot/src/index.js");
         function isLegacyEligible() {
-            return !!Object(lib.C)() && (!!Object(lib.Y)() && !Object(lib.A)());
+            return !!Object(lib.D)() && (!!Object(lib.Z)() && !Object(lib.B)());
         }
         var warn = Object(client.n)(LOG_PREFIX).warn, DEFAULT_COUNTRY = constants.r.US, DEFAULT_LANG = constants.x.EN;
         function normalizeLocale(locale) {
@@ -14961,19 +15261,19 @@
                 lang: lang
             };
         }
-        var button__prefix = Object(client.n)(LOG_PREFIX), info = button__prefix.info, debug = button__prefix.debug, error = button__prefix.error, loadButtonJS = Object(lib.J)(function() {
+        var button__prefix = Object(client.n)(LOG_PREFIX), info = button__prefix.info, debug = button__prefix.debug, error = button__prefix.error, loadButtonJS = Object(lib.K)(function() {
             debug("buttonjs_load");
-            return Object(lib.I)(config.a.buttonJSUrl).catch(function(err) {
+            return Object(lib.J)(config.a.buttonJSUrl).catch(function(err) {
                 info("buttonjs_load_error_retry", {
-                    error: Object(lib.W)(err)
+                    error: Object(lib.X)(err)
                 });
-                return Object(lib.I)(config.a.buttonJSUrl);
+                return Object(lib.J)(config.a.buttonJSUrl);
             }).then(function(result) {
                 debug("buttonjs_load_success");
                 return result;
             }).catch(function(err) {
                 error("buttonjs_load_error", {
-                    error: Object(lib.W)(err)
+                    error: Object(lib.X)(err)
                 });
                 throw err;
             });
@@ -15009,7 +15309,7 @@
                             }).el;
                             container.appendChild(el);
                             try {
-                                info("in_page_button_" + (Object(lib.B)(el) ? "visible" : "not_visible"));
+                                info("in_page_button_" + (Object(lib.C)(el) ? "visible" : "not_visible"));
                             } catch (err) {}
                             return el.childNodes[0];
                         });
@@ -15058,15 +15358,15 @@
         var util_warn = Object(client.n)(LOG_PREFIX).warn, redirected = !1;
         function logRedirect(location) {
             redirected && util_warn("multiple_redirects");
-            Object(lib._0)(location) && (redirected = !0);
+            Object(lib._1)(location) && (redirected = !0);
             Object(client.h)();
         }
         function redirect(url) {
             return src.a.try(function() {
                 if (!url) throw new Error("Redirect url undefined");
-                if (config.a.env === constants.t.TEST && Object(lib._0)(url)) return Object(lib.R)(window, "#fullpageRedirect?url=" + url);
+                if (config.a.env === constants.t.TEST && Object(lib._1)(url)) return Object(lib.S)(window, "#fullpageRedirect?url=" + url);
                 logRedirect(url);
-                return Object(lib.R)(window, url);
+                return Object(lib.S)(window, url);
             });
         }
         function parseToken(token) {
@@ -15125,7 +15425,7 @@
                     });
                     throw new Error('Could not determine url or token from "' + item + '"');
                 }
-                url = Object(lib.h)(config.a.checkoutUrl, {
+                url = Object(lib.i)(config.a.checkoutUrl, {
                     token: paymentToken
                 });
                 interface_debug("startflow_with_token", {
@@ -15155,7 +15455,7 @@
                 interface_checkout.initXO = function() {
                     interface_warn("gettoken_initxo");
                 };
-                interface_checkout.startFlow = Object(lib.M)(function(item) {
+                interface_checkout.startFlow = Object(lib.N)(function(item) {
                     interface_debug("gettoken_startflow", {
                         item: item
                     });
@@ -15223,9 +15523,9 @@
                 props.init = function(data) {
                     resolve(data.paymentToken);
                 };
-            }), errorHandler = Object(lib.M)(function(err) {
+            }), errorHandler = Object(lib.N)(function(err) {
                 interface_error("component_error", {
-                    error: Object(lib.W)(err)
+                    error: Object(lib.X)(err)
                 });
                 if (hijackTarget) {
                     interface_warn("render_error_hijack_revert_target");
@@ -15237,7 +15537,7 @@
                 });
                 paymentToken.then(function(token) {
                     interface_warn("render_error_redirect_using_token");
-                    return redirect(Object(lib.h)(config.a.checkoutUrl, {
+                    return redirect(Object(lib.i)(config.a.checkoutUrl, {
                         token: token
                     }));
                 });
@@ -15265,7 +15565,7 @@
             element.addEventListener("click", function(event) {
                 tracker();
                 var eligible = isLegacyEligible();
-                if (Object(lib.Y)()) {
+                if (Object(lib.Z)()) {
                     interface_debug("click_popups_supported");
                     eligible || interface_debug("click_popups_supported_but_ineligible");
                 } else {
@@ -15284,7 +15584,7 @@
                         clickHandler(event);
                     } catch (err) {
                         interface_error("click_handler_error", {
-                            error: Object(lib.W)(err)
+                            error: Object(lib.X)(err)
                         });
                     }
                 }(clickHandler, event) : function(element) {
@@ -15317,7 +15617,7 @@
             interface_info("setup", {
                 id: id = id || "merchant",
                 env: options.environment,
-                options: Object(lib.U)(options)
+                options: Object(lib.V)(options)
             });
             setupCalled && interface_debug("setup_called_multiple_times");
             setupCalled = !0;
@@ -15335,7 +15635,7 @@
                     options_info("options_button_single_button_passed");
                     options.button = [ options.button ];
                 }
-                if (options.buttons && Object(lib.p)(options.buttons).length) {
+                if (options.buttons && Object(lib.q)(options.buttons).length) {
                     options_info("options_buttons_with_elements_passed");
                     options.button = options.buttons;
                     delete options.buttons;
@@ -15353,7 +15653,7 @@
                     delete options.container;
                 }
                 if (options.button) {
-                    var button = Object(lib.p)(options.button);
+                    var button = Object(lib.q)(options.button);
                     if (button.length) options.button = button; else {
                         options_warn("options_button_element_not_found", {
                             element: JSON.stringify(options.button)
@@ -15380,7 +15680,7 @@
                                 options: options.container,
                                 button: button.container
                             });
-                            Object(lib.p)(button.container || button.button).forEach(function(element) {
+                            Object(lib.q)(button.container || button.button).forEach(function(element) {
                                 var _buttons$push;
                                 buttons.push(((_buttons$push = {})[button.container ? "container" : "button"] = element, 
                                 _buttons$push.click = button.click || options.click, _buttons$push.condition = button.condition || options.condition, 
@@ -15402,7 +15702,7 @@
                     buttons.length && (options.buttons = buttons);
                 } else if (options.container && !Array.isArray(options.buttons)) {
                     var _buttons = [];
-                    Object(lib.p)(options.container).forEach(function(container, i) {
+                    Object(lib.q)(options.container).forEach(function(container, i) {
                         _buttons.push({
                             container: container,
                             click: options.click,
@@ -15445,7 +15745,7 @@
                 Object(client.f)("setup_post_bridge", {
                     env: env
                 });
-                return Object(lib.N)(env).then(lib.K);
+                return Object(lib.O)(env).then(lib.L);
             });
             return src.a.try(function() {
                 return options.buttons.length ? renderButtons(id, options.buttons).then(function(buttons) {
@@ -15536,7 +15836,7 @@
                     }
                 };
                 !function(method) {
-                    Object(lib.L)(function() {
+                    Object(lib.M)(function() {
                         ready_debug("paypal_checkout_ready");
                         setTimeout(function() {
                             window.paypal || ready_error("paypal_checkout_ready_no_window_paypal");
@@ -15547,7 +15847,7 @@
                 return oneTimeReady;
             }
         });
-        Object(lib.L)(function() {
+        Object(lib.M)(function() {
             var buttons = Array.prototype.slice.call(document.querySelectorAll("[" + ATTRIBUTES.BUTTON + "]"));
             if (buttons && buttons.length) {
                 ready_debug("data_paypal_button", {
@@ -15667,7 +15967,7 @@
             }(ua) || (userAgent = getUserAgent(), /\belectron\b/i.test(userAgent)) || function() {
                 var userAgent = getUserAgent();
                 return /Macintosh.*AppleWebKit(?!.*Safari)/i.test(userAgent);
-            }() || !Boolean(Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.k)(Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.m)(window))) && (!0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches));
+            }() || !Boolean(Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.l)(Object(__WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__.n)(window))) && (!0 === window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches));
             var userAgent;
         };
         var __WEBPACK_IMPORTED_MODULE_0_cross_domain_utils_src__ = __webpack_require__("./node_modules/cross-domain-utils/src/index.js");
@@ -15894,7 +16194,7 @@
         "use strict";
         var device = __webpack_require__("./src/lib/device.js"), util = __webpack_require__("./src/lib/util.js"), src = __webpack_require__("./node_modules/post-robot/src/index.js"), client = __webpack_require__("./node_modules/beaver-logger/client/index.js"), cross_domain_utils_src = __webpack_require__("./node_modules/cross-domain-utils/src/index.js"), config = __webpack_require__("./src/config/index.js"), constants = __webpack_require__("./src/constants/index.js"), session = __webpack_require__("./src/lib/session.js");
         function proxyMethod(name, win, originalMethod) {
-            if (win && Object(cross_domain_utils_src.f)() === config.a.paypalDomain && !Object(cross_domain_utils_src.t)(win)) {
+            if (win && Object(cross_domain_utils_src.g)() === config.a.paypalDomain && !Object(cross_domain_utils_src.u)(win)) {
                 win && Object(src.send)(win, "proxy_" + name, {
                     originalMethod: originalMethod
                 }).catch(util.k);
@@ -15910,7 +16210,7 @@
             return function() {
                 var _this = this, _arguments = arguments;
                 return (methods = methods.filter(function(method) {
-                    return !Object(cross_domain_utils_src.x)(method.source);
+                    return !Object(cross_domain_utils_src.y)(method.source);
                 })).length ? methods[methods.length - 1].apply(this, arguments).catch(function() {
                     return originalMethod.apply(_this, _arguments);
                 }) : originalMethod.apply(this, arguments);
@@ -15921,7 +16221,7 @@
             return window.xchild && window.xchild.getParentDomain ? window.xchild.getParentDomain() : window.location.host;
         }
         var setupProxyLogTransport = Object(util.l)(function() {
-            Object(client.o)(proxyMethod("log", Object(cross_domain_utils_src.l)(window), Object(client.i)()));
+            Object(client.o)(proxyMethod("log", Object(cross_domain_utils_src.m)(window), Object(client.i)()));
         });
         function initLogger() {
             setupProxyLogTransport();
@@ -16036,6 +16336,15 @@
             if (window.console) {
                 if (window.console.warn) return window.console.warn(err);
                 if (window.console.log) return window.console.log(err);
+            }
+        }
+        function checkForDeprecatedIntegration() {
+            for (var scripts = Array.prototype.slice.call(document.getElementsByTagName("script")), _i2 = 0, _length2 = null == scripts ? 0 : scripts.length; _i2 < _length2; _i2++) {
+                var script = scripts[_i2];
+                if (script.attributes.type && "application/x-component" === script.attributes.type.value) {
+                    Object(client.q)("deprecated_integration_application_xcomponent");
+                    console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
+                }
             }
         }
         function checkForCommonErrors() {
@@ -16344,17 +16653,17 @@
         var jsx = __webpack_require__("./src/lib/jsx.js");
         function allowIframe() {
             if (!Object(device.g)()) return !0;
-            var parentWindow = Object(cross_domain_utils_src.l)(window);
-            if (parentWindow && Object(cross_domain_utils_src.t)(parentWindow)) return !0;
+            var parentWindow = Object(cross_domain_utils_src.m)(window);
+            if (parentWindow && Object(cross_domain_utils_src.u)(parentWindow)) return !0;
             var parentComponentWindow = window.xchild && window.xchild.getParentComponentWindow();
-            if (parentComponentWindow && Object(cross_domain_utils_src.t)(parentComponentWindow)) return !0;
+            if (parentComponentWindow && Object(cross_domain_utils_src.u)(parentComponentWindow)) return !0;
             0;
             return !1;
         }
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return device.a;
         });
-        __webpack_require__.d(__webpack_exports__, "A", function() {
+        __webpack_require__.d(__webpack_exports__, "B", function() {
             return device.b;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16364,7 +16673,7 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "G", function() {
+        __webpack_require__.d(__webpack_exports__, "H", function() {
             return device.f;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16372,7 +16681,7 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "E", function() {
+        __webpack_require__.d(__webpack_exports__, "F", function() {
             return device.c;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16380,27 +16689,27 @@
             return device.d;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "F", function() {
+        __webpack_require__.d(__webpack_exports__, "G", function() {
             return device.e;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "Y", function() {
+        __webpack_require__.d(__webpack_exports__, "Z", function() {
             return device.g;
         });
-        __webpack_require__.d(__webpack_exports__, "H", function() {
+        __webpack_require__.d(__webpack_exports__, "I", function() {
             return util.g;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "J", function() {
+        __webpack_require__.d(__webpack_exports__, "K", function() {
             return util.j;
         });
-        __webpack_require__.d(__webpack_exports__, "K", function() {
+        __webpack_require__.d(__webpack_exports__, "L", function() {
             return util.k;
         });
-        __webpack_require__.d(__webpack_exports__, "M", function() {
+        __webpack_require__.d(__webpack_exports__, "N", function() {
             return util.l;
         });
-        __webpack_require__.d(__webpack_exports__, "Z", function() {
+        __webpack_require__.d(__webpack_exports__, "_0", function() {
             return util.u;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16408,19 +16717,19 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return util.h;
         });
-        __webpack_require__.d(__webpack_exports__, "U", function() {
+        __webpack_require__.d(__webpack_exports__, "V", function() {
             return util.q;
         });
-        __webpack_require__.d(__webpack_exports__, "f", function() {
+        __webpack_require__.d(__webpack_exports__, "g", function() {
             return util.c;
         });
         __webpack_require__.d(__webpack_exports__, "b", function() {
             return util.a;
         });
-        __webpack_require__.d(__webpack_exports__, "W", function() {
+        __webpack_require__.d(__webpack_exports__, "X", function() {
             return util.s;
         });
-        __webpack_require__.d(__webpack_exports__, "X", function() {
+        __webpack_require__.d(__webpack_exports__, "Y", function() {
             return util.t;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16428,20 +16737,20 @@
             return util.f;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "n", function() {
+        __webpack_require__.d(__webpack_exports__, "o", function() {
             return util.e;
         });
-        __webpack_require__.d(__webpack_exports__, "P", function() {
+        __webpack_require__.d(__webpack_exports__, "Q", function() {
             return util.n;
         });
-        __webpack_require__.d(__webpack_exports__, "O", function() {
+        __webpack_require__.d(__webpack_exports__, "P", function() {
             return util.m;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "g", function() {
+        __webpack_require__.d(__webpack_exports__, "h", function() {
             return util.d;
         });
-        __webpack_require__.d(__webpack_exports__, "e", function() {
+        __webpack_require__.d(__webpack_exports__, "f", function() {
             return util.b;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16465,72 +16774,75 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return util.p;
         });
-        __webpack_require__.d(__webpack_exports__, "z", function() {
+        __webpack_require__.d(__webpack_exports__, "A", function() {
             return initLogger;
         });
-        __webpack_require__.d(__webpack_exports__, "V", function() {
+        __webpack_require__.d(__webpack_exports__, "W", function() {
             return setLogLevel;
         });
-        __webpack_require__.d(__webpack_exports__, "i", function() {
+        __webpack_require__.d(__webpack_exports__, "j", function() {
             return getBrowser;
         });
-        __webpack_require__.d(__webpack_exports__, "C", function() {
+        __webpack_require__.d(__webpack_exports__, "D", function() {
             return isEligible;
         });
-        __webpack_require__.d(__webpack_exports__, "d", function() {
+        __webpack_require__.d(__webpack_exports__, "e", function() {
             return checkRecognizedBrowser;
+        });
+        __webpack_require__.d(__webpack_exports__, "d", function() {
+            return checkForDeprecatedIntegration;
         });
         __webpack_require__.d(__webpack_exports__, "c", function() {
             return checkForCommonErrors;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "I", function() {
+        __webpack_require__.d(__webpack_exports__, "J", function() {
             return dom.i;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "o", function() {
+        __webpack_require__.d(__webpack_exports__, "p", function() {
             return dom.c;
         });
-        __webpack_require__.d(__webpack_exports__, "p", function() {
+        __webpack_require__.d(__webpack_exports__, "q", function() {
             return dom.d;
         });
-        __webpack_require__.d(__webpack_exports__, "L", function() {
+        __webpack_require__.d(__webpack_exports__, "M", function() {
             return dom.j;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "r", function() {
+        __webpack_require__.d(__webpack_exports__, "s", function() {
             return dom.f;
         });
-        __webpack_require__.d(__webpack_exports__, "_0", function() {
+        __webpack_require__.d(__webpack_exports__, "_1", function() {
             return dom.l;
         });
-        __webpack_require__.d(__webpack_exports__, "h", function() {
+        __webpack_require__.d(__webpack_exports__, "i", function() {
             return dom.a;
         });
-        __webpack_require__.d(__webpack_exports__, "R", function() {
+        __webpack_require__.d(__webpack_exports__, "S", function() {
             return dom.k;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "j", function() {
+        __webpack_require__.d(__webpack_exports__, "k", function() {
             return dom.b;
         });
-        __webpack_require__.d(__webpack_exports__, "B", function() {
+        __webpack_require__.d(__webpack_exports__, "C", function() {
             return dom.h;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "q", function() {
+        __webpack_require__.d(__webpack_exports__, "r", function() {
             return dom.e;
         });
-        __webpack_require__.d(__webpack_exports__, "t", function() {
+        __webpack_require__.d(__webpack_exports__, "u", function() {
             return dom.g;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "T", function() {
+        __webpack_require__.d(__webpack_exports__, "U", function() {
             return request;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
@@ -16538,10 +16850,10 @@
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "y", function() {
+        __webpack_require__.d(__webpack_exports__, "z", function() {
             return getThrottle;
         });
-        __webpack_require__.d(__webpack_exports__, "u", function() {
+        __webpack_require__.d(__webpack_exports__, "v", function() {
             return getReturnToken;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
@@ -16554,13 +16866,13 @@
             return session.e;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
-        __webpack_require__.d(__webpack_exports__, "x", function() {
+        __webpack_require__.d(__webpack_exports__, "y", function() {
             return session.d;
         });
-        __webpack_require__.d(__webpack_exports__, "w", function() {
+        __webpack_require__.d(__webpack_exports__, "x", function() {
             return session.c;
         });
-        __webpack_require__.d(__webpack_exports__, "k", function() {
+        __webpack_require__.d(__webpack_exports__, "l", function() {
             return session.a;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
@@ -16569,31 +16881,31 @@
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return proxyMethod;
         });
-        __webpack_require__.d(__webpack_exports__, "N", function() {
+        __webpack_require__.d(__webpack_exports__, "O", function() {
             return openMetaFrame;
         });
-        __webpack_require__.d(__webpack_exports__, "s", function() {
+        __webpack_require__.d(__webpack_exports__, "t", function() {
             return getRememberedFunding;
         });
-        __webpack_require__.d(__webpack_exports__, "S", function() {
+        __webpack_require__.d(__webpack_exports__, "T", function() {
             return rememberFunding;
         });
-        __webpack_require__.d(__webpack_exports__, "D", function() {
+        __webpack_require__.d(__webpack_exports__, "E", function() {
             return isFundingRemembered;
         });
-        __webpack_require__.d(__webpack_exports__, "Q", function() {
+        __webpack_require__.d(__webpack_exports__, "R", function() {
             return precacheRememberedFunding;
         });
-        __webpack_require__.d(__webpack_exports__, "l", function() {
+        __webpack_require__.d(__webpack_exports__, "m", function() {
             return getCurrentScript;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {
             return isPayPalObjects;
         });
-        __webpack_require__.d(__webpack_exports__, "v", function() {
+        __webpack_require__.d(__webpack_exports__, "w", function() {
             return getScriptVersion;
         });
-        __webpack_require__.d(__webpack_exports__, "m", function() {
+        __webpack_require__.d(__webpack_exports__, "n", function() {
             return getCurrentScriptUrl;
         });
         __webpack_require__.d(__webpack_exports__, !1, function() {});
@@ -16884,7 +17196,7 @@
             return isLocalStorageEnabled;
         });
         __webpack_exports__.e = function(name, def) {
-            var hostname = window.xchild ? window.xchild.getParentDomain() : Object(__WEBPACK_IMPORTED_MODULE_2_cross_domain_utils_src__.f)();
+            var hostname = window.xchild ? window.xchild.getParentDomain() : Object(__WEBPACK_IMPORTED_MODULE_2_cross_domain_utils_src__.g)();
             if (__WEBPACK_IMPORTED_MODULE_3__config__.a.domain_settings) for (var _i4 = 0, _Object$keys2 = Object.keys(__WEBPACK_IMPORTED_MODULE_3__config__.a.domain_settings), _length4 = null == _Object$keys2 ? 0 : _Object$keys2.length; _i4 < _length4; _i4++) {
                 var domain = _Object$keys2[_i4];
                 if (domainMatches(hostname, domain)) return __WEBPACK_IMPORTED_MODULE_3__config__.a.domain_settings[domain][name];
