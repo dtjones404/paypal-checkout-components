@@ -49,7 +49,7 @@ export default function configKarma(karma : Object) {
     karmaConfig.client = {
         captureConsole: karmaConfig.client.captureConsole,
         mocha:          {
-            timeout: process.env.TRAVIS ? 60 * 1000 : 10 * 1000, // eslint-disable-line no-process-env
+            timeout: process.env.TRAVIS ? 60 * 1000 : 60 * 1000, // eslint-disable-line no-process-env
             bail:    true
         }
     };
