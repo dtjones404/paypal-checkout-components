@@ -38,34 +38,57 @@
     return __webpack_require__(__webpack_require__.s = "./src/button/template/componentTemplate.jsx");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
-        !function() {
-            var object = "object" === _typeof(exports) && null !== exports && "number" != typeof exports.nodeType ? exports : "undefined" != typeof self ? self : $.global, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = f) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
             InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    if ((charCode = str.charCodeAt(idx += .75)) > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            return {
+                btoa: function(input) {
+                    for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                        o1 = data.charCodeAt(i++);
+                        o2 = data.charCodeAt(i++);
+                        o3 = data.charCodeAt(i++);
+                        if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                        bits = o1 << 16 | o2 << 8 | o3;
+                        acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
+                    }
+                    switch (data.length % 3) {
+                      case 0:
+                        return acc;
+
+                      case 1:
+                        return acc.slice(0, -2) + "==";
+
+                      case 2:
+                        return acc.slice(0, -1) + "=";
+                    }
+                },
+                atob: function(input) {
+                    var str = String(input).replace(/[=]+$/, "");
+                    if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
+                    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
+                    return output;
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
-                var str = String(input).replace(/[=]+$/, "");
-                if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-                for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
-                bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
-                return output;
-            });
-        }();
+            };
+        });
     },
     "./node_modules/hi-base32/src/base32.js": function(module, exports, __webpack_require__) {
         (function(module) {
@@ -117,6 +140,7 @@
                     err.position = position;
                     throw err;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -196,6 +220,7 @@
                         }
                         return str;
                     }(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -305,6 +330,7 @@
                             return base32Str;
                         }(input) : function(str) {
                             var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                            if ("" === str) return base32Str;
                             do {
                                 blocks[0] = blocks[5];
                                 blocks[1] = blocks[6];
@@ -1202,8 +1228,8 @@
             try {
                 if (!item) return !1;
                 if ("undefined" != typeof Promise && item instanceof Promise) return !0;
-                if ("undefined" != typeof window && window.Window && item instanceof window.Window) return !1;
-                if ("undefined" != typeof window && window.constructor && item instanceof window.constructor) return !1;
+                if ("undefined" != typeof window && "function" == typeof window.Window && item instanceof window.Window) return !1;
+                if ("undefined" != typeof window && "function" == typeof window.constructor && item instanceof window.constructor) return !1;
                 var _toString = {}.toString;
                 if (_toString) {
                     var name = _toString.call(item);
@@ -1305,38 +1331,41 @@
                 return this;
             };
             ZalgoPromise.prototype.dispatch = function() {
-                var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
+                var dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                 if (!dispatching && (resolved || rejected)) {
                     this.dispatching = !0;
                     startActive();
-                    for (var _loop = function(i) {
-                        var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
+                    for (var chain = function(firstPromise, secondPromise) {
+                        return firstPromise.then(function(res) {
+                            secondPromise.resolve(res);
+                        }, function(err) {
+                            secondPromise.reject(err);
+                        });
+                    }, i = 0; i < handlers.length; i++) {
+                        var _handlers$i = handlers[i], _onSuccess = _handlers$i.onSuccess, _onError = _handlers$i.onError, _promise = _handlers$i.promise, _result2 = void 0;
                         if (resolved) try {
-                            result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                            _result2 = _onSuccess ? _onSuccess(this.value) : this.value;
                         } catch (err) {
-                            promise.reject(err);
-                            return "continue";
+                            _promise.reject(err);
+                            continue;
                         } else if (rejected) {
-                            if (!onError) {
-                                promise.reject(_this3.error);
-                                return "continue";
+                            if (!_onError) {
+                                _promise.reject(this.error);
+                                continue;
                             }
                             try {
-                                result = onError(_this3.error);
+                                _result2 = _onError(this.error);
                             } catch (err) {
-                                promise.reject(err);
-                                return "continue";
+                                _promise.reject(err);
+                                continue;
                             }
                         }
-                        if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
-                            result.resolved ? promise.resolve(result.value) : promise.reject(result.error);
-                            result.errorHandled = !0;
-                        } else utils_isPromise(result) ? result instanceof ZalgoPromise && (result.resolved || result.rejected) ? result.resolved ? promise.resolve(result.value) : promise.reject(result.error) : result.then(function(res) {
-                            promise.resolve(res);
-                        }, function(err) {
-                            promise.reject(err);
-                        }) : promise.resolve(result);
-                    }, i = 0; i < handlers.length; i++) _loop(i);
+                        if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
+                            var promiseResult = _result2;
+                            promiseResult.resolved ? _promise.resolve(promiseResult.value) : _promise.reject(promiseResult.error);
+                            promiseResult.errorHandled = !0;
+                        } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? _promise.resolve(_result2.value) : _promise.reject(_result2.error) : chain(_result2, _promise) : _promise.resolve(_result2);
+                    }
                     handlers.length = 0;
                     this.dispatching = !1;
                     endActive();
@@ -1371,10 +1400,10 @@
                 });
             };
             ZalgoPromise.prototype.timeout = function(time, err) {
-                var _this4 = this;
+                var _this3 = this;
                 if (this.resolved || this.rejected) return this;
                 var timeout = setTimeout(function() {
-                    _this4.resolved || _this4.rejected || _this4.reject(err || new Error("Promise timed out after " + time + "ms"));
+                    _this3.resolved || _this3.rejected || _this3.reject(err || new Error("Promise timed out after " + time + "ms"));
                 }, time);
                 return this.then(function(result) {
                     clearTimeout(timeout);
@@ -1385,8 +1414,15 @@
                 if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
                 return Promise.resolve(this);
             };
+            ZalgoPromise.prototype.lazy = function() {
+                this.errorHandled = !0;
+                return this;
+            };
             ZalgoPromise.resolve = function(value) {
-                return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
+                if (value instanceof ZalgoPromise) {
+                    return value;
+                }
+                return utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
                     return value.then(resolve, reject);
                 }) : new ZalgoPromise().resolve(value);
             };
@@ -1397,41 +1433,47 @@
                 return new ZalgoPromise().asyncReject(error);
             };
             ZalgoPromise.all = function(promises) {
-                var promise = new ZalgoPromise(), count = promises.length, results = [];
+                var promise = new ZalgoPromise(), count = promises.length, results = [].slice();
                 if (!count) {
                     promise.resolve(results);
                     return promise;
                 }
-                for (var _loop2 = function(i) {
+                for (var chain = function(i, firstPromise, secondPromise) {
+                    return firstPromise.then(function(res) {
+                        results[i] = res;
+                        0 === (count -= 1) && promise.resolve(results);
+                    }, function(err) {
+                        secondPromise.reject(err);
+                    });
+                }, i = 0; i < promises.length; i++) {
                     var prom = promises[i];
                     if (prom instanceof ZalgoPromise) {
                         if (prom.resolved) {
                             results[i] = prom.value;
                             count -= 1;
-                            return "continue";
+                            continue;
                         }
                     } else if (!utils_isPromise(prom)) {
                         results[i] = prom;
                         count -= 1;
-                        return "continue";
+                        continue;
                     }
-                    ZalgoPromise.resolve(prom).then(function(result) {
-                        results[i] = result;
-                        0 === (count -= 1) && promise.resolve(results);
-                    }, function(err) {
-                        promise.reject(err);
-                    });
-                }, i = 0; i < promises.length; i++) _loop2(i);
+                    chain(i, ZalgoPromise.resolve(prom), promise);
+                }
                 0 === count && promise.resolve(results);
                 return promise;
             };
             ZalgoPromise.hash = function(promises) {
-                var result = {};
-                return ZalgoPromise.all(Object.keys(promises).map(function(key) {
-                    return ZalgoPromise.resolve(promises[key]).then(function(value) {
-                        result[key] = value;
-                    });
-                })).then(function() {
+                var result = {}, awaitPromises = [], _loop = function(key) {
+                    if (promises.hasOwnProperty(key)) {
+                        var value = promises[key];
+                        utils_isPromise(value) ? awaitPromises.push(value.then(function(res) {
+                            result[key] = res;
+                        })) : result[key] = value;
+                    }
+                };
+                for (var key in promises) _loop(key);
+                return ZalgoPromise.all(awaitPromises).then(function() {
                     return result;
                 });
             };
