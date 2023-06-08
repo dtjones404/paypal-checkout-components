@@ -8,7 +8,7 @@ import { FPTI } from './constants';
 import { initLogger, checkForCommonErrors, setLogLevel, stringifyError,
     stringifyErrorMessage, getResourceLoadTime, isPayPalDomain, isEligible,
     getDomainSetting, once, openMetaFrame, precacheRememberedFunding,
-    getCurrentScript } from './lib';
+    getCurrentScript, checkForDeprecatedIntegration } from './lib';
 import { createPptmScript } from './external';
 import { Button } from './button';
 import { Checkout } from './checkout';
@@ -154,6 +154,8 @@ export let init = once(({ precacheRemembered }) => {
     if (!isPayPalDomain()) {
         createPptmScript();
     }
+
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     if (precacheRemembered) {
         precacheRememberedFunding();
