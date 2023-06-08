@@ -38,88 +38,57 @@
     return __webpack_require__(__webpack_require__.s = "./src/button/template/componentTemplate.jsx");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        !function() {
-            var object = exports, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = f) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
             InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    if ((charCode = str.charCodeAt(idx += .75)) > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            return {
+                btoa: function(input) {
+                    for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                        o1 = data.charCodeAt(i++);
+                        o2 = data.charCodeAt(i++);
+                        o3 = data.charCodeAt(i++);
+                        if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                        bits = o1 << 16 | o2 << 8 | o3;
+                        acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
+                    }
+                    switch (data.length % 3) {
+                      case 0:
+                        return acc;
+
+                      case 1:
+                        return acc.slice(0, -2) + "==";
+
+                      case 2:
+                        return acc.slice(0, -1) + "=";
+                    }
+                },
+                atob: function(input) {
+                    var str = String(input).replace(/[=]+$/, "");
+                    if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
+                    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
+                    return output;
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
-                var str = String(input).replace(/[=]+$/, "");
-                if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-                for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
-                bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
-                return output;
-            });
-        }();
-    },
-    "./node_modules/cross-domain-utils/src/constants.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        __webpack_require__.d(__webpack_exports__, "a", function() {
-            return PROTOCOL;
+            };
         });
-        __webpack_require__.d(__webpack_exports__, "b", function() {
-            return WILDCARD;
-        });
-        var PROTOCOL = {
-            MOCK: "mock:",
-            FILE: "file:",
-            ABOUT: "about:"
-        }, WILDCARD = "*";
-    },
-    "./node_modules/cross-domain-utils/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        var __WEBPACK_IMPORTED_MODULE_0__utils__ = __webpack_require__("./node_modules/cross-domain-utils/src/utils.js");
-        __webpack_require__.d(__webpack_exports__, "getDomain", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__utils__.a;
-        });
-        var __WEBPACK_IMPORTED_MODULE_1__types__ = __webpack_require__("./node_modules/cross-domain-utils/src/types.js");
-        __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__types__), __webpack_require__("./node_modules/cross-domain-utils/src/constants.js");
-    },
-    "./node_modules/cross-domain-utils/src/types.js": function(module, exports) {},
-    "./node_modules/cross-domain-utils/src/utils.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        var constants = __webpack_require__("./node_modules/cross-domain-utils/src/constants.js");
-        __webpack_exports__.a = getDomain;
-        function getParent(win) {
-            if (win) try {
-                if (win.parent && win.parent !== win) return win.parent;
-            } catch (err) {}
-        }
-        function canReadFromWindow(win) {
-            try {
-                win && win.location && win.location.href;
-                return !0;
-            } catch (err) {}
-            return !1;
-        }
-        function getActualDomain(win) {
-            var location = (win = win || window).location;
-            if (!location) throw new Error("Can not read window location");
-            var protocol = location.protocol;
-            if (!protocol) throw new Error("Can not read window protocol");
-            if (protocol === constants.a.FILE) return constants.a.FILE + "//";
-            if (protocol === constants.a.ABOUT) {
-                var parent = getParent(win);
-                return parent && canReadFromWindow(parent) ? getActualDomain(parent) : constants.a.ABOUT + "//";
-            }
-            var host = location.host;
-            if (!host) throw new Error("Can not read window host");
-            return protocol + "//" + host;
-        }
-        function getDomain(win) {
-            var domain = getActualDomain(win = win || window);
-            return domain && win.mockDomain && 0 === win.mockDomain.indexOf(constants.a.MOCK) ? win.mockDomain : domain;
-        }
     },
     "./node_modules/hi-base32/src/base32.js": function(module, exports, __webpack_require__) {
         (function(module) {
@@ -171,6 +140,7 @@
                     err.position = position;
                     throw err;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -250,6 +220,7 @@
                         }
                         return str;
                     }(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -359,6 +330,7 @@
                             return base32Str;
                         }(input) : function(str) {
                             var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                            if ("" === str) return base32Str;
                             do {
                                 blocks[0] = blocks[5];
                                 blocks[1] = blocks[6];
@@ -1293,8 +1265,7 @@
             activeCount -= 1;
             flushActive();
         }
-        var _checkoutUris, _altpayUris, _guestUris, _billingUris, _buttonUris, _inlinedCardFieldUris, _postBridgeUris, _legacyCheckoutUris, _buttonJSUrls, _locales;
-        (function() {
+        !function() {
             function ZalgoPromise(handler) {
                 var _this = this;
                 !function(instance, Constructor) {
@@ -1539,7 +1510,8 @@
                     return promise;
                 }(ZalgoPromise);
             };
-        })(), __webpack_require__("./node_modules/cross-domain-utils/src/index.js");
+        }();
+        var _checkoutUris, _altpayUris, _guestUris, _billingUris, _buttonUris, _inlinedCardFieldUris, _postBridgeUris, _legacyCheckoutUris, _buttonJSUrls, _locales;
         var config = {
             scriptUrl: "//www.paypalobjects.com/api/checkout.button.render.js",
             paypal_domain_regex: /^(https?|mock):\/\/[a-zA-Z0-9_.-]+\.paypal\.com(:\d+)?$/,
