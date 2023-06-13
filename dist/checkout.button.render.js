@@ -38,52 +38,85 @@
     return __webpack_require__(__webpack_require__.s = "./src/button/template/componentTemplate.jsx");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        !function() {
-            var object = exports, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = f) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
             InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    if ((charCode = str.charCodeAt(idx += .75)) > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            return {
+                btoa: function(input) {
+                    for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                        o1 = data.charCodeAt(i++);
+                        o2 = data.charCodeAt(i++);
+                        o3 = data.charCodeAt(i++);
+                        if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                        bits = o1 << 16 | o2 << 8 | o3;
+                        acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
+                    }
+                    switch (data.length % 3) {
+                      case 0:
+                        return acc;
+
+                      case 1:
+                        return acc.slice(0, -2) + "==";
+
+                      case 2:
+                        return acc.slice(0, -1) + "=";
+                    }
+                },
+                atob: function(input) {
+                    var str = String(input).replace(/[=]+$/, "");
+                    if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
+                    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
+                    return output;
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
-                var str = String(input).replace(/[=]+$/, "");
-                if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-                for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
-                bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
-                return output;
-            });
-        }();
+            };
+        });
     },
     "./node_modules/cross-domain-utils/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var __WEBPACK_IMPORTED_MODULE_0__utils__ = __webpack_require__("./node_modules/cross-domain-utils/src/utils.js");
-        __webpack_require__.d(__webpack_exports__, "getDomain", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__utils__.a;
-        });
-        var __WEBPACK_IMPORTED_MODULE_1__types__ = __webpack_require__("./node_modules/cross-domain-utils/src/types.js");
-        __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__types__);
-    },
-    "./node_modules/cross-domain-utils/src/types.js": function(module, exports) {},
-    "./node_modules/cross-domain-utils/src/utils.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        __webpack_exports__.a = getDomain;
-        var CONSTANTS = {
-            MOCK_PROTOCOL: "mock:",
-            FILE_PROTOCOL: "file:",
-            ABOUT_PROTOCOL: "about:",
-            WILDCARD: "*"
-        };
+        function isRegex(item) {
+            return "[object RegExp]" === Object.prototype.toString.call(item);
+        }
+        var PROTOCOL = {
+            MOCK: "mock:",
+            FILE: "file:",
+            ABOUT: "about:"
+        }, WILDCARD = "*", WINDOW_TYPE = {
+            IFRAME: "iframe",
+            POPUP: "popup"
+        }, IE_WIN_ACCESS_ERROR = "Call was rejected by callee.\r\n";
+        function isFileProtocol() {
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window).location.protocol === PROTOCOL.FILE;
+        }
+        function isAboutProtocol() {
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window).location.protocol === PROTOCOL.ABOUT;
+        }
         function getParent(win) {
             if (win) try {
                 if (win.parent && win.parent !== win) return win.parent;
+            } catch (err) {}
+        }
+        function getOpener(win) {
+            if (win && !getParent(win)) try {
+                return win.opener;
             } catch (err) {}
         }
         function canReadFromWindow(win) {
@@ -98,10 +131,10 @@
             if (!location) throw new Error("Can not read window location");
             var protocol = location.protocol;
             if (!protocol) throw new Error("Can not read window protocol");
-            if (protocol === CONSTANTS.FILE_PROTOCOL) return CONSTANTS.FILE_PROTOCOL + "//";
-            if (protocol === CONSTANTS.ABOUT_PROTOCOL) {
+            if (protocol === PROTOCOL.FILE) return PROTOCOL.FILE + "//";
+            if (protocol === PROTOCOL.ABOUT) {
                 var parent = getParent(win);
-                return parent && canReadFromWindow(parent) ? getActualDomain(parent) : CONSTANTS.ABOUT_PROTOCOL + "//";
+                return parent && canReadFromWindow(parent) ? getActualDomain(parent) : PROTOCOL.ABOUT + "//";
             }
             var host = location.host;
             if (!host) throw new Error("Can not read window host");
@@ -109,8 +142,552 @@
         }
         function getDomain(win) {
             var domain = getActualDomain(win = win || window);
-            return domain && win.mockDomain && 0 === win.mockDomain.indexOf(CONSTANTS.MOCK_PROTOCOL) ? win.mockDomain : domain;
+            return domain && win.mockDomain && 0 === win.mockDomain.indexOf(PROTOCOL.MOCK) ? win.mockDomain : domain;
         }
+        function isBlankDomain(win) {
+            try {
+                if (!win.location.href) return !0;
+                if ("about:blank" === win.location.href) return !0;
+            } catch (err) {}
+            return !1;
+        }
+        function isActuallySameDomain(win) {
+            try {
+                if (win === window) return !0;
+            } catch (err) {}
+            try {
+                var desc = Object.getOwnPropertyDescriptor(win, "location");
+                if (desc && !1 === desc.enumerable) return !1;
+            } catch (err) {}
+            try {
+                if (isAboutProtocol(win) && canReadFromWindow(win)) return !0;
+            } catch (err) {}
+            try {
+                if (getActualDomain(win) === getActualDomain(window)) return !0;
+            } catch (err) {}
+            return !1;
+        }
+        function isSameDomain(win) {
+            if (!isActuallySameDomain(win)) return !1;
+            try {
+                if (win === window) return !0;
+                if (isAboutProtocol(win) && canReadFromWindow(win)) return !0;
+                if (getDomain(window) === getDomain(win)) return !0;
+            } catch (err) {}
+            return !1;
+        }
+        function assertSameDomain(win) {
+            if (!isSameDomain(win)) throw new Error("Expected window to be same domain");
+            return win;
+        }
+        function getParents(win) {
+            var result = [];
+            try {
+                for (;win.parent !== win; ) {
+                    result.push(win.parent);
+                    win = win.parent;
+                }
+            } catch (err) {}
+            return result;
+        }
+        function isAncestorParent(parent, child) {
+            if (!parent || !child) return !1;
+            var childParent = getParent(child);
+            return childParent ? childParent === parent : -1 !== getParents(child).indexOf(parent);
+        }
+        function getFrames(win) {
+            var result = [], frames = void 0;
+            try {
+                frames = win.frames;
+            } catch (err) {
+                frames = win;
+            }
+            var len = void 0;
+            try {
+                len = frames.length;
+            } catch (err) {}
+            if (0 === len) return result;
+            if (len) {
+                for (var i = 0; i < len; i++) {
+                    var frame = void 0;
+                    try {
+                        frame = frames[i];
+                    } catch (err) {
+                        continue;
+                    }
+                    result.push(frame);
+                }
+                return result;
+            }
+            for (var _i = 0; _i < 100; _i++) {
+                var _frame = void 0;
+                try {
+                    _frame = frames[_i];
+                } catch (err) {
+                    return result;
+                }
+                if (!_frame) return result;
+                result.push(_frame);
+            }
+            return result;
+        }
+        function getAllChildFrames(win) {
+            for (var result = [], _i3 = 0, _getFrames2 = getFrames(win), _length2 = null == _getFrames2 ? 0 : _getFrames2.length; _i3 < _length2; _i3++) {
+                var frame = _getFrames2[_i3];
+                result.push(frame);
+                for (var _i5 = 0, _getAllChildFrames2 = getAllChildFrames(frame), _length4 = null == _getAllChildFrames2 ? 0 : _getAllChildFrames2.length; _i5 < _length4; _i5++) {
+                    var childFrame = _getAllChildFrames2[_i5];
+                    result.push(childFrame);
+                }
+            }
+            return result;
+        }
+        function getTop(win) {
+            if (win) {
+                try {
+                    if (win.top) return win.top;
+                } catch (err) {}
+                if (getParent(win) === win) return win;
+                try {
+                    if (isAncestorParent(window, win) && window.top) return window.top;
+                } catch (err) {}
+                try {
+                    if (isAncestorParent(win, window) && window.top) return window.top;
+                } catch (err) {}
+                for (var _i7 = 0, _getAllChildFrames4 = getAllChildFrames(win), _length6 = null == _getAllChildFrames4 ? 0 : _getAllChildFrames4.length; _i7 < _length6; _i7++) {
+                    var frame = _getAllChildFrames4[_i7];
+                    try {
+                        if (frame.top) return frame.top;
+                    } catch (err) {}
+                    if (getParent(frame) === frame) return frame;
+                }
+            }
+        }
+        function getNextOpener() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window;
+            return getOpener(getTop(win) || win);
+        }
+        function getUltimateTop() {
+            var opener = getNextOpener(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window);
+            return opener ? getUltimateTop(opener) : top;
+        }
+        function getAllFramesInWindow(win) {
+            var top = getTop(win);
+            if (!top) throw new Error("Can not determine top window");
+            return [].concat(getAllChildFrames(top), [ top ]);
+        }
+        function getAllWindows() {
+            var win = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window, frames = getAllFramesInWindow(win), opener = getNextOpener(win);
+            return opener ? [].concat(getAllWindows(opener), frames) : frames;
+        }
+        function isTop(win) {
+            return win === getTop(win);
+        }
+        function isFrameWindowClosed(frame) {
+            if (!frame.contentWindow) return !0;
+            if (!frame.parentNode) return !0;
+            var doc = frame.ownerDocument;
+            return !(!doc || !doc.documentElement || doc.documentElement.contains(frame));
+        }
+        var iframeWindows = [], iframeFrames = [];
+        function isWindowClosed(win) {
+            var allowMock = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];
+            try {
+                if (win === window) return !1;
+            } catch (err) {
+                return !0;
+            }
+            try {
+                if (!win) return !0;
+            } catch (err) {
+                return !0;
+            }
+            try {
+                if (win.closed) return !0;
+            } catch (err) {
+                return !err || err.message !== IE_WIN_ACCESS_ERROR;
+            }
+            if (allowMock && isSameDomain(win)) try {
+                if (win.mockclosed) return !0;
+            } catch (err) {}
+            try {
+                if (!win.parent || !win.top) return !0;
+            } catch (err) {}
+            var iframeIndex = function(collection, item) {
+                for (var i = 0; i < collection.length; i++) try {
+                    if (collection[i] === item) return i;
+                } catch (err) {}
+                return -1;
+            }(iframeWindows, win);
+            if (-1 !== iframeIndex) {
+                var frame = iframeFrames[iframeIndex];
+                if (frame && isFrameWindowClosed(frame)) return !0;
+            }
+            return !1;
+        }
+        function linkFrameWindow(frame) {
+            !function() {
+                for (var i = 0; i < iframeWindows.length; i++) {
+                    var closed = !1;
+                    try {
+                        closed = iframeWindows[i].closed;
+                    } catch (err) {}
+                    if (closed) {
+                        iframeFrames.splice(i, 1);
+                        iframeWindows.splice(i, 1);
+                    }
+                }
+            }();
+            if (frame && frame.contentWindow) try {
+                iframeWindows.push(frame.contentWindow);
+                iframeFrames.push(frame);
+            } catch (err) {}
+        }
+        function getUserAgent(win) {
+            return (win = win || window).navigator.mockUserAgent || win.navigator.userAgent;
+        }
+        function getFrameByName(win, name) {
+            for (var winFrames = getFrames(win), _i9 = 0, _length8 = null == winFrames ? 0 : winFrames.length; _i9 < _length8; _i9++) {
+                var childFrame = winFrames[_i9];
+                try {
+                    if (isSameDomain(childFrame) && childFrame.name === name && -1 !== winFrames.indexOf(childFrame)) return childFrame;
+                } catch (err) {}
+            }
+            try {
+                if (-1 !== winFrames.indexOf(win.frames[name])) return win.frames[name];
+            } catch (err) {}
+            try {
+                if (-1 !== winFrames.indexOf(win[name])) return win[name];
+            } catch (err) {}
+        }
+        function findChildFrameByName(win, name) {
+            var frame = getFrameByName(win, name);
+            if (frame) return frame;
+            for (var _i11 = 0, _getFrames4 = getFrames(win), _length10 = null == _getFrames4 ? 0 : _getFrames4.length; _i11 < _length10; _i11++) {
+                var namedFrame = findChildFrameByName(_getFrames4[_i11], name);
+                if (namedFrame) return namedFrame;
+            }
+        }
+        function findFrameByName(win, name) {
+            var frame;
+            return (frame = getFrameByName(win, name)) ? frame : findChildFrameByName(getTop(win) || win, name);
+        }
+        function isParent(win, frame) {
+            var frameParent = getParent(frame);
+            if (frameParent) return frameParent === win;
+            for (var _i13 = 0, _getFrames6 = getFrames(win), _length12 = null == _getFrames6 ? 0 : _getFrames6.length; _i13 < _length12; _i13++) {
+                if (_getFrames6[_i13] === frame) return !0;
+            }
+            return !1;
+        }
+        function isOpener(parent, child) {
+            return parent === getOpener(child);
+        }
+        function getAncestor(win) {
+            var opener = getOpener(win = win || window);
+            if (opener) return opener;
+            var parent = getParent(win);
+            return parent || void 0;
+        }
+        function getAncestors(win) {
+            for (var results = [], ancestor = win; ancestor; ) (ancestor = getAncestor(ancestor)) && results.push(ancestor);
+            return results;
+        }
+        function isAncestor(parent, child) {
+            var actualParent = getAncestor(child);
+            if (actualParent) return actualParent === parent;
+            if (child === parent) return !1;
+            if (getTop(child) === child) return !1;
+            for (var _i15 = 0, _getFrames8 = getFrames(parent), _length14 = null == _getFrames8 ? 0 : _getFrames8.length; _i15 < _length14; _i15++) {
+                if (_getFrames8[_i15] === child) return !0;
+            }
+            return !1;
+        }
+        function isPopup() {
+            return Boolean(getOpener(window));
+        }
+        function isIframe() {
+            return Boolean(getParent(window));
+        }
+        function isFullpage() {
+            return Boolean(!isIframe() && !isPopup());
+        }
+        function anyMatch(collection1, collection2) {
+            for (var _i17 = 0, _length16 = null == collection1 ? 0 : collection1.length; _i17 < _length16; _i17++) for (var item1 = collection1[_i17], _i19 = 0, _length18 = null == collection2 ? 0 : collection2.length; _i19 < _length18; _i19++) {
+                if (item1 === collection2[_i19]) return !0;
+            }
+            return !1;
+        }
+        function getDistanceFromTop() {
+            for (var distance = 0, parent = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window; parent; ) (parent = getParent(parent)) && (distance += 1);
+            return distance;
+        }
+        function getNthParent(win) {
+            for (var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 1, parent = win, i = 0; i < n; i++) {
+                if (!parent) return;
+                parent = getParent(parent);
+            }
+            return parent;
+        }
+        function getNthParentFromTop(win) {
+            var n = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 1;
+            return getNthParent(win, getDistanceFromTop(win) - n);
+        }
+        function isSameTopWindow(win1, win2) {
+            var top1 = getTop(win1) || win1, top2 = getTop(win2) || win2;
+            try {
+                if (top1 && top2) return top1 === top2;
+            } catch (err) {}
+            var allFrames1 = getAllFramesInWindow(win1), allFrames2 = getAllFramesInWindow(win2);
+            if (anyMatch(allFrames1, allFrames2)) return !0;
+            var opener1 = getOpener(top1), opener2 = getOpener(top2);
+            return (!opener1 || !anyMatch(getAllFramesInWindow(opener1), allFrames2)) && (opener2 && anyMatch(getAllFramesInWindow(opener2), allFrames1), 
+            !1);
+        }
+        function matchDomain(pattern, origin) {
+            if ("string" == typeof pattern) {
+                if ("string" == typeof origin) return pattern === WILDCARD || origin === pattern;
+                if (isRegex(origin)) return !1;
+                if (Array.isArray(origin)) return !1;
+            }
+            return isRegex(pattern) ? isRegex(origin) ? pattern.toString() === origin.toString() : !Array.isArray(origin) && Boolean(origin.match(pattern)) : !!Array.isArray(pattern) && (Array.isArray(origin) ? JSON.stringify(pattern) === JSON.stringify(origin) : !isRegex(origin) && pattern.some(function(subpattern) {
+                return matchDomain(subpattern, origin);
+            }));
+        }
+        function stringifyDomainPattern(pattern) {
+            return Array.isArray(pattern) ? "(" + pattern.join(" | ") + ")" : isRegex(pattern) ? "RegExp(" + pattern.toString() : pattern.toString();
+        }
+        function getDomainFromUrl(url) {
+            return url.match(/^(https?|mock|file):\/\//) ? url.split("/").slice(0, 3).join("/") : getDomain();
+        }
+        function onCloseWindow(win, callback) {
+            var delay = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : 1e3, maxtime = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : 1 / 0, timeout = void 0;
+            !function check() {
+                if (isWindowClosed(win)) {
+                    timeout && clearTimeout(timeout);
+                    return callback();
+                }
+                if (maxtime <= 0) clearTimeout(timeout); else {
+                    maxtime -= delay;
+                    timeout = setTimeout(check, delay);
+                }
+            }();
+            return {
+                cancel: function() {
+                    timeout && clearTimeout(timeout);
+                }
+            };
+        }
+        function isWindow(obj) {
+            try {
+                if (obj === window) return !0;
+            } catch (err) {
+                if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
+            }
+            try {
+                if ("[object Window]" === Object.prototype.toString.call(obj)) return !0;
+            } catch (err) {
+                if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
+            }
+            try {
+                if (window.Window && obj instanceof window.Window) return !0;
+            } catch (err) {
+                if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
+            }
+            try {
+                if (obj && obj.self === obj) return !0;
+            } catch (err) {
+                if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
+            }
+            try {
+                if (obj && obj.parent === obj) return !0;
+            } catch (err) {
+                if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
+            }
+            try {
+                if (obj && obj.top === obj) return !0;
+            } catch (err) {
+                if (err && err.message === IE_WIN_ACCESS_ERROR) return !0;
+            }
+            try {
+                obj && obj.__cross_domain_utils_window_check__;
+            } catch (err) {
+                return !0;
+            }
+            return !1;
+        }
+        function isBrowser() {
+            return "undefined" != typeof window && void 0 !== window.location;
+        }
+        function isCurrentDomain(domain) {
+            return !!isBrowser() && getDomain() === domain;
+        }
+        function isMockDomain(domain) {
+            return 0 === domain.indexOf(PROTOCOL.MOCK);
+        }
+        function normalizeMockUrl(url) {
+            if (!isMockDomain(getDomainFromUrl(url))) return url;
+            throw new Error("Mock urls not supported out of test mode");
+        }
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isFileProtocol;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isAboutProtocol;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getParent;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getOpener;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return canReadFromWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getActualDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return getDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isBlankDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isActuallySameDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isSameDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return assertSameDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getParents;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isAncestorParent;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getFrames;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getAllChildFrames;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getTop;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getNextOpener;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getUltimateTop;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getAllFramesInWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getAllWindows;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isTop;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isFrameWindowClosed;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isWindowClosed;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return linkFrameWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getUserAgent;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getFrameByName;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return findChildFrameByName;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return findFrameByName;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isParent;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isOpener;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getAncestor;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getAncestors;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isAncestor;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isPopup;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isIframe;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isFullpage;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getDistanceFromTop;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getNthParent;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getNthParentFromTop;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isSameTopWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return matchDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return stringifyDomainPattern;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return getDomainFromUrl;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return onCloseWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isWindow;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isBrowser;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isCurrentDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return isMockDomain;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return normalizeMockUrl;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return !0;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return PROTOCOL;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return WILDCARD;
+        });
+        __webpack_require__.d(__webpack_exports__, !1, function() {
+            return WINDOW_TYPE;
+        });
     },
     "./node_modules/hi-base32/src/base32.js": function(module, exports, __webpack_require__) {
         (function(process, global, module) {
@@ -162,6 +739,7 @@
                     err.position = position;
                     throw err;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -241,6 +819,7 @@
                         }
                         return str;
                     }(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -350,6 +929,7 @@
                             return base32Str;
                         }(input) : function(str) {
                             var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                            if ("" === str) return base32Str;
                             do {
                                 blocks[0] = blocks[5];
                                 blocks[1] = blocks[6];
@@ -571,24 +1151,6 @@
             return module;
         };
     },
-    "./node_modules/zalgo-promise/src/global.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
-        (function(global) {
-            __webpack_exports__.a = function() {
-                var glob = void 0;
-                if ("undefined" != typeof window) glob = window; else {
-                    if (void 0 === global) throw new TypeError("Can not find global");
-                    glob = global;
-                }
-                var zalgoGlobal = glob.__zalgopromise__ = glob.__zalgopromise__ || {};
-                zalgoGlobal.flushPromises = zalgoGlobal.flushPromises || [];
-                zalgoGlobal.activeCount = zalgoGlobal.activeCount || 0;
-                zalgoGlobal.possiblyUnhandledPromiseHandlers = zalgoGlobal.possiblyUnhandledPromiseHandlers || [];
-                zalgoGlobal.dispatchedErrors = zalgoGlobal.dispatchedErrors || [];
-                return zalgoGlobal;
-            };
-        }).call(__webpack_exports__, __webpack_require__("./node_modules/webpack/buildin/global.js"));
-    },
     "./node_modules/zalgo-promise/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function utils_isPromise(item) {
@@ -608,7 +1170,22 @@
             }
             return !1;
         }
-        var global = __webpack_require__("./node_modules/zalgo-promise/src/global.js");
+        var dispatchedErrors = [], possiblyUnhandledPromiseHandlers = [];
+        var activeCount = 0, flushPromise = void 0;
+        function flushActive() {
+            if (!activeCount && flushPromise) {
+                var promise = flushPromise;
+                flushPromise = null;
+                promise.resolve();
+            }
+        }
+        function startActive() {
+            activeCount += 1;
+        }
+        function endActive() {
+            activeCount -= 1;
+            flushActive();
+        }
         var promise_ZalgoPromise = function() {
             function ZalgoPromise(handler) {
                 var _this = this;
@@ -621,6 +1198,7 @@
                 this.handlers = [];
                 if (handler) {
                     var _result = void 0, _error = void 0, resolved = !1, rejected = !1, isAsync = !1;
+                    startActive();
                     try {
                         handler(function(res) {
                             if (isAsync) _this.resolve(res); else {
@@ -634,9 +1212,11 @@
                             }
                         });
                     } catch (err) {
+                        endActive();
                         this.reject(err);
                         return;
                     }
+                    endActive();
                     isAsync = !0;
                     resolved ? this.resolve(_result) : rejected && this.reject(_error);
                 }
@@ -662,12 +1242,12 @@
                 this.error = error;
                 this.errorHandled || setTimeout(function() {
                     _this2.errorHandled || function(err, promise) {
-                        if (-1 === Object(global.a)().dispatchedErrors.indexOf(err)) {
-                            Object(global.a)().dispatchedErrors.push(err);
+                        if (-1 === dispatchedErrors.indexOf(err)) {
+                            dispatchedErrors.push(err);
                             setTimeout(function() {
                                 throw err;
                             }, 1);
-                            for (var j = 0; j < Object(global.a)().possiblyUnhandledPromiseHandlers.length; j++) Object(global.a)().possiblyUnhandledPromiseHandlers[j](err, promise);
+                            for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) possiblyUnhandledPromiseHandlers[j](err, promise);
                         }
                     }(error, _this2);
                 }, 1);
@@ -677,12 +1257,13 @@
             ZalgoPromise.prototype.asyncReject = function(error) {
                 this.errorHandled = !0;
                 this.reject(error);
+                return this;
             };
             ZalgoPromise.prototype.dispatch = function() {
                 var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                 if (!dispatching && (resolved || rejected)) {
                     this.dispatching = !0;
-                    Object(global.a)().activeCount += 1;
+                    startActive();
                     for (var _loop = function(i) {
                         var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
                         if (resolved) try {
@@ -713,8 +1294,7 @@
                     }, i = 0; i < handlers.length; i++) _loop(i);
                     handlers.length = 0;
                     this.dispatching = !1;
-                    Object(global.a)().activeCount -= 1;
-                    0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
+                    endActive();
                 }
             };
             ZalgoPromise.prototype.then = function(onSuccess, onError) {
@@ -768,6 +1348,9 @@
             ZalgoPromise.reject = function(error) {
                 return new ZalgoPromise().reject(error);
             };
+            ZalgoPromise.asyncReject = function(error) {
+                return new ZalgoPromise().asyncReject(error);
+            };
             ZalgoPromise.all = function(promises) {
                 var promise = new ZalgoPromise(), count = promises.length, results = [];
                 if (!count) {
@@ -812,10 +1395,10 @@
             };
             ZalgoPromise.onPossiblyUnhandledException = function(handler) {
                 return function(handler) {
-                    Object(global.a)().possiblyUnhandledPromiseHandlers.push(handler);
+                    possiblyUnhandledPromiseHandlers.push(handler);
                     return {
                         cancel: function() {
-                            Object(global.a)().possiblyUnhandledPromiseHandlers.splice(Object(global.a)().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+                            possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
                         }
                     };
                 }(handler);
@@ -823,11 +1406,14 @@
             ZalgoPromise.try = function(method, context, args) {
                 if (method && "function" != typeof method && !method.call) throw new Error("Promise.try expected a function");
                 var result = void 0;
+                startActive();
                 try {
                     result = method.apply(context, args || []);
                 } catch (err) {
+                    endActive();
                     return ZalgoPromise.reject(err);
                 }
+                endActive();
                 return ZalgoPromise.resolve(result);
             };
             ZalgoPromise.delay = function(_delay) {
@@ -839,17 +1425,11 @@
                 return !!(value && value instanceof ZalgoPromise) || utils_isPromise(value);
             };
             ZalgoPromise.flush = function() {
-                var promise = new ZalgoPromise();
-                Object(global.a)().flushPromises.push(promise);
-                0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
-                return promise;
-            };
-            ZalgoPromise.flushQueue = function() {
-                var promisesToFlush = Object(global.a)().flushPromises;
-                Object(global.a)().flushPromises = [];
-                for (var _i2 = 0, _length2 = null == promisesToFlush ? 0 : promisesToFlush.length; _i2 < _length2; _i2++) {
-                    promisesToFlush[_i2].resolve();
-                }
+                return function(Zalgo) {
+                    var promise = flushPromise = flushPromise || new Zalgo();
+                    flushActive();
+                    return promise;
+                }(ZalgoPromise);
             };
             return ZalgoPromise;
         }();
