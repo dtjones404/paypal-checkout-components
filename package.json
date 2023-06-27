@@ -78,10 +78,10 @@
     "Base64": "^1.0.0",
     "beaver-logger": "^3.0.6",
     "bowser": "^1.7.1",
-    "cross-domain-utils": "^2.0.1",
+    "cross-domain-utils": "2.0.10",
     "hi-base32": "^0.5.0",
-    "post-robot": "^8.0.0",
-    "xcomponent": "^6.0.0",
-    "zalgo-promise": "^1.0.10"
+    "post-robot": "8.0.30",
+    "xcomponent": "6.0.60-patch1",
+    "zalgo-promise": "1.0.28"
   }
 }
