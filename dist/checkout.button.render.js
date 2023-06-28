@@ -38,29 +38,57 @@
     return __webpack_require__(__webpack_require__.s = "./src/button/template/componentTemplate.jsx");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        !function() {
-            var object = exports, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = f) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
             InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    if ((charCode = str.charCodeAt(idx += .75)) > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            return {
+                btoa: function(input) {
+                    for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                        o1 = data.charCodeAt(i++);
+                        o2 = data.charCodeAt(i++);
+                        o3 = data.charCodeAt(i++);
+                        if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                        bits = o1 << 16 | o2 << 8 | o3;
+                        acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
+                    }
+                    switch (data.length % 3) {
+                      case 0:
+                        return acc;
+
+                      case 1:
+                        return acc.slice(0, -2) + "==";
+
+                      case 2:
+                        return acc.slice(0, -1) + "=";
+                    }
+                },
+                atob: function(input) {
+                    var str = String(input).replace(/[=]+$/, "");
+                    if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
+                    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
+                    return output;
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
-                var str = String(input).replace(/[=]+$/, "");
-                if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-                for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
-                bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
-                return output;
-            });
-        }();
+            };
+        });
     },
     "./node_modules/cross-domain-utils/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -94,7 +122,7 @@
             return !1;
         }
         function getActualDomain(win) {
-            var location = (win = win || window).location;
+            var location = win.location;
             if (!location) throw new Error("Can not read window location");
             var protocol = location.protocol;
             if (!protocol) throw new Error("Can not read window protocol");
@@ -162,6 +190,7 @@
                     err.position = position;
                     throw err;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -241,6 +270,7 @@
                         }
                         return str;
                     }(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -350,6 +380,7 @@
                             return base32Str;
                         }(input) : function(str) {
                             var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                            if ("" === str) return base32Str;
                             do {
                                 blocks[0] = blocks[5];
                                 blocks[1] = blocks[6];
@@ -732,14 +763,13 @@
             ZalgoPromise.prototype.catch = function(onError) {
                 return this.then(void 0, onError);
             };
-            ZalgoPromise.prototype.finally = function(onFinally) {
-                if (onFinally && "function" != typeof onFinally && !onFinally.call) throw new Error("Promise.finally expected a function");
+            ZalgoPromise.prototype.finally = function(handler) {
                 return this.then(function(result) {
-                    return ZalgoPromise.try(onFinally).then(function() {
+                    return ZalgoPromise.try(handler).then(function() {
                         return result;
                     });
                 }, function(err) {
-                    return ZalgoPromise.try(onFinally).then(function() {
+                    return ZalgoPromise.try(handler).then(function() {
                         throw err;
                     });
                 });
@@ -820,7 +850,6 @@
                 }(handler);
             };
             ZalgoPromise.try = function(method, context, args) {
-                if (method && "function" != typeof method && !method.call) throw new Error("Promise.try expected a function");
                 var result = void 0;
                 try {
                     result = method.apply(context, args || []);
@@ -846,17 +875,8 @@
             ZalgoPromise.flushQueue = function() {
                 var promisesToFlush = Object(global.a)().flushPromises;
                 Object(global.a)().flushPromises = [];
-                var _iterator = promisesToFlush, _isArray = Array.isArray(_iterator), _i = 0;
-                for (_iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
-                    var _ref;
-                    if (_isArray) {
-                        if (_i >= _iterator.length) break;
-                        _ref = _iterator[_i++];
-                    } else {
-                        if ((_i = _iterator.next()).done) break;
-                        _ref = _i.value;
-                    }
-                    _ref.resolve();
+                for (var _i2 = 0, _length2 = null == promisesToFlush ? 0 : promisesToFlush.length; _i2 < _length2; _i2++) {
+                    promisesToFlush[_i2].resolve();
                 }
             };
             return ZalgoPromise;
@@ -1477,17 +1497,8 @@
                 if (!this.children) return "";
                 var result = "";
                 !function iterate(children) {
-                    var _iterator = children, _isArray = Array.isArray(_iterator), _i = 0;
-                    for (_iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
-                        var _ref;
-                        if (_isArray) {
-                            if (_i >= _iterator.length) break;
-                            _ref = _iterator[_i++];
-                        } else {
-                            if ((_i = _iterator.next()).done) break;
-                            _ref = _i.value;
-                        }
-                        var child = _ref;
+                    for (var _i2 = 0, _length2 = null == children ? 0 : children.length; _i2 < _length2; _i2++) {
+                        var child = children[_i2];
                         null !== child && void 0 !== child && (Array.isArray(child) ? iterate(child) : result += child instanceof JsxHTMLNode ? child.toString() : htmlEncode(child));
                     }
                 }(this.children);
@@ -2273,8 +2284,8 @@
             };
         }
         var template_content = __webpack_require__("./src/button/template/content.json"), content_default = __webpack_require__.n(template_content), componentContent = "string" == typeof content_default.a ? JSON.parse(content_default.a) : content_default.a;
-        __webpack_exports__.componentTemplate = function(_ref18) {
-            var _ref19, props = _ref18.props;
+        __webpack_exports__.componentTemplate = function(_ref17) {
+            var _ref18, props = _ref17.props;
             if (props && props.style) {
                 var style = props.style;
                 "generic" === style.label && (style.label = "paypal");
@@ -2304,8 +2315,8 @@
                 multiple: multiple,
                 layout: layout
             }).map(function(button, i) {
-                return function(_ref12) {
-                    var _ref13, _ref14, _ref15, size = _ref12.size, label = _ref12.label, color = _ref12.color, locale = _ref12.locale, branding = _ref12.branding, multiple = _ref12.multiple, layout = _ref12.layout, shape = _ref12.shape, source = _ref12.source, funding = _ref12.funding, i = _ref12.i, env = _ref12.env, cards = _ref12.cards, installmentperiod = _ref12.installmentperiod, logoColor = getButtonConfig(label, "logoColors")[color], contentText = determineLabel({
+                return function(_ref11) {
+                    var _ref12, _ref13, _ref14, size = _ref11.size, label = _ref11.label, color = _ref11.color, locale = _ref11.locale, branding = _ref11.branding, multiple = _ref11.multiple, layout = _ref11.layout, shape = _ref11.shape, source = _ref11.source, funding = _ref11.funding, i = _ref11.i, env = _ref11.env, cards = _ref11.cards, installmentperiod = _ref11.installmentperiod, logoColor = getButtonConfig(label, "logoColors")[color], contentText = determineLabel({
                         label: label,
                         source: source,
                         multiple: multiple,
@@ -2327,9 +2338,9 @@
                         layout: layout,
                         size: size
                     });
-                    return jsxToHTML("div", _extends({}, ((_ref13 = {})[constants.c.LAYOUT] = layout || "", 
-                    _ref13), ((_ref14 = {})[constants.c.SIZE] = size || "", _ref14), ((_ref15 = {})[constants.c.FUNDING_SOURCE] = source, 
-                    _ref15[constants.c.BUTTON] = !0, _ref15), {
+                    return jsxToHTML("div", _extends({}, ((_ref12 = {})[constants.c.LAYOUT] = layout || "", 
+                    _ref12), ((_ref13 = {})[constants.c.SIZE] = size || "", _ref13), ((_ref14 = {})[constants.c.FUNDING_SOURCE] = source, 
+                    _ref14[constants.c.BUTTON] = !0, _ref14), {
                         class: CLASS.BUTTON + " " + CLASS.NUMBER + "-" + i + " " + getCommonButtonClasses({
                             layout: layout,
                             shape: shape,
@@ -2364,8 +2375,8 @@
                     installmentperiod: installmentperiod,
                     size: size
                 });
-            }), taglineNode = function(_ref16) {
-                var label = _ref16.label, tagline = _ref16.tagline, color = _ref16.color, locale = _ref16.locale, multiple = _ref16.multiple, env = _ref16.env, cards = _ref16.cards;
+            }), taglineNode = function(_ref15) {
+                var label = _ref15.label, tagline = _ref15.tagline, color = _ref15.color, locale = _ref15.locale, multiple = _ref15.multiple, env = _ref15.env, cards = _ref15.cards;
                 if (!tagline) return;
                 var text = renderContent(multiple && getButtonConfig(label, "dualTag") || getButtonConfig(label, "tag"), {
                     locale: locale,
@@ -2402,8 +2413,8 @@
                 fundingicons: fundingicons,
                 size: size,
                 layout: layout
-            }), styleNode = function(_ref17) {
-                var height = _ref17.height, cardNumber = _ref17.cardNumber;
+            }), styleNode = function(_ref16) {
+                var height = _ref16.height, cardNumber = _ref16.cardNumber;
                 return jsxToHTML("style", {
                     innerHTML: componentStyle({
                         height: height,
@@ -2429,8 +2440,8 @@
                 })));
             }(normalizeProps(props)) : null;
             var script;
-            return jsxToHTML("div", _extends({}, (_ref19 = {}, _ref19[constants.c.VERSION] = "4.0.216", 
-            _ref19), {
+            return jsxToHTML("div", _extends({}, (_ref18 = {}, _ref18[constants.c.VERSION] = "4.0.216", 
+            _ref18), {
                 class: CLASS.CONTAINER + " " + getCommonButtonClasses({
                     layout: layout,
                     shape: shape,
@@ -2501,17 +2512,8 @@
                     }
                 },
                 content: function(name) {
-                    var contentString = void 0, _iterator = name.split("|"), _isArray = Array.isArray(_iterator), _i = 0;
-                    for (_iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
-                        var _ref11;
-                        if (_isArray) {
-                            if (_i >= _iterator.length) break;
-                            _ref11 = _iterator[_i++];
-                        } else {
-                            if ((_i = _iterator.next()).done) break;
-                            _ref11 = _i.value;
-                        }
-                        var key = _ref11;
+                    for (var contentString = void 0, _i2 = 0, _name$split2 = name.split("|"), _length2 = null == _name$split2 ? 0 : _name$split2.length; _i2 < _length2; _i2++) {
+                        var key = _name$split2[_i2];
                         if (_content[key]) {
                             contentString = _content[key];
                             break;
