@@ -96,6 +96,7 @@ export function getWebpackConfig({
     }
 
     vars.__DEBUG__ = false;
+    vars.__ENV__ = "production";
 
     const plugins = [
         new webpack.optimize.LimitChunkCountPlugin({
