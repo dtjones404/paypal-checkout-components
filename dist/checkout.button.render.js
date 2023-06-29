@@ -38,29 +38,57 @@
     return __webpack_require__(__webpack_require__.s = "./src/button/template/componentTemplate.jsx");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        !function() {
-            var object = exports, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof (__WEBPACK_AMD_DEFINE_FACTORY__ = f) ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
             InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    if ((charCode = str.charCodeAt(idx += .75)) > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            return {
+                btoa: function(input) {
+                    for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                        o1 = data.charCodeAt(i++);
+                        o2 = data.charCodeAt(i++);
+                        o3 = data.charCodeAt(i++);
+                        if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                        bits = o1 << 16 | o2 << 8 | o3;
+                        acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
+                    }
+                    switch (data.length % 3) {
+                      case 0:
+                        return acc;
+
+                      case 1:
+                        return acc.slice(0, -2) + "==";
+
+                      case 2:
+                        return acc.slice(0, -1) + "=";
+                    }
+                },
+                atob: function(input) {
+                    var str = String(input).replace(/[=]+$/, "");
+                    if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
+                    bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
+                    return output;
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
-                var str = String(input).replace(/[=]+$/, "");
-                if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-                for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
-                bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
-                return output;
-            });
-        }();
+            };
+        });
     },
     "./node_modules/cross-domain-utils/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -162,6 +190,7 @@
                     err.position = position;
                     throw err;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = (base32Str = base32Str.replace(/=/g, "")).length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -241,6 +270,7 @@
                         }
                         return str;
                     }(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -350,6 +380,7 @@
                             return base32Str;
                         }(input) : function(str) {
                             var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, length = str.length;
+                            if ("" === str) return base32Str;
                             do {
                                 blocks[0] = blocks[5];
                                 blocks[1] = blocks[6];
@@ -609,22 +640,6 @@
             return !1;
         }
         var global = __webpack_require__("./node_modules/zalgo-promise/src/global.js");
-        var _createClass = function() {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || !1;
-                    descriptor.configurable = !0;
-                    "value" in descriptor && (descriptor.writable = !0);
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-            return function(Constructor, protoProps, staticProps) {
-                protoProps && defineProperties(Constructor.prototype, protoProps);
-                staticProps && defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
         var promise_ZalgoPromise = function() {
             function ZalgoPromise(handler) {
                 var _this = this;
@@ -657,263 +672,213 @@
                     resolved ? this.resolve(_result) : rejected && this.reject(_error);
                 }
             }
-            _createClass(ZalgoPromise, [ {
-                key: "resolve",
-                value: function(result) {
-                    if (this.resolved || this.rejected) return this;
-                    if (utils_isPromise(result)) throw new Error("Can not resolve promise with another promise");
-                    this.resolved = !0;
-                    this.value = result;
-                    this.dispatch();
-                    return this;
+            ZalgoPromise.prototype.resolve = function(result) {
+                if (this.resolved || this.rejected) return this;
+                if (utils_isPromise(result)) throw new Error("Can not resolve promise with another promise");
+                this.resolved = !0;
+                this.value = result;
+                this.dispatch();
+                return this;
+            };
+            ZalgoPromise.prototype.reject = function(error) {
+                var _this2 = this;
+                if (this.resolved || this.rejected) return this;
+                if (utils_isPromise(error)) throw new Error("Can not reject promise with another promise");
+                if (!error) {
+                    var _err = error && "function" == typeof error.toString ? error.toString() : Object.prototype.toString.call(error);
+                    error = new Error("Expected reject to be called with Error, got " + _err);
                 }
-            }, {
-                key: "reject",
-                value: function(error) {
-                    var _this2 = this;
-                    if (this.resolved || this.rejected) return this;
-                    if (utils_isPromise(error)) throw new Error("Can not reject promise with another promise");
-                    if (!error) {
-                        var _err = error && "function" == typeof error.toString ? error.toString() : Object.prototype.toString.call(error);
-                        error = new Error("Expected reject to be called with Error, got " + _err);
-                    }
-                    this.rejected = !0;
-                    this.error = error;
-                    this.errorHandled || setTimeout(function() {
-                        _this2.errorHandled || function(err) {
-                            if (-1 === Object(global.a)().dispatchedErrors.indexOf(err)) {
-                                Object(global.a)().dispatchedErrors.push(err);
-                                setTimeout(function() {
-                                    throw err;
-                                }, 1);
-                                for (var j = 0; j < Object(global.a)().possiblyUnhandledPromiseHandlers.length; j++) Object(global.a)().possiblyUnhandledPromiseHandlers[j](err);
+                this.rejected = !0;
+                this.error = error;
+                this.errorHandled || setTimeout(function() {
+                    _this2.errorHandled || function(err) {
+                        if (-1 === Object(global.a)().dispatchedErrors.indexOf(err)) {
+                            Object(global.a)().dispatchedErrors.push(err);
+                            setTimeout(function() {
+                                throw err;
+                            }, 1);
+                            for (var j = 0; j < Object(global.a)().possiblyUnhandledPromiseHandlers.length; j++) Object(global.a)().possiblyUnhandledPromiseHandlers[j](err);
+                        }
+                    }(error);
+                }, 1);
+                this.dispatch();
+                return this;
+            };
+            ZalgoPromise.prototype.asyncReject = function(error) {
+                this.errorHandled = !0;
+                this.reject(error);
+            };
+            ZalgoPromise.prototype.dispatch = function() {
+                var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
+                if (!dispatching && (resolved || rejected)) {
+                    this.dispatching = !0;
+                    Object(global.a)().activeCount += 1;
+                    for (var _loop = function(i) {
+                        var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
+                        if (resolved) try {
+                            result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                        } catch (err) {
+                            promise.reject(err);
+                            return "continue";
+                        } else if (rejected) {
+                            if (!onError) {
+                                promise.reject(_this3.error);
+                                return "continue";
                             }
-                        }(error);
-                    }, 1);
-                    this.dispatch();
-                    return this;
-                }
-            }, {
-                key: "asyncReject",
-                value: function(error) {
-                    this.errorHandled = !0;
-                    this.reject(error);
-                }
-            }, {
-                key: "dispatch",
-                value: function() {
-                    var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
-                    if (!dispatching && (resolved || rejected)) {
-                        this.dispatching = !0;
-                        Object(global.a)().activeCount += 1;
-                        for (var _loop = function(i) {
-                            var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
-                            if (resolved) try {
-                                result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                            try {
+                                result = onError(_this3.error);
                             } catch (err) {
                                 promise.reject(err);
                                 return "continue";
-                            } else if (rejected) {
-                                if (!onError) {
-                                    promise.reject(_this3.error);
-                                    return "continue";
-                                }
-                                try {
-                                    result = onError(_this3.error);
-                                } catch (err) {
-                                    promise.reject(err);
-                                    return "continue";
-                                }
                             }
-                            if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
-                                result.resolved ? promise.resolve(result.value) : promise.reject(result.error);
-                                result.errorHandled = !0;
-                            } else utils_isPromise(result) ? result instanceof ZalgoPromise && (result.resolved || result.rejected) ? result.resolved ? promise.resolve(result.value) : promise.reject(result.error) : result.then(function(res) {
-                                promise.resolve(res);
-                            }, function(err) {
-                                promise.reject(err);
-                            }) : promise.resolve(result);
-                        }, i = 0; i < handlers.length; i++) _loop(i);
-                        handlers.length = 0;
-                        this.dispatching = !1;
-                        Object(global.a)().activeCount -= 1;
-                        0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
-                    }
+                        }
+                        if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
+                            result.resolved ? promise.resolve(result.value) : promise.reject(result.error);
+                            result.errorHandled = !0;
+                        } else utils_isPromise(result) ? result instanceof ZalgoPromise && (result.resolved || result.rejected) ? result.resolved ? promise.resolve(result.value) : promise.reject(result.error) : result.then(function(res) {
+                            promise.resolve(res);
+                        }, function(err) {
+                            promise.reject(err);
+                        }) : promise.resolve(result);
+                    }, i = 0; i < handlers.length; i++) _loop(i);
+                    handlers.length = 0;
+                    this.dispatching = !1;
+                    Object(global.a)().activeCount -= 1;
+                    0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
                 }
-            }, {
-                key: "then",
-                value: function(onSuccess, onError) {
-                    if (onSuccess && "function" != typeof onSuccess && !onSuccess.call) throw new Error("Promise.then expected a function for success handler");
-                    if (onError && "function" != typeof onError && !onError.call) throw new Error("Promise.then expected a function for error handler");
-                    var promise = new ZalgoPromise();
-                    this.handlers.push({
-                        promise: promise,
-                        onSuccess: onSuccess,
-                        onError: onError
-                    });
-                    this.errorHandled = !0;
-                    this.dispatch();
-                    return promise;
-                }
-            }, {
-                key: "catch",
-                value: function(onError) {
-                    return this.then(void 0, onError);
-                }
-            }, {
-                key: "finally",
-                value: function(handler) {
-                    return this.then(function(result) {
-                        return ZalgoPromise.try(handler).then(function() {
-                            return result;
-                        });
-                    }, function(err) {
-                        return ZalgoPromise.try(handler).then(function() {
-                            throw err;
-                        });
-                    });
-                }
-            }, {
-                key: "timeout",
-                value: function(time, err) {
-                    var _this4 = this;
-                    if (this.resolved || this.rejected) return this;
-                    var timeout = setTimeout(function() {
-                        _this4.resolved || _this4.rejected || _this4.reject(err || new Error("Promise timed out after " + time + "ms"));
-                    }, time);
-                    return this.then(function(result) {
-                        clearTimeout(timeout);
+            };
+            ZalgoPromise.prototype.then = function(onSuccess, onError) {
+                if (onSuccess && "function" != typeof onSuccess && !onSuccess.call) throw new Error("Promise.then expected a function for success handler");
+                if (onError && "function" != typeof onError && !onError.call) throw new Error("Promise.then expected a function for error handler");
+                var promise = new ZalgoPromise();
+                this.handlers.push({
+                    promise: promise,
+                    onSuccess: onSuccess,
+                    onError: onError
+                });
+                this.errorHandled = !0;
+                this.dispatch();
+                return promise;
+            };
+            ZalgoPromise.prototype.catch = function(onError) {
+                return this.then(void 0, onError);
+            };
+            ZalgoPromise.prototype.finally = function(handler) {
+                return this.then(function(result) {
+                    return ZalgoPromise.try(handler).then(function() {
                         return result;
                     });
+                }, function(err) {
+                    return ZalgoPromise.try(handler).then(function() {
+                        throw err;
+                    });
+                });
+            };
+            ZalgoPromise.prototype.timeout = function(time, err) {
+                var _this4 = this;
+                if (this.resolved || this.rejected) return this;
+                var timeout = setTimeout(function() {
+                    _this4.resolved || _this4.rejected || _this4.reject(err || new Error("Promise timed out after " + time + "ms"));
+                }, time);
+                return this.then(function(result) {
+                    clearTimeout(timeout);
+                    return result;
+                });
+            };
+            ZalgoPromise.prototype.toPromise = function() {
+                if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
+                return Promise.resolve(this);
+            };
+            ZalgoPromise.resolve = function(value) {
+                return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
+                    return value.then(resolve, reject);
+                }) : new ZalgoPromise().resolve(value);
+            };
+            ZalgoPromise.reject = function(error) {
+                return new ZalgoPromise().reject(error);
+            };
+            ZalgoPromise.all = function(promises) {
+                var promise = new ZalgoPromise(), count = promises.length, results = [];
+                if (!count) {
+                    promise.resolve(results);
+                    return promise;
                 }
-            }, {
-                key: "toPromise",
-                value: function() {
-                    if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
-                    return Promise.resolve(this);
-                }
-            } ], [ {
-                key: "resolve",
-                value: function(value) {
-                    return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
-                        return value.then(resolve, reject);
-                    }) : new ZalgoPromise().resolve(value);
-                }
-            }, {
-                key: "reject",
-                value: function(error) {
-                    return new ZalgoPromise().reject(error);
-                }
-            }, {
-                key: "all",
-                value: function(promises) {
-                    var promise = new ZalgoPromise(), count = promises.length, results = [];
-                    if (!count) {
-                        promise.resolve(results);
-                        return promise;
-                    }
-                    for (var _loop2 = function(i) {
-                        var prom = promises[i];
-                        if (prom instanceof ZalgoPromise) {
-                            if (prom.resolved) {
-                                results[i] = prom.value;
-                                count -= 1;
-                                return "continue";
-                            }
-                        } else if (!utils_isPromise(prom)) {
-                            results[i] = prom;
+                for (var _loop2 = function(i) {
+                    var prom = promises[i];
+                    if (prom instanceof ZalgoPromise) {
+                        if (prom.resolved) {
+                            results[i] = prom.value;
                             count -= 1;
                             return "continue";
                         }
-                        ZalgoPromise.resolve(prom).then(function(result) {
-                            results[i] = result;
-                            0 === (count -= 1) && promise.resolve(results);
-                        }, function(err) {
-                            promise.reject(err);
-                        });
-                    }, i = 0; i < promises.length; i++) _loop2(i);
-                    0 === count && promise.resolve(results);
-                    return promise;
-                }
-            }, {
-                key: "hash",
-                value: function(promises) {
-                    var result = {};
-                    return ZalgoPromise.all(Object.keys(promises).map(function(key) {
-                        return ZalgoPromise.resolve(promises[key]).then(function(value) {
-                            result[key] = value;
-                        });
-                    })).then(function() {
-                        return result;
-                    });
-                }
-            }, {
-                key: "map",
-                value: function(items, method) {
-                    return ZalgoPromise.all(items.map(method));
-                }
-            }, {
-                key: "onPossiblyUnhandledException",
-                value: function(handler) {
-                    return function(handler) {
-                        Object(global.a)().possiblyUnhandledPromiseHandlers.push(handler);
-                        return {
-                            cancel: function() {
-                                Object(global.a)().possiblyUnhandledPromiseHandlers.splice(Object(global.a)().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
-                            }
-                        };
-                    }(handler);
-                }
-            }, {
-                key: "try",
-                value: function(method, context, args) {
-                    var result = void 0;
-                    try {
-                        result = method.apply(context, args || []);
-                    } catch (err) {
-                        return ZalgoPromise.reject(err);
+                    } else if (!utils_isPromise(prom)) {
+                        results[i] = prom;
+                        count -= 1;
+                        return "continue";
                     }
-                    return ZalgoPromise.resolve(result);
-                }
-            }, {
-                key: "delay",
-                value: function(_delay) {
-                    return new ZalgoPromise(function(resolve) {
-                        setTimeout(resolve, _delay);
+                    ZalgoPromise.resolve(prom).then(function(result) {
+                        results[i] = result;
+                        0 === (count -= 1) && promise.resolve(results);
+                    }, function(err) {
+                        promise.reject(err);
                     });
-                }
-            }, {
-                key: "isPromise",
-                value: function(value) {
-                    return !!(value && value instanceof ZalgoPromise) || utils_isPromise(value);
-                }
-            }, {
-                key: "flush",
-                value: function() {
-                    var promise = new ZalgoPromise();
-                    Object(global.a)().flushPromises.push(promise);
-                    0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
-                    return promise;
-                }
-            }, {
-                key: "flushQueue",
-                value: function() {
-                    var promisesToFlush = Object(global.a)().flushPromises;
-                    Object(global.a)().flushPromises = [];
-                    var _iterator = promisesToFlush, _isArray = Array.isArray(_iterator), _i = 0;
-                    for (_iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
-                        var _ref;
-                        if (_isArray) {
-                            if (_i >= _iterator.length) break;
-                            _ref = _iterator[_i++];
-                        } else {
-                            if ((_i = _iterator.next()).done) break;
-                            _ref = _i.value;
+                }, i = 0; i < promises.length; i++) _loop2(i);
+                0 === count && promise.resolve(results);
+                return promise;
+            };
+            ZalgoPromise.hash = function(promises) {
+                var result = {};
+                return ZalgoPromise.all(Object.keys(promises).map(function(key) {
+                    return ZalgoPromise.resolve(promises[key]).then(function(value) {
+                        result[key] = value;
+                    });
+                })).then(function() {
+                    return result;
+                });
+            };
+            ZalgoPromise.map = function(items, method) {
+                return ZalgoPromise.all(items.map(method));
+            };
+            ZalgoPromise.onPossiblyUnhandledException = function(handler) {
+                return function(handler) {
+                    Object(global.a)().possiblyUnhandledPromiseHandlers.push(handler);
+                    return {
+                        cancel: function() {
+                            Object(global.a)().possiblyUnhandledPromiseHandlers.splice(Object(global.a)().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
                         }
-                        _ref.resolve();
-                    }
+                    };
+                }(handler);
+            };
+            ZalgoPromise.try = function(method, context, args) {
+                var result = void 0;
+                try {
+                    result = method.apply(context, args || []);
+                } catch (err) {
+                    return ZalgoPromise.reject(err);
                 }
-            } ]);
+                return ZalgoPromise.resolve(result);
+            };
+            ZalgoPromise.delay = function(_delay) {
+                return new ZalgoPromise(function(resolve) {
+                    setTimeout(resolve, _delay);
+                });
+            };
+            ZalgoPromise.isPromise = function(value) {
+                return !!(value && value instanceof ZalgoPromise) || utils_isPromise(value);
+            };
+            ZalgoPromise.flush = function() {
+                var promise = new ZalgoPromise();
+                Object(global.a)().flushPromises.push(promise);
+                0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
+                return promise;
+            };
+            ZalgoPromise.flushQueue = function() {
+                var promisesToFlush = Object(global.a)().flushPromises;
+                Object(global.a)().flushPromises = [];
+                for (var _i2 = 0, _length2 = null == promisesToFlush ? 0 : promisesToFlush.length; _i2 < _length2; _i2++) {
+                    promisesToFlush[_i2].resolve();
+                }
+            };
             return ZalgoPromise;
         }();
         __webpack_require__.d(__webpack_exports__, "a", function() {
@@ -925,32 +890,22 @@
         Object.defineProperty(__webpack_exports__, "__esModule", {
             value: !0
         });
-        var _logoColors, _tagLineColors, _secondaryColors, _logoColors2, _secondaryColors2, _logoColors3, _secondaryColors3, _logoColors4, _secondaryColors4, _logoColors5, _secondaryColors5, _logoColors6, _secondaryColors6, _logoColors7, _secondaryColors7, _logoColors8, _secondaryColors8, _logoColors9, _secondaryColors9, _secondaryColors10, _BUTTON_CONFIG, _FUNDING_TO_DEFAULT_L, _LABEL_TO_FUNDING, _BUTTON_STYLE, base64 = __webpack_require__("./node_modules/Base64/base64.js"), constants = __webpack_require__("./src/constants/index.js");
-        function _defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var _FUNDING_CONFIG, _CARD_CONFIG, BUTTON_CONFIG = (_defineProperty(_BUTTON_CONFIG = {}, constants.r, {
+        var _logoColors, _tagLineColors, _secondaryColors, _logoColors2, _secondaryColors2, _logoColors3, _secondaryColors3, _logoColors4, _secondaryColors4, _logoColors5, _secondaryColors5, _logoColors6, _secondaryColors6, _logoColors7, _secondaryColors7, _logoColors8, _secondaryColors8, _logoColors9, _secondaryColors9, _logoColors10, _secondaryColors10, _BUTTON_CONFIG, _FUNDING_TO_DEFAULT_L, _LABEL_TO_FUNDING, _BUTTON_STYLE, _FUNDING_CONFIG, _CARD_CONFIG, base64 = __webpack_require__("./node_modules/Base64/base64.js"), constants = __webpack_require__("./src/constants/index.js"), BUTTON_CONFIG = ((_BUTTON_CONFIG = {})[constants.r] = {
             colors: [ constants.e.GOLD, constants.e.BLUE, constants.e.SILVER, constants.e.BLACK ],
             sizes: [ constants.l.SMALL, constants.l.MEDIUM, constants.l.LARGE, constants.l.RESPONSIVE ],
             shapes: [ constants.k.PILL, constants.k.RECT ],
             layouts: [ constants.g.HORIZONTAL, constants.g.VERTICAL ],
-            logoColors: (_logoColors = {}, _defineProperty(_logoColors, constants.e.GOLD, constants.i.BLUE), 
-            _defineProperty(_logoColors, constants.e.SILVER, constants.i.BLUE), _defineProperty(_logoColors, constants.e.BLUE, constants.i.WHITE), 
-            _defineProperty(_logoColors, constants.e.BLACK, constants.i.WHITE), _defineProperty(_logoColors, constants.e.BLACK, constants.i.WHITE), 
+            logoColors: (_logoColors = {}, _logoColors[constants.e.GOLD] = constants.i.BLUE, 
+            _logoColors[constants.e.SILVER] = constants.i.BLUE, _logoColors[constants.e.BLUE] = constants.i.WHITE, 
+            _logoColors[constants.e.BLACK] = constants.i.WHITE, _logoColors[constants.e.BLACK] = constants.i.WHITE, 
             _logoColors),
-            tagLineColors: (_tagLineColors = {}, _defineProperty(_tagLineColors, constants.e.GOLD, constants.n.BLUE), 
-            _defineProperty(_tagLineColors, constants.e.SILVER, constants.n.BLUE), _defineProperty(_tagLineColors, constants.e.BLUE, constants.n.BLUE), 
-            _defineProperty(_tagLineColors, constants.e.BLACK, constants.n.BLACK), _defineProperty(_tagLineColors, constants.e.DARKBLUE, constants.n.BLUE), 
+            tagLineColors: (_tagLineColors = {}, _tagLineColors[constants.e.GOLD] = constants.n.BLUE, 
+            _tagLineColors[constants.e.SILVER] = constants.n.BLUE, _tagLineColors[constants.e.BLUE] = constants.n.BLUE, 
+            _tagLineColors[constants.e.BLACK] = constants.n.BLACK, _tagLineColors[constants.e.DARKBLUE] = constants.n.BLUE, 
             _tagLineColors),
-            secondaryColors: (_secondaryColors = {}, _defineProperty(_secondaryColors, constants.e.GOLD, constants.e.BLUE), 
-            _defineProperty(_secondaryColors, constants.e.SILVER, constants.e.BLUE), _defineProperty(_secondaryColors, constants.e.BLUE, constants.e.SILVER), 
-            _defineProperty(_secondaryColors, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors, constants.e.DARKBLUE, constants.e.SILVER), 
+            secondaryColors: (_secondaryColors = {}, _secondaryColors[constants.e.GOLD] = constants.e.BLUE, 
+            _secondaryColors[constants.e.SILVER] = constants.e.BLUE, _secondaryColors[constants.e.BLUE] = constants.e.SILVER, 
+            _secondaryColors[constants.e.BLACK] = constants.e.BLACK, _secondaryColors[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors),
             tag: "{ content: safer_tag }",
             dualTag: "{ content: dual_tag|safer_tag }",
@@ -980,25 +935,25 @@
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.PAYPAL, {
+        }, _BUTTON_CONFIG[constants.f.PAYPAL] = {
             label: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " }",
             logoLabel: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " }",
             allowPrimary: !0,
             allowPrimaryVertical: !0,
             allowPrimaryHorizontal: !0
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.CHECKOUT, {
+        }, _BUTTON_CONFIG[constants.f.CHECKOUT] = {
             label: "{ content: checkout }",
             logoLabel: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " }",
             allowPrimary: !0,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !0
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.PAY, {
+        }, _BUTTON_CONFIG[constants.f.PAY] = {
             label: "{ content: pay }",
             logoLabel: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " }",
             allowPrimary: !0,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !0
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.BUYNOW, {
+        }, _BUTTON_CONFIG[constants.f.BUYNOW] = {
             label: "{ content: buynow }",
             logoLabel: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " }",
             defaultBranding: void 0,
@@ -1006,7 +961,7 @@
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !0,
             allowUnbranded: !0
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.INSTALLMENT, {
+        }, _BUTTON_CONFIG[constants.f.INSTALLMENT] = {
             label: function(style) {
                 return "{ content: " + (style.installmentperiod ? "installment_period" : "installment") + " }";
             },
@@ -1016,154 +971,151 @@
             allowPrimaryHorizontal: !0,
             allowSecondaryVertical: !1,
             allowSecondaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.CREDIT, {
+        }, _BUTTON_CONFIG[constants.f.CREDIT] = {
             label: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " } { logo: " + constants.h.CREDIT + " }",
             logoLabel: "{ logo: " + constants.h.PP + " } { logo: " + constants.h.PAYPAL + " } { logo: " + constants.h.CREDIT + " }",
             tag: "{ content: later_tag }",
             colors: [ constants.e.DARKBLUE, constants.e.BLACK ],
-            logoColors: (_logoColors2 = {}, _defineProperty(_logoColors2, constants.e.BLACK, constants.i.WHITE), 
-            _defineProperty(_logoColors2, constants.e.DARKBLUE, constants.i.WHITE), _logoColors2),
-            secondaryColors: (_secondaryColors2 = {}, _defineProperty(_secondaryColors2, constants.e.GOLD, constants.e.DARKBLUE), 
-            _defineProperty(_secondaryColors2, constants.e.BLUE, constants.e.DARKBLUE), _defineProperty(_secondaryColors2, constants.e.SILVER, constants.e.DARKBLUE), 
-            _defineProperty(_secondaryColors2, constants.e.BLACK, constants.e.BLACK), _secondaryColors2),
+            logoColors: (_logoColors2 = {}, _logoColors2[constants.e.BLACK] = constants.i.WHITE, 
+            _logoColors2[constants.e.DARKBLUE] = constants.i.WHITE, _logoColors2),
+            secondaryColors: (_secondaryColors2 = {}, _secondaryColors2[constants.e.GOLD] = constants.e.DARKBLUE, 
+            _secondaryColors2[constants.e.BLUE] = constants.e.DARKBLUE, _secondaryColors2[constants.e.SILVER] = constants.e.DARKBLUE, 
+            _secondaryColors2[constants.e.BLACK] = constants.e.BLACK, _secondaryColors2),
             defaultColor: constants.e.DARKBLUE,
             allowPrimary: !0,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1,
             allowFundingIcons: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.VENMO, {
+        }, _BUTTON_CONFIG[constants.f.VENMO] = {
             label: "{ logo: " + constants.h.VENMO + " }",
             logoLabel: "{ logo: " + constants.h.VENMO + " }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.BLUE, constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors3 = {}, _defineProperty(_logoColors3, constants.e.BLUE, constants.i.WHITE), 
-            _defineProperty(_logoColors3, constants.e.SILVER, constants.i.BLUE), _defineProperty(_logoColors3, constants.e.BLACK, constants.i.WHITE), 
+            logoColors: (_logoColors3 = {}, _logoColors3[constants.e.BLUE] = constants.i.WHITE, 
+            _logoColors3[constants.e.SILVER] = constants.i.BLUE, _logoColors3[constants.e.BLACK] = constants.i.WHITE, 
             _logoColors3),
-            secondaryColors: (_secondaryColors3 = {}, _defineProperty(_secondaryColors3, constants.e.GOLD, constants.e.BLUE), 
-            _defineProperty(_secondaryColors3, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors3, constants.e.SILVER, constants.e.BLUE), 
-            _defineProperty(_secondaryColors3, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors3, constants.e.DARKBLUE, constants.e.SILVER), 
+            secondaryColors: (_secondaryColors3 = {}, _secondaryColors3[constants.e.GOLD] = constants.e.BLUE, 
+            _secondaryColors3[constants.e.BLUE] = constants.e.SILVER, _secondaryColors3[constants.e.SILVER] = constants.e.BLUE, 
+            _secondaryColors3[constants.e.BLACK] = constants.e.BLACK, _secondaryColors3[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors3),
             allowPrimary: !0,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !0
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.IDEAL, {
+        }, _BUTTON_CONFIG[constants.f.IDEAL] = {
             label: "{ logo: " + constants.h.IDEAL + " } Online betalen",
             logoLabel: "{ logo: " + constants.h.IDEAL + " } Online betalen",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors4 = {}, _defineProperty(_logoColors4, constants.e.SILVER, constants.i.BLACK), 
-            _defineProperty(_logoColors4, constants.e.BLACK, constants.i.WHITE), _logoColors4),
-            secondaryColors: (_secondaryColors4 = {}, _defineProperty(_secondaryColors4, constants.e.GOLD, constants.e.SILVER), 
-            _defineProperty(_secondaryColors4, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors4, constants.e.SILVER, constants.e.SILVER), 
-            _defineProperty(_secondaryColors4, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors4, constants.e.DARKBLUE, constants.e.SILVER), 
+            logoColors: (_logoColors4 = {}, _logoColors4[constants.e.SILVER] = constants.i.BLACK, 
+            _logoColors4[constants.e.BLACK] = constants.i.WHITE, _logoColors4),
+            secondaryColors: (_secondaryColors4 = {}, _secondaryColors4[constants.e.GOLD] = constants.e.SILVER, 
+            _secondaryColors4[constants.e.BLUE] = constants.e.SILVER, _secondaryColors4[constants.e.SILVER] = constants.e.SILVER, 
+            _secondaryColors4[constants.e.BLACK] = constants.e.BLACK, _secondaryColors4[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors4),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.ELV, {
+        }, _BUTTON_CONFIG[constants.f.ELV] = {
             label: "{ logo: " + constants.h.ELV + " }",
             logoLabel: "{ logo: " + constants.h.ELV + " }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors5 = {}, _defineProperty(_logoColors5, constants.e.SILVER, constants.i.BLACK), 
-            _defineProperty(_logoColors5, constants.e.BLACK, constants.i.WHITE), _logoColors5),
-            secondaryColors: (_secondaryColors5 = {}, _defineProperty(_secondaryColors5, constants.e.GOLD, constants.e.SILVER), 
-            _defineProperty(_secondaryColors5, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors5, constants.e.SILVER, constants.e.SILVER), 
-            _defineProperty(_secondaryColors5, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors5, constants.e.DARKBLUE, constants.e.SILVER), 
+            logoColors: (_logoColors5 = {}, _logoColors5[constants.e.SILVER] = constants.i.BLACK, 
+            _logoColors5[constants.e.BLACK] = constants.i.WHITE, _logoColors5),
+            secondaryColors: (_secondaryColors5 = {}, _secondaryColors5[constants.e.GOLD] = constants.e.SILVER, 
+            _secondaryColors5[constants.e.BLUE] = constants.e.SILVER, _secondaryColors5[constants.e.SILVER] = constants.e.SILVER, 
+            _secondaryColors5[constants.e.BLACK] = constants.e.BLACK, _secondaryColors5[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors5),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.BANCONTACT, {
+        }, _BUTTON_CONFIG[constants.f.BANCONTACT] = {
             label: "{ logo: " + constants.h.BANCONTACT + " }",
             logoLabel: "{ logo: " + constants.h.BANCONTACT + " }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors6 = {}, _defineProperty(_logoColors6, constants.e.SILVER, constants.i.BLACK), 
-            _defineProperty(_logoColors6, constants.e.BLACK, constants.i.WHITE), _logoColors6),
-            secondaryColors: (_secondaryColors6 = {}, _defineProperty(_secondaryColors6, constants.e.GOLD, constants.e.SILVER), 
-            _defineProperty(_secondaryColors6, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors6, constants.e.SILVER, constants.e.SILVER), 
-            _defineProperty(_secondaryColors6, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors6, constants.e.DARKBLUE, constants.e.SILVER), 
+            logoColors: (_logoColors6 = {}, _logoColors6[constants.e.SILVER] = constants.i.BLACK, 
+            _logoColors6[constants.e.BLACK] = constants.i.WHITE, _logoColors6),
+            secondaryColors: (_secondaryColors6 = {}, _secondaryColors6[constants.e.GOLD] = constants.e.SILVER, 
+            _secondaryColors6[constants.e.BLUE] = constants.e.SILVER, _secondaryColors6[constants.e.SILVER] = constants.e.SILVER, 
+            _secondaryColors6[constants.e.BLACK] = constants.e.BLACK, _secondaryColors6[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors6),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.GIROPAY, {
+        }, _BUTTON_CONFIG[constants.f.GIROPAY] = {
             label: "{ logo: " + constants.h.GIROPAY + " }",
             logoLabel: "{ logo: " + constants.h.GIROPAY + " }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors7 = {}, _defineProperty(_logoColors7, constants.e.SILVER, constants.i.BLACK), 
-            _defineProperty(_logoColors7, constants.e.BLACK, constants.i.WHITE), _logoColors7),
-            secondaryColors: (_secondaryColors7 = {}, _defineProperty(_secondaryColors7, constants.e.GOLD, constants.e.SILVER), 
-            _defineProperty(_secondaryColors7, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors7, constants.e.SILVER, constants.e.SILVER), 
-            _defineProperty(_secondaryColors7, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors7, constants.e.DARKBLUE, constants.e.SILVER), 
+            logoColors: (_logoColors7 = {}, _logoColors7[constants.e.SILVER] = constants.i.BLACK, 
+            _logoColors7[constants.e.BLACK] = constants.i.WHITE, _logoColors7),
+            secondaryColors: (_secondaryColors7 = {}, _secondaryColors7[constants.e.GOLD] = constants.e.SILVER, 
+            _secondaryColors7[constants.e.BLUE] = constants.e.SILVER, _secondaryColors7[constants.e.SILVER] = constants.e.SILVER, 
+            _secondaryColors7[constants.e.BLACK] = constants.e.BLACK, _secondaryColors7[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors7),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.EPS, {
+        }, _BUTTON_CONFIG[constants.f.EPS] = {
             label: "{ logo: " + constants.h.EPS + " }",
             logoLabel: "{ logo: " + constants.h.EPS + " }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors8 = {}, _defineProperty(_logoColors8, constants.e.SILVER, constants.i.BLACK), 
-            _defineProperty(_logoColors8, constants.e.BLACK, constants.i.WHITE), _logoColors8),
-            secondaryColors: (_secondaryColors8 = {}, _defineProperty(_secondaryColors8, constants.e.GOLD, constants.e.SILVER), 
-            _defineProperty(_secondaryColors8, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors8, constants.e.SILVER, constants.e.SILVER), 
-            _defineProperty(_secondaryColors8, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors8, constants.e.DARKBLUE, constants.e.SILVER), 
+            logoColors: (_logoColors8 = {}, _logoColors8[constants.e.SILVER] = constants.i.BLACK, 
+            _logoColors8[constants.e.BLACK] = constants.i.WHITE, _logoColors8),
+            secondaryColors: (_secondaryColors8 = {}, _secondaryColors8[constants.e.GOLD] = constants.e.SILVER, 
+            _secondaryColors8[constants.e.BLUE] = constants.e.SILVER, _secondaryColors8[constants.e.SILVER] = constants.e.SILVER, 
+            _secondaryColors8[constants.e.BLACK] = constants.e.BLACK, _secondaryColors8[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors8),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.MYBANK, {
+        }, _BUTTON_CONFIG[constants.f.MYBANK] = {
             label: "{ logo: " + constants.h.MYBANK + " }",
             logoLabel: "{ logo: " + constants.h.MYBANK + " }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.SILVER, constants.e.BLACK ],
-            logoColors: (_logoColors9 = {}, _defineProperty(_logoColors9, constants.e.SILVER, constants.i.BLACK), 
-            _defineProperty(_logoColors9, constants.e.BLACK, constants.i.WHITE), _logoColors9),
-            secondaryColors: (_secondaryColors9 = {}, _defineProperty(_secondaryColors9, constants.e.GOLD, constants.e.SILVER), 
-            _defineProperty(_secondaryColors9, constants.e.BLUE, constants.e.SILVER), _defineProperty(_secondaryColors9, constants.e.SILVER, constants.e.SILVER), 
-            _defineProperty(_secondaryColors9, constants.e.BLACK, constants.e.BLACK), _defineProperty(_secondaryColors9, constants.e.DARKBLUE, constants.e.SILVER), 
+            logoColors: (_logoColors9 = {}, _logoColors9[constants.e.SILVER] = constants.i.BLACK, 
+            _logoColors9[constants.e.BLACK] = constants.i.WHITE, _logoColors9),
+            secondaryColors: (_secondaryColors9 = {}, _secondaryColors9[constants.e.GOLD] = constants.e.SILVER, 
+            _secondaryColors9[constants.e.BLUE] = constants.e.SILVER, _secondaryColors9[constants.e.SILVER] = constants.e.SILVER, 
+            _secondaryColors9[constants.e.BLACK] = constants.e.BLACK, _secondaryColors9[constants.e.DARKBLUE] = constants.e.SILVER, 
             _secondaryColors9),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _defineProperty(_BUTTON_CONFIG, constants.f.CARD, {
+        }, _BUTTON_CONFIG[constants.f.CARD] = {
             label: "{ cards }",
             logoLabel: "{ cards }",
             defaultColor: constants.e.SILVER,
             colors: [ constants.e.TRANSPARENT ],
-            logoColors: _defineProperty({}, constants.e.TRANSPARENT, constants.i.BLACK),
-            secondaryColors: (_secondaryColors10 = {}, _defineProperty(_secondaryColors10, constants.e.GOLD, constants.e.TRANSPARENT), 
-            _defineProperty(_secondaryColors10, constants.e.BLUE, constants.e.TRANSPARENT), 
-            _defineProperty(_secondaryColors10, constants.e.SILVER, constants.e.TRANSPARENT), 
-            _defineProperty(_secondaryColors10, constants.e.BLACK, constants.e.TRANSPARENT), 
-            _defineProperty(_secondaryColors10, constants.e.DARKBLUE, constants.e.TRANSPARENT), 
+            logoColors: (_logoColors10 = {}, _logoColors10[constants.e.TRANSPARENT] = constants.i.BLACK, 
+            _logoColors10),
+            secondaryColors: (_secondaryColors10 = {}, _secondaryColors10[constants.e.GOLD] = constants.e.TRANSPARENT, 
+            _secondaryColors10[constants.e.BLUE] = constants.e.TRANSPARENT, _secondaryColors10[constants.e.SILVER] = constants.e.TRANSPARENT, 
+            _secondaryColors10[constants.e.BLACK] = constants.e.TRANSPARENT, _secondaryColors10[constants.e.DARKBLUE] = constants.e.TRANSPARENT, 
             _secondaryColors10),
             allowPrimary: !1,
             allowPrimaryVertical: !1,
             allowPrimaryHorizontal: !1
-        }), _BUTTON_CONFIG), FUNDING_TO_DEFAULT_LABEL = (_defineProperty(_FUNDING_TO_DEFAULT_L = {}, constants.t.PAYPAL, constants.f.PAYPAL), 
-        _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.VENMO, constants.f.VENMO), _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.CARD, constants.f.CARD), 
-        _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.CREDIT, constants.f.CREDIT), 
-        _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.IDEAL, constants.f.IDEAL), _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.ELV, constants.f.ELV), 
-        _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.BANCONTACT, constants.f.BANCONTACT), 
-        _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.GIROPAY, constants.f.GIROPAY), 
-        _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.EPS, constants.f.EPS), _defineProperty(_FUNDING_TO_DEFAULT_L, constants.t.MYBANK, constants.f.MYBANK), 
-        _FUNDING_TO_DEFAULT_L), LABEL_TO_FUNDING = (_defineProperty(_LABEL_TO_FUNDING = {}, constants.f.PAYPAL, constants.t.PAYPAL), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.CHECKOUT, constants.t.PAYPAL), _defineProperty(_LABEL_TO_FUNDING, constants.f.PAY, constants.t.PAYPAL), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.BUYNOW, constants.t.PAYPAL), _defineProperty(_LABEL_TO_FUNDING, constants.f.INSTALLMENT, constants.t.PAYPAL), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.CARD, constants.t.CARD), _defineProperty(_LABEL_TO_FUNDING, constants.f.CREDIT, constants.t.CREDIT), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.VENMO, constants.t.VENMO), _defineProperty(_LABEL_TO_FUNDING, constants.f.IDEAL, constants.t.IDEAL), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.BANCONTACT, constants.t.BANCONTACT), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.GIROPAY, constants.t.GIROPAY), _defineProperty(_LABEL_TO_FUNDING, constants.f.GIROPAY, constants.t.EPS), 
-        _defineProperty(_LABEL_TO_FUNDING, constants.f.MYBANK, constants.t.MYBANK), _LABEL_TO_FUNDING), BUTTON_RELATIVE_STYLE = {
+        }, _BUTTON_CONFIG), FUNDING_TO_DEFAULT_LABEL = ((_FUNDING_TO_DEFAULT_L = {})[constants.t.PAYPAL] = constants.f.PAYPAL, 
+        _FUNDING_TO_DEFAULT_L[constants.t.VENMO] = constants.f.VENMO, _FUNDING_TO_DEFAULT_L[constants.t.CARD] = constants.f.CARD, 
+        _FUNDING_TO_DEFAULT_L[constants.t.CREDIT] = constants.f.CREDIT, _FUNDING_TO_DEFAULT_L[constants.t.IDEAL] = constants.f.IDEAL, 
+        _FUNDING_TO_DEFAULT_L[constants.t.ELV] = constants.f.ELV, _FUNDING_TO_DEFAULT_L[constants.t.BANCONTACT] = constants.f.BANCONTACT, 
+        _FUNDING_TO_DEFAULT_L[constants.t.GIROPAY] = constants.f.GIROPAY, _FUNDING_TO_DEFAULT_L[constants.t.EPS] = constants.f.EPS, 
+        _FUNDING_TO_DEFAULT_L[constants.t.MYBANK] = constants.f.MYBANK, _FUNDING_TO_DEFAULT_L), LABEL_TO_FUNDING = ((_LABEL_TO_FUNDING = {})[constants.f.PAYPAL] = constants.t.PAYPAL, 
+        _LABEL_TO_FUNDING[constants.f.CHECKOUT] = constants.t.PAYPAL, _LABEL_TO_FUNDING[constants.f.PAY] = constants.t.PAYPAL, 
+        _LABEL_TO_FUNDING[constants.f.BUYNOW] = constants.t.PAYPAL, _LABEL_TO_FUNDING[constants.f.INSTALLMENT] = constants.t.PAYPAL, 
+        _LABEL_TO_FUNDING[constants.f.CARD] = constants.t.CARD, _LABEL_TO_FUNDING[constants.f.CREDIT] = constants.t.CREDIT, 
+        _LABEL_TO_FUNDING[constants.f.VENMO] = constants.t.VENMO, _LABEL_TO_FUNDING[constants.f.IDEAL] = constants.t.IDEAL, 
+        _LABEL_TO_FUNDING[constants.f.BANCONTACT] = constants.t.BANCONTACT, _LABEL_TO_FUNDING[constants.f.GIROPAY] = constants.t.GIROPAY, 
+        _LABEL_TO_FUNDING[constants.f.GIROPAY] = constants.t.EPS, _LABEL_TO_FUNDING[constants.f.MYBANK] = constants.t.MYBANK, 
+        _LABEL_TO_FUNDING), BUTTON_RELATIVE_STYLE = {
             FUNDINGICONS: 100,
             TAGLINE: 50,
             VERTICAL_MARGIN: 30
-        }, BUTTON_STYLE = (_defineProperty(_BUTTON_STYLE = {}, constants.l.TINY, {
+        }, BUTTON_STYLE = ((_BUTTON_STYLE = {})[constants.l.TINY] = {
             defaultWidth: 75,
             defaultHeight: 25,
             minWidth: 75,
@@ -1172,7 +1124,7 @@
             maxHeight: 30,
             allowFunding: !0,
             allowTagline: !1
-        }), _defineProperty(_BUTTON_STYLE, constants.l.SMALL, {
+        }, _BUTTON_STYLE[constants.l.SMALL] = {
             defaultWidth: 150,
             defaultHeight: 25,
             minWidth: 150,
@@ -1181,7 +1133,7 @@
             maxHeight: 55,
             allowFunding: !0,
             allowTagline: !0
-        }), _defineProperty(_BUTTON_STYLE, constants.l.MEDIUM, {
+        }, _BUTTON_STYLE[constants.l.MEDIUM] = {
             defaultWidth: 250,
             defaultHeight: 35,
             minWidth: 200,
@@ -1190,7 +1142,7 @@
             maxHeight: 55,
             allowFunding: !0,
             allowTagline: !0
-        }), _defineProperty(_BUTTON_STYLE, constants.l.LARGE, {
+        }, _BUTTON_STYLE[constants.l.LARGE] = {
             defaultWidth: 350,
             defaultHeight: 45,
             minWidth: 300,
@@ -1199,7 +1151,7 @@
             maxHeight: 55,
             allowFunding: !0,
             allowTagline: !0
-        }), _defineProperty(_BUTTON_STYLE, constants.l.HUGE, {
+        }, _BUTTON_STYLE[constants.l.HUGE] = {
             defaultWidth: 500,
             defaultHeight: 55,
             minWidth: 500,
@@ -1208,7 +1160,7 @@
             maxHeight: 55,
             allowFunding: !0,
             allowTagline: !0
-        }), _BUTTON_STYLE);
+        }, _BUTTON_STYLE);
         function getButtonConfig(label, key, def) {
             return function(conf, category, key, def) {
                 var categoryConfig = conf[category];
@@ -1218,16 +1170,7 @@
                 throw new Error("No value found for " + category + ":" + key);
             }(BUTTON_CONFIG, label, key, def);
         }
-        function config__defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var FUNDING_PRIORITY = [ constants.t.PAYPAL, constants.t.VENMO, constants.t.CREDIT, constants.t.IDEAL, constants.t.ELV, constants.t.BANCONTACT, constants.t.GIROPAY, constants.t.EPS, constants.t.MYBANK, constants.t.CARD ], FUNDING_CONFIG = (config__defineProperty(_FUNDING_CONFIG = {}, constants.r, {
+        var FUNDING_PRIORITY = [ constants.t.PAYPAL, constants.t.VENMO, constants.t.CREDIT, constants.t.IDEAL, constants.t.ELV, constants.t.BANCONTACT, constants.t.GIROPAY, constants.t.EPS, constants.t.MYBANK, constants.t.CARD ], FUNDING_CONFIG = ((_FUNDING_CONFIG = {})[constants.r] = {
             enabled: !0,
             allowOptIn: !0,
             allowOptOut: !0,
@@ -1235,66 +1178,66 @@
             allowHorizontal: !0,
             allowVertical: !0,
             requireCommitAsTrue: !1
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.PAYPAL, {
+        }, _FUNDING_CONFIG[constants.t.PAYPAL] = {
             default: !0,
             allowOptIn: !1,
             allowOptOut: !1,
             allowHorizontal: !0,
             allowVertical: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.CARD, {
+        }, _FUNDING_CONFIG[constants.t.CARD] = {
             default: !0,
             allowHorizontal: !1,
             allowVertical: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.VENMO, {
+        }, _FUNDING_CONFIG[constants.t.VENMO] = {
             allowOptOut: !1,
             allowedCountries: [ constants.q.US ],
             allowHorizontal: !0,
             allowVertical: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.CREDIT, {
+        }, _FUNDING_CONFIG[constants.t.CREDIT] = {
             allowedCountries: [ constants.q.US, constants.q.GB, constants.q.DE ],
             defaultVerticalCountries: [ constants.q.US ],
             platforms: [ constants.w.MOBILE ],
             allowHorizontal: !0,
             allowVertical: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.IDEAL, {
+        }, _FUNDING_CONFIG[constants.t.IDEAL] = {
             allowedCountries: [ constants.q.NL ],
             allowHorizontal: !0,
             allowVertical: !0,
             requireCommitAsTrue: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.ELV, {
+        }, _FUNDING_CONFIG[constants.t.ELV] = {
             allowedCountries: [ constants.q.DE, constants.q.AT ],
             defaultVerticalCountries: [ constants.q.DE, constants.q.AT ],
             allowHorizontal: !0,
             allowVertical: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.BANCONTACT, {
+        }, _FUNDING_CONFIG[constants.t.BANCONTACT] = {
             allowedCountries: [ constants.q.BE ],
             allowHorizontal: !0,
             allowVertical: !0,
             requireCommitAsTrue: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.GIROPAY, {
+        }, _FUNDING_CONFIG[constants.t.GIROPAY] = {
             allowedCountries: [ constants.q.DE ],
             allowHorizontal: !0,
             allowVertical: !0,
             requireCommitAsTrue: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.EPS, {
+        }, _FUNDING_CONFIG[constants.t.EPS] = {
             allowedCountries: [ constants.q.AT ],
             allowHorizontal: !0,
             allowVertical: !0,
             requireCommitAsTrue: !0
-        }), config__defineProperty(_FUNDING_CONFIG, constants.t.MYBANK, {
+        }, _FUNDING_CONFIG[constants.t.MYBANK] = {
             allowedCountries: [ constants.q.IT ],
             allowHorizontal: !0,
             allowVertical: !0,
             requireCommitAsTrue: !0
-        }), _FUNDING_CONFIG), CARD_CONFIG = (config__defineProperty(_CARD_CONFIG = {}, constants.r, {
+        }, _FUNDING_CONFIG), CARD_CONFIG = ((_CARD_CONFIG = {})[constants.r] = {
             priority: [ constants.o.VISA, constants.o.MASTERCARD, constants.o.AMEX ]
-        }), config__defineProperty(_CARD_CONFIG, constants.q.US, {
+        }, _CARD_CONFIG[constants.q.US] = {
             priority: [ constants.o.VISA, constants.o.MASTERCARD, constants.o.AMEX, constants.o.DISCOVER ]
-        }), config__defineProperty(_CARD_CONFIG, constants.q.BR, {
+        }, _CARD_CONFIG[constants.q.BR] = {
             priority: [ constants.o.VISA, constants.o.MASTERCARD, constants.o.AMEX, constants.o.HIPER, constants.o.ELO ]
-        }), config__defineProperty(_CARD_CONFIG, constants.q.JP, {
+        }, _CARD_CONFIG[constants.q.JP] = {
             priority: [ constants.o.VISA, constants.o.MASTERCARD, constants.o.AMEX, constants.o.JCB ]
-        }), _CARD_CONFIG);
+        }, _CARD_CONFIG);
         function config_getConfig(conf, category, key, def) {
             var categoryConfig = conf[category];
             if (categoryConfig && categoryConfig.hasOwnProperty(key)) return categoryConfig[key];
@@ -1351,37 +1294,13 @@
                 return -1 === funding.disallowed.indexOf(card);
             });
         }
-        var util = __webpack_require__("./src/lib/util.js"), _slicedToArray = function() {
-            return function(arr, i) {
-                if (Array.isArray(arr)) return arr;
-                if (Symbol.iterator in Object(arr)) return function(arr, i) {
-                    var _arr = [], _n = !0, _d = !1, _e = void 0;
-                    try {
-                        for (var _s, _i = arr[Symbol.iterator](); !(_n = (_s = _i.next()).done); _n = !0) {
-                            _arr.push(_s.value);
-                            if (i && _arr.length === i) break;
-                        }
-                    } catch (err) {
-                        _d = !0;
-                        _e = err;
-                    } finally {
-                        try {
-                            !_n && _i.return && _i.return();
-                        } finally {
-                            if (_d) throw _e;
-                        }
-                    }
-                    return _arr;
-                }(arr, i);
-                throw new TypeError("Invalid attempt to destructure non-iterable instance");
-            };
-        }();
+        var util = __webpack_require__("./src/lib/util.js");
         var normalizeProps = Object(util.b)(function(props) {
             var defs = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, env = props.env, locale = props.locale, _props$style = props.style, style = void 0 === _props$style ? {} : _props$style, funding = props.funding, commit = props.commit;
             locale = locale ? function(locale) {
-                var _locale$split = locale.split("_"), _locale$split2 = _slicedToArray(_locale$split, 2), lang = _locale$split2[0];
+                var _locale$split = locale.split("_"), lang = _locale$split[0];
                 return {
-                    country: _locale$split2[1],
+                    country: _locale$split[1],
                     lang: lang
                 };
             }(locale) : defs.locale || getButtonConfig("DEFAULT", "defaultLocale");
@@ -1465,22 +1384,7 @@
                 }),
                 installmentperiod: installmentperiod
             };
-        }), _createClass = function() {
-            function defineProperties(target, props) {
-                for (var i = 0; i < props.length; i++) {
-                    var descriptor = props[i];
-                    descriptor.enumerable = descriptor.enumerable || !1;
-                    descriptor.configurable = !0;
-                    "value" in descriptor && (descriptor.writable = !0);
-                    Object.defineProperty(target, descriptor.key, descriptor);
-                }
-            }
-            return function(Constructor, protoProps, staticProps) {
-                protoProps && defineProperties(Constructor.prototype, protoProps);
-                staticProps && defineProperties(Constructor, staticProps);
-                return Constructor;
-            };
-        }();
+        });
         function _classCallCheck(instance, Constructor) {
             if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
         }
@@ -1494,45 +1398,29 @@
                 this.props = props;
                 this.children = children;
             }
-            _createClass(JsxHTMLNode, [ {
-                key: "toString",
-                value: function() {
-                    return "<" + this.name + (this.props ? " " : "") + (this.props ? this.propsToString() : "") + ">" + this.childrenToString() + "</" + this.name + ">";
-                }
-            }, {
-                key: "propsToString",
-                value: function() {
-                    var props = this.props;
-                    return props ? Object.keys(props).filter(function(key) {
-                        return "innerHTML" !== key && props && !1 !== props[key];
-                    }).map(function(key) {
-                        return props && !0 === props[key] ? "" + htmlEncode(key) : props ? htmlEncode(key) + '="' + htmlEncode(props[key]) + '"' : "";
-                    }).join(" ") : "";
-                }
-            }, {
-                key: "childrenToString",
-                value: function() {
-                    if (this.props && this.props.innerHTML) return this.props.innerHTML;
-                    if (!this.children) return "";
-                    var result = "";
-                    !function iterate(children) {
-                        var _iterator = children, _isArray = Array.isArray(_iterator), _i = 0;
-                        for (_iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
-                            var _ref;
-                            if (_isArray) {
-                                if (_i >= _iterator.length) break;
-                                _ref = _iterator[_i++];
-                            } else {
-                                if ((_i = _iterator.next()).done) break;
-                                _ref = _i.value;
-                            }
-                            var child = _ref;
-                            null !== child && void 0 !== child && (Array.isArray(child) ? iterate(child) : result += child instanceof JsxHTMLNode ? child.toString() : htmlEncode(child));
-                        }
-                    }(this.children);
-                    return result;
-                }
-            } ]);
+            JsxHTMLNode.prototype.toString = function() {
+                return "<" + this.name + (this.props ? " " : "") + (this.props ? this.propsToString() : "") + ">" + this.childrenToString() + "</" + this.name + ">";
+            };
+            JsxHTMLNode.prototype.propsToString = function() {
+                var props = this.props;
+                return props ? Object.keys(props).filter(function(key) {
+                    return "innerHTML" !== key && props && !1 !== props[key];
+                }).map(function(key) {
+                    return props && !0 === props[key] ? "" + htmlEncode(key) : props ? htmlEncode(key) + '="' + htmlEncode(props[key]) + '"' : "";
+                }).join(" ") : "";
+            };
+            JsxHTMLNode.prototype.childrenToString = function() {
+                if (this.props && this.props.innerHTML) return this.props.innerHTML;
+                if (!this.children) return "";
+                var result = "";
+                !function iterate(children) {
+                    for (var _i2 = 0, _length2 = null == children ? 0 : children.length; _i2 < _length2; _i2++) {
+                        var child = children[_i2];
+                        null !== child && void 0 !== child && (Array.isArray(child) ? iterate(child) : result += child instanceof JsxHTMLNode ? child.toString() : htmlEncode(child));
+                    }
+                }(this.children);
+                return result;
+            };
             return JsxHTMLNode;
         }(), JsxHTMLNodeContainer = function(_JsxHTMLNode) {
             !function(subClass, superClass) {
@@ -1546,95 +1434,44 @@
                     }
                 });
                 superClass && (Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass);
-            }(JsxHTMLNodeContainer, JsxHTMLNode);
+            }(JsxHTMLNodeContainer, _JsxHTMLNode);
             function JsxHTMLNodeContainer(children) {
                 _classCallCheck(this, JsxHTMLNodeContainer);
                 return function(self, call) {
                     if (!self) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
                     return !call || "object" != typeof call && "function" != typeof call ? self : call;
-                }(this, (JsxHTMLNodeContainer.__proto__ || Object.getPrototypeOf(JsxHTMLNodeContainer)).call(this, "", {}, children));
+                }(this, _JsxHTMLNode.call(this, "", {}, children));
             }
-            _createClass(JsxHTMLNodeContainer, [ {
-                key: "toString",
-                value: function() {
-                    return this.childrenToString();
-                }
-            } ]);
+            JsxHTMLNodeContainer.prototype.toString = function() {
+                return this.childrenToString();
+            };
             return JsxHTMLNodeContainer;
-        }();
+        }(JsxHTMLNode);
         function jsxToHTML(name, props) {
             for (var _len = arguments.length, children = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) children[_key - 2] = arguments[_key];
             return new JsxHTMLNode(name, props, children);
         }
-        var _BUTTON_LOGO$PP, _BUTTON_LOGO$PAYPAL, _BUTTON_LOGO$VENMO, _BUTTON_LOGO$ELV, _BUTTON_LOGO$BANCONTA, _BUTTON_LOGO$GIROPAY, _BUTTON_LOGO$EPS, _BUTTON_LOGO$MYBANK, _fundingLogos, pp_white = __webpack_require__("./src/resources/fundingLogos/pp_white.svg"), pp_white_default = __webpack_require__.n(pp_white), pp_blue = __webpack_require__("./src/resources/fundingLogos/pp_blue.svg"), pp_blue_default = __webpack_require__.n(pp_blue), pp_black = __webpack_require__("./src/resources/fundingLogos/pp_black.svg"), pp_black_default = __webpack_require__.n(pp_black), paypal_white = __webpack_require__("./src/resources/fundingLogos/paypal_white.svg"), paypal_white_default = __webpack_require__.n(paypal_white), paypal_blue = __webpack_require__("./src/resources/fundingLogos/paypal_blue.svg"), paypal_blue_default = __webpack_require__.n(paypal_blue), paypal_black = __webpack_require__("./src/resources/fundingLogos/paypal_black.svg"), paypal_black_default = __webpack_require__.n(paypal_black), credit_white = __webpack_require__("./src/resources/fundingLogos/credit_white.svg"), credit_white_default = __webpack_require__.n(credit_white), venmo_white = __webpack_require__("./src/resources/fundingLogos/venmo_white.svg"), venmo_white_default = __webpack_require__.n(venmo_white), venmo_blue = __webpack_require__("./src/resources/fundingLogos/venmo_blue.svg"), venmo_blue_default = __webpack_require__.n(venmo_blue), ideal = __webpack_require__("./src/resources/fundingLogos/ideal.svg"), ideal_default = __webpack_require__.n(ideal), elv = __webpack_require__("./src/resources/fundingLogos/elv.svg"), elv_default = __webpack_require__.n(elv), elv_white = __webpack_require__("./src/resources/fundingLogos/elv_white.svg"), elv_white_default = __webpack_require__.n(elv_white), bancontact = __webpack_require__("./src/resources/fundingLogos/bancontact.svg"), bancontact_default = __webpack_require__.n(bancontact), bancontact_white = __webpack_require__("./src/resources/fundingLogos/bancontact_white.svg"), bancontact_white_default = __webpack_require__.n(bancontact_white), giropay = __webpack_require__("./src/resources/fundingLogos/giropay.svg"), giropay_default = __webpack_require__.n(giropay), giropay_white = __webpack_require__("./src/resources/fundingLogos/giropay_white.svg"), giropay_white_default = __webpack_require__.n(giropay_white), eps = __webpack_require__("./src/resources/fundingLogos/eps.svg"), eps_default = __webpack_require__.n(eps), eps_white = __webpack_require__("./src/resources/fundingLogos/eps_white.svg"), eps_white_default = __webpack_require__.n(eps_white), mybank = __webpack_require__("./src/resources/fundingLogos/mybank.svg"), mybank_default = __webpack_require__.n(mybank), mybank_white = __webpack_require__("./src/resources/fundingLogos/mybank_white.svg"), mybank_white_default = __webpack_require__.n(mybank_white);
-        function fundingLogos__defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var _cardLogos, fundingLogos = (fundingLogos__defineProperty(_fundingLogos = {}, constants.h.PP, (fundingLogos__defineProperty(_BUTTON_LOGO$PP = {}, constants.i.WHITE, pp_white_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$PP, constants.i.BLUE, pp_blue_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$PP, constants.i.BLACK, pp_black_default.a), 
-        _BUTTON_LOGO$PP)), fundingLogos__defineProperty(_fundingLogos, constants.h.PAYPAL, (fundingLogos__defineProperty(_BUTTON_LOGO$PAYPAL = {}, constants.i.WHITE, paypal_white_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$PAYPAL, constants.i.BLUE, paypal_blue_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$PAYPAL, constants.i.BLACK, paypal_black_default.a), 
-        _BUTTON_LOGO$PAYPAL)), fundingLogos__defineProperty(_fundingLogos, constants.h.CREDIT, fundingLogos__defineProperty({}, constants.i.WHITE, credit_white_default.a)), 
-        fundingLogos__defineProperty(_fundingLogos, constants.h.VENMO, (fundingLogos__defineProperty(_BUTTON_LOGO$VENMO = {}, constants.i.WHITE, venmo_white_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$VENMO, constants.i.BLUE, venmo_blue_default.a), 
-        _BUTTON_LOGO$VENMO)), fundingLogos__defineProperty(_fundingLogos, constants.h.IDEAL, fundingLogos__defineProperty({}, constants.i.ANY, ideal_default.a)), 
-        fundingLogos__defineProperty(_fundingLogos, constants.h.ELV, (fundingLogos__defineProperty(_BUTTON_LOGO$ELV = {}, constants.i.ANY, elv_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$ELV, constants.i.WHITE, elv_white_default.a), 
-        _BUTTON_LOGO$ELV)), fundingLogos__defineProperty(_fundingLogos, constants.h.BANCONTACT, (fundingLogos__defineProperty(_BUTTON_LOGO$BANCONTA = {}, constants.i.ANY, bancontact_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$BANCONTA, constants.i.WHITE, bancontact_white_default.a), 
-        _BUTTON_LOGO$BANCONTA)), fundingLogos__defineProperty(_fundingLogos, constants.h.GIROPAY, (fundingLogos__defineProperty(_BUTTON_LOGO$GIROPAY = {}, constants.i.ANY, giropay_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$GIROPAY, constants.i.WHITE, giropay_white_default.a), 
-        _BUTTON_LOGO$GIROPAY)), fundingLogos__defineProperty(_fundingLogos, constants.h.EPS, (fundingLogos__defineProperty(_BUTTON_LOGO$EPS = {}, constants.i.ANY, eps_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$EPS, constants.i.WHITE, eps_white_default.a), 
-        _BUTTON_LOGO$EPS)), fundingLogos__defineProperty(_fundingLogos, constants.h.MYBANK, (fundingLogos__defineProperty(_BUTTON_LOGO$MYBANK = {}, constants.i.ANY, mybank_default.a), 
-        fundingLogos__defineProperty(_BUTTON_LOGO$MYBANK, constants.i.WHITE, mybank_white_default.a), 
-        _BUTTON_LOGO$MYBANK)), _fundingLogos), visa = __webpack_require__("./src/resources/cardLogos/visa.svg"), visa_default = __webpack_require__.n(visa), amex = __webpack_require__("./src/resources/cardLogos/amex.svg"), amex_default = __webpack_require__.n(amex), mastercard = __webpack_require__("./src/resources/cardLogos/mastercard.svg"), mastercard_default = __webpack_require__.n(mastercard), discover = __webpack_require__("./src/resources/cardLogos/discover.svg"), discover_default = __webpack_require__.n(discover), hiper = __webpack_require__("./src/resources/cardLogos/hiper.svg"), hiper_default = __webpack_require__.n(hiper), elo = __webpack_require__("./src/resources/cardLogos/elo.svg"), elo_default = __webpack_require__.n(elo), jcb = __webpack_require__("./src/resources/cardLogos/jcb.svg"), jcb_default = __webpack_require__.n(jcb);
-        function cardLogos__defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var cardLogos = (cardLogos__defineProperty(_cardLogos = {}, constants.o.VISA, visa_default.a), 
-        cardLogos__defineProperty(_cardLogos, constants.o.AMEX, amex_default.a), cardLogos__defineProperty(_cardLogos, constants.o.MASTERCARD, mastercard_default.a), 
-        cardLogos__defineProperty(_cardLogos, constants.o.DISCOVER, discover_default.a), 
-        cardLogos__defineProperty(_cardLogos, constants.o.HIPER, hiper_default.a), cardLogos__defineProperty(_cardLogos, constants.o.ELO, elo_default.a), 
-        cardLogos__defineProperty(_cardLogos, constants.o.JCB, jcb_default.a), _cardLogos), config = __webpack_require__("./src/config/index.js"), validate__slicedToArray = function() {
-            return function(arr, i) {
-                if (Array.isArray(arr)) return arr;
-                if (Symbol.iterator in Object(arr)) return function(arr, i) {
-                    var _arr = [], _n = !0, _d = !1, _e = void 0;
-                    try {
-                        for (var _s, _i = arr[Symbol.iterator](); !(_n = (_s = _i.next()).done); _n = !0) {
-                            _arr.push(_s.value);
-                            if (i && _arr.length === i) break;
-                        }
-                    } catch (err) {
-                        _d = !0;
-                        _e = err;
-                    } finally {
-                        try {
-                            !_n && _i.return && _i.return();
-                        } finally {
-                            if (_d) throw _e;
-                        }
-                    }
-                    return _arr;
-                }(arr, i);
-                throw new TypeError("Invalid attempt to destructure non-iterable instance");
-            };
-        }();
+        var _BUTTON_LOGO$PP, _BUTTON_LOGO$PAYPAL, _BUTTON_LOGO$CREDIT, _BUTTON_LOGO$VENMO, _BUTTON_LOGO$IDEAL, _BUTTON_LOGO$ELV, _BUTTON_LOGO$BANCONTA, _BUTTON_LOGO$GIROPAY, _BUTTON_LOGO$EPS, _BUTTON_LOGO$MYBANK, _fundingLogos, _cardLogos, pp_white = __webpack_require__("./src/resources/fundingLogos/pp_white.svg"), pp_white_default = __webpack_require__.n(pp_white), pp_blue = __webpack_require__("./src/resources/fundingLogos/pp_blue.svg"), pp_blue_default = __webpack_require__.n(pp_blue), pp_black = __webpack_require__("./src/resources/fundingLogos/pp_black.svg"), pp_black_default = __webpack_require__.n(pp_black), paypal_white = __webpack_require__("./src/resources/fundingLogos/paypal_white.svg"), paypal_white_default = __webpack_require__.n(paypal_white), paypal_blue = __webpack_require__("./src/resources/fundingLogos/paypal_blue.svg"), paypal_blue_default = __webpack_require__.n(paypal_blue), paypal_black = __webpack_require__("./src/resources/fundingLogos/paypal_black.svg"), paypal_black_default = __webpack_require__.n(paypal_black), credit_white = __webpack_require__("./src/resources/fundingLogos/credit_white.svg"), credit_white_default = __webpack_require__.n(credit_white), venmo_white = __webpack_require__("./src/resources/fundingLogos/venmo_white.svg"), venmo_white_default = __webpack_require__.n(venmo_white), venmo_blue = __webpack_require__("./src/resources/fundingLogos/venmo_blue.svg"), venmo_blue_default = __webpack_require__.n(venmo_blue), ideal = __webpack_require__("./src/resources/fundingLogos/ideal.svg"), ideal_default = __webpack_require__.n(ideal), elv = __webpack_require__("./src/resources/fundingLogos/elv.svg"), elv_default = __webpack_require__.n(elv), elv_white = __webpack_require__("./src/resources/fundingLogos/elv_white.svg"), elv_white_default = __webpack_require__.n(elv_white), bancontact = __webpack_require__("./src/resources/fundingLogos/bancontact.svg"), bancontact_default = __webpack_require__.n(bancontact), bancontact_white = __webpack_require__("./src/resources/fundingLogos/bancontact_white.svg"), bancontact_white_default = __webpack_require__.n(bancontact_white), giropay = __webpack_require__("./src/resources/fundingLogos/giropay.svg"), giropay_default = __webpack_require__.n(giropay), giropay_white = __webpack_require__("./src/resources/fundingLogos/giropay_white.svg"), giropay_white_default = __webpack_require__.n(giropay_white), eps = __webpack_require__("./src/resources/fundingLogos/eps.svg"), eps_default = __webpack_require__.n(eps), eps_white = __webpack_require__("./src/resources/fundingLogos/eps_white.svg"), eps_white_default = __webpack_require__.n(eps_white), mybank = __webpack_require__("./src/resources/fundingLogos/mybank.svg"), mybank_default = __webpack_require__.n(mybank), mybank_white = __webpack_require__("./src/resources/fundingLogos/mybank_white.svg"), mybank_white_default = __webpack_require__.n(mybank_white), fundingLogos = ((_fundingLogos = {})[constants.h.PP] = ((_BUTTON_LOGO$PP = {})[constants.i.WHITE] = pp_white_default.a, 
+        _BUTTON_LOGO$PP[constants.i.BLUE] = pp_blue_default.a, _BUTTON_LOGO$PP[constants.i.BLACK] = pp_black_default.a, 
+        _BUTTON_LOGO$PP), _fundingLogos[constants.h.PAYPAL] = ((_BUTTON_LOGO$PAYPAL = {})[constants.i.WHITE] = paypal_white_default.a, 
+        _BUTTON_LOGO$PAYPAL[constants.i.BLUE] = paypal_blue_default.a, _BUTTON_LOGO$PAYPAL[constants.i.BLACK] = paypal_black_default.a, 
+        _BUTTON_LOGO$PAYPAL), _fundingLogos[constants.h.CREDIT] = ((_BUTTON_LOGO$CREDIT = {})[constants.i.WHITE] = credit_white_default.a, 
+        _BUTTON_LOGO$CREDIT), _fundingLogos[constants.h.VENMO] = ((_BUTTON_LOGO$VENMO = {})[constants.i.WHITE] = venmo_white_default.a, 
+        _BUTTON_LOGO$VENMO[constants.i.BLUE] = venmo_blue_default.a, _BUTTON_LOGO$VENMO), 
+        _fundingLogos[constants.h.IDEAL] = ((_BUTTON_LOGO$IDEAL = {})[constants.i.ANY] = ideal_default.a, 
+        _BUTTON_LOGO$IDEAL), _fundingLogos[constants.h.ELV] = ((_BUTTON_LOGO$ELV = {})[constants.i.ANY] = elv_default.a, 
+        _BUTTON_LOGO$ELV[constants.i.WHITE] = elv_white_default.a, _BUTTON_LOGO$ELV), _fundingLogos[constants.h.BANCONTACT] = ((_BUTTON_LOGO$BANCONTA = {})[constants.i.ANY] = bancontact_default.a, 
+        _BUTTON_LOGO$BANCONTA[constants.i.WHITE] = bancontact_white_default.a, _BUTTON_LOGO$BANCONTA), 
+        _fundingLogos[constants.h.GIROPAY] = ((_BUTTON_LOGO$GIROPAY = {})[constants.i.ANY] = giropay_default.a, 
+        _BUTTON_LOGO$GIROPAY[constants.i.WHITE] = giropay_white_default.a, _BUTTON_LOGO$GIROPAY), 
+        _fundingLogos[constants.h.EPS] = ((_BUTTON_LOGO$EPS = {})[constants.i.ANY] = eps_default.a, 
+        _BUTTON_LOGO$EPS[constants.i.WHITE] = eps_white_default.a, _BUTTON_LOGO$EPS), _fundingLogos[constants.h.MYBANK] = ((_BUTTON_LOGO$MYBANK = {})[constants.i.ANY] = mybank_default.a, 
+        _BUTTON_LOGO$MYBANK[constants.i.WHITE] = mybank_white_default.a, _BUTTON_LOGO$MYBANK), 
+        _fundingLogos), visa = __webpack_require__("./src/resources/cardLogos/visa.svg"), visa_default = __webpack_require__.n(visa), amex = __webpack_require__("./src/resources/cardLogos/amex.svg"), amex_default = __webpack_require__.n(amex), mastercard = __webpack_require__("./src/resources/cardLogos/mastercard.svg"), mastercard_default = __webpack_require__.n(mastercard), discover = __webpack_require__("./src/resources/cardLogos/discover.svg"), discover_default = __webpack_require__.n(discover), hiper = __webpack_require__("./src/resources/cardLogos/hiper.svg"), hiper_default = __webpack_require__.n(hiper), elo = __webpack_require__("./src/resources/cardLogos/elo.svg"), elo_default = __webpack_require__.n(elo), jcb = __webpack_require__("./src/resources/cardLogos/jcb.svg"), jcb_default = __webpack_require__.n(jcb), cardLogos = ((_cardLogos = {})[constants.o.VISA] = visa_default.a, 
+        _cardLogos[constants.o.AMEX] = amex_default.a, _cardLogos[constants.o.MASTERCARD] = mastercard_default.a, 
+        _cardLogos[constants.o.DISCOVER] = discover_default.a, _cardLogos[constants.o.HIPER] = hiper_default.a, 
+        _cardLogos[constants.o.ELO] = elo_default.a, _cardLogos[constants.o.JCB] = jcb_default.a, 
+        _cardLogos), config = __webpack_require__("./src/config/index.js");
         function validateButtonStyle() {
             var style = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, props = arguments[1];
             if (!style) throw new Error("Expected props.style to be set");
@@ -1683,7 +1520,7 @@
             !function(locale) {
                 if (!locale) throw new Error("Expected props.locale to be set");
                 if (!locale.match(/^[a-z]{2}[_][A-Z][A-Z0-9]$/)) throw new Error("Expected props.locale to be valid, got " + locale);
-                var _locale$split = locale.split("_"), _locale$split2 = validate__slicedToArray(_locale$split, 2), lang = _locale$split2[0], country = _locale$split2[1];
+                var _locale$split = locale.split("_"), lang = _locale$split[0], country = _locale$split[1];
                 if (!config.a.locales[country] || -1 === config.a.locales[country].indexOf(lang)) throw new Error("Expected props.locale to be valid");
             }(locale);
             validateButtonStyle(style, props);
@@ -1812,8 +1649,8 @@
             };
         }
         var template_content = __webpack_require__("./src/button/template/content.json"), content_default = __webpack_require__.n(template_content), componentContent = "string" == typeof content_default.a ? JSON.parse(content_default.a) : content_default.a;
-        __webpack_exports__.componentTemplate = function(_ref13) {
-            var props = _ref13.props;
+        __webpack_exports__.componentTemplate = function(_ref12) {
+            var _ref13, props = _ref12.props;
             if (props && props.style) {
                 var style = props.style;
                 "generic" === style.label && (style.label = "paypal");
@@ -1837,8 +1674,8 @@
                 sources: sources,
                 multiple: multiple
             }).map(function(button, i) {
-                return function(_ref9) {
-                    var _ref10, label = _ref9.label, color = _ref9.color, locale = _ref9.locale, branding = _ref9.branding, multiple = _ref9.multiple, layout = _ref9.layout, shape = _ref9.shape, source = _ref9.source, funding = _ref9.funding, i = _ref9.i, env = _ref9.env, cards = _ref9.cards, installmentperiod = _ref9.installmentperiod, logoColor = getButtonConfig(label, "logoColors")[color], contentText = getButtonConfig(label, multiple ? "logoLabel" : "label"), dynamicContent = {
+                return function(_ref8) {
+                    var _ref9, label = _ref8.label, color = _ref8.color, locale = _ref8.locale, branding = _ref8.branding, multiple = _ref8.multiple, layout = _ref8.layout, shape = _ref8.shape, source = _ref8.source, funding = _ref8.funding, i = _ref8.i, env = _ref8.env, cards = _ref8.cards, installmentperiod = _ref8.installmentperiod, logoColor = getButtonConfig(label, "logoColors")[color], contentText = getButtonConfig(label, multiple ? "logoLabel" : "label"), dynamicContent = {
                         installmentperiod: installmentperiod
                     };
                     contentText = renderContent(contentText = "function" == typeof contentText ? contentText(dynamicContent) : contentText, {
@@ -1852,8 +1689,8 @@
                         cards: cards,
                         dynamicContent: dynamicContent
                     });
-                    return jsxToHTML("div", _extends({}, (componentTemplate__defineProperty(_ref10 = {}, constants.c.FUNDING_SOURCE, source), 
-                    componentTemplate__defineProperty(_ref10, constants.c.BUTTON, !0), _ref10), {
+                    return jsxToHTML("div", _extends({}, ((_ref9 = {})[constants.c.FUNDING_SOURCE] = source, 
+                    _ref9[constants.c.BUTTON] = !0, _ref9), {
                         class: CLASS.BUTTON + " " + CLASS.NUMBER + "-" + i + " " + getCommonButtonClasses({
                             layout: layout,
                             shape: shape,
@@ -1887,8 +1724,8 @@
                     cards: cards,
                     installmentperiod: installmentperiod
                 });
-            }), taglineNode = function(_ref11) {
-                var label = _ref11.label, tagline = _ref11.tagline, color = _ref11.color, locale = _ref11.locale, multiple = _ref11.multiple, env = _ref11.env, cards = _ref11.cards;
+            }), taglineNode = function(_ref10) {
+                var label = _ref10.label, tagline = _ref10.tagline, color = _ref10.color, locale = _ref10.locale, multiple = _ref10.multiple, env = _ref10.env, cards = _ref10.cards;
                 if (!tagline) return;
                 var text = renderContent(multiple && getButtonConfig(label, "dualTag") || getButtonConfig(label, "tag"), {
                     locale: locale,
@@ -1921,8 +1758,8 @@
             }({
                 cards: cards,
                 fundingicons: fundingicons
-            }), styleNode = function(_ref12) {
-                var height = _ref12.height, cardNumber = _ref12.cardNumber;
+            }), styleNode = function(_ref11) {
+                var height = _ref11.height, cardNumber = _ref11.cardNumber;
                 return jsxToHTML("style", {
                     innerHTML: componentStyle({
                         height: height,
@@ -1938,7 +1775,8 @@
                 })) + ")();"
             }));
             var script;
-            return jsxToHTML("div", _extends({}, componentTemplate__defineProperty({}, constants.c.VERSION, "4.0.203"), {
+            return jsxToHTML("div", _extends({}, (_ref13 = {}, _ref13[constants.c.VERSION] = "4.0.203", 
+            _ref13), {
                 class: CLASS.CONTAINER + " " + getCommonButtonClasses({
                     layout: layout,
                     shape: shape,
@@ -1955,15 +1793,6 @@
             }
             return target;
         };
-        function componentTemplate__defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
         function getCommonButtonClasses(_ref) {
             var layout = _ref.layout, shape = _ref.shape, branding = _ref.branding, multiple = _ref.multiple, env = _ref.env;
             return [ CLASS.LAYOUT + "-" + layout, CLASS.SHAPE + "-" + shape, CLASS.BRANDING + "-" + (branding ? constants.d.BRANDED : constants.d.UNBRANDED), CLASS.NUMBER + "-" + (multiple ? constants.j.MULTIPLE : constants.j.SINGLE), CLASS.ENV + "-" + env ].join(" ");
@@ -1972,9 +1801,9 @@
             var cards = _ref4.cards, button = _ref4.button;
             return cards.map(function(name) {
                 var _ref5, logo = cardLogos[name];
-                return jsxToHTML("img", _extends({}, (componentTemplate__defineProperty(_ref5 = {}, constants.c.BUTTON, button || !1), 
-                componentTemplate__defineProperty(_ref5, constants.c.FUNDING_SOURCE, "" + constants.t.CARD), 
-                componentTemplate__defineProperty(_ref5, constants.c.CARD, "" + name), _ref5), {
+                return jsxToHTML("img", _extends({}, ((_ref5 = {})[constants.c.BUTTON] = button || !1, 
+                _ref5[constants.c.FUNDING_SOURCE] = "" + constants.t.CARD, _ref5[constants.c.CARD] = "" + name, 
+                _ref5), {
                     class: CLASS.CARD + " " + CLASS.CARD + "-" + name + " " + (button ? CLASS.BUTTON : ""),
                     src: "data:image/svg+xml;base64," + Object(base64.btoa)(logo),
                     alt: name
@@ -2004,17 +1833,8 @@
                     }
                 },
                 content: function(name) {
-                    var contentString = void 0, _iterator = name.split("|"), _isArray = Array.isArray(_iterator), _i = 0;
-                    for (_iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
-                        var _ref8;
-                        if (_isArray) {
-                            if (_i >= _iterator.length) break;
-                            _ref8 = _iterator[_i++];
-                        } else {
-                            if ((_i = _iterator.next()).done) break;
-                            _ref8 = _i.value;
-                        }
-                        var key = _ref8;
+                    for (var contentString = void 0, _i2 = 0, _name$split2 = name.split("|"), _length2 = null == _name$split2 ? 0 : _name$split2.length; _i2 < _length2; _i2++) {
+                        var key = _name$split2[_i2];
                         if (_content[key]) {
                             contentString = _content[key];
                             break;
@@ -2065,17 +1885,7 @@
     },
     "./src/config/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var _checkoutUris, _altpayUris, _guestUris, _billingUris, _buttonUris, _inlinedCardFieldUris, _postBridgeUris, _legacyCheckoutUris, _buttonJSUrls, _locales, constants = __webpack_require__("./src/constants/index.js");
-        function _defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var config = {
+        var _checkoutUris, _altpayUris, _guestUris, _billingUris, _buttonUris, _inlinedCardFieldUris, _postBridgeUris, _legacyCheckoutUris, _buttonJSUrls, _locales, constants = __webpack_require__("./src/constants/index.js"), config = {
             scriptUrl: "//www.paypalobjects.com/api/checkout.button.render.js",
             paypal_domain_regex: /^(https?|mock):\/\/[a-zA-Z0-9_.-]+\.paypal\.com(:\d+)?$/,
             version: "4.0.203",
@@ -2223,89 +2033,81 @@
             },
             get paypalUrls() {
                 var _ref;
-                return _defineProperty(_ref = {}, constants.s.LOCAL, "http://localhost.paypal.com:" + config.ports.default), 
-                _defineProperty(_ref, constants.s.STAGE, "https://www." + config.stageUrl), _defineProperty(_ref, constants.s.SANDBOX, "https://www.sandbox.paypal.com"), 
-                _defineProperty(_ref, constants.s.PRODUCTION, "https://www.paypal.com"), _defineProperty(_ref, constants.s.TEST, window.location.protocol + "//" + window.location.host), 
-                _defineProperty(_ref, constants.s.DEMO, window.location.protocol + "//localhost.paypal.com:" + window.location.port), 
+                return (_ref = {})[constants.s.LOCAL] = "http://localhost.paypal.com:" + config.ports.default, 
+                _ref[constants.s.STAGE] = "https://www." + config.stageUrl, _ref[constants.s.SANDBOX] = "https://www.sandbox.paypal.com", 
+                _ref[constants.s.PRODUCTION] = "https://www.paypal.com", _ref[constants.s.TEST] = window.location.protocol + "//" + window.location.host, 
+                _ref[constants.s.DEMO] = window.location.protocol + "//localhost.paypal.com:" + window.location.port, 
                 _ref;
             },
             get paypalDomains() {
                 var _ref2;
-                return _defineProperty(_ref2 = {}, constants.s.LOCAL, "http://localhost.paypal.com:" + config.ports.default), 
-                _defineProperty(_ref2, constants.s.STAGE, "https://www." + config.stageUrl), _defineProperty(_ref2, constants.s.SANDBOX, "https://www.sandbox.paypal.com"), 
-                _defineProperty(_ref2, constants.s.PRODUCTION, "https://www.paypal.com"), _defineProperty(_ref2, constants.s.TEST, "mock://www.paypal.com"), 
-                _defineProperty(_ref2, constants.s.DEMO, window.location.protocol + "//localhost.paypal.com:" + window.location.port), 
+                return (_ref2 = {})[constants.s.LOCAL] = "http://localhost.paypal.com:" + config.ports.default, 
+                _ref2[constants.s.STAGE] = "https://www." + config.stageUrl, _ref2[constants.s.SANDBOX] = "https://www.sandbox.paypal.com", 
+                _ref2[constants.s.PRODUCTION] = "https://www.paypal.com", _ref2[constants.s.TEST] = "mock://www.paypal.com", 
+                _ref2[constants.s.DEMO] = window.location.protocol + "//localhost.paypal.com:" + window.location.port, 
                 _ref2;
             },
             get wwwApiUrls() {
                 var _ref3;
-                return _defineProperty(_ref3 = {}, constants.s.LOCAL, "https://www." + config.stageUrl), 
-                _defineProperty(_ref3, constants.s.STAGE, "https://www." + config.stageUrl), _defineProperty(_ref3, constants.s.SANDBOX, "https://www.sandbox.paypal.com"), 
-                _defineProperty(_ref3, constants.s.PRODUCTION, "https://www.paypal.com"), _defineProperty(_ref3, constants.s.TEST, window.location.protocol + "//" + window.location.host), 
+                return (_ref3 = {})[constants.s.LOCAL] = "https://www." + config.stageUrl, _ref3[constants.s.STAGE] = "https://www." + config.stageUrl, 
+                _ref3[constants.s.SANDBOX] = "https://www.sandbox.paypal.com", _ref3[constants.s.PRODUCTION] = "https://www.paypal.com", 
+                _ref3[constants.s.TEST] = window.location.protocol + "//" + window.location.host, 
                 _ref3;
             },
             get corsApiUrls() {
                 var _ref4;
-                return _defineProperty(_ref4 = {}, constants.s.LOCAL, "https://" + config.apiStageUrl + ":12326"), 
-                _defineProperty(_ref4, constants.s.STAGE, "https://" + config.apiStageUrl + ":12326"), 
-                _defineProperty(_ref4, constants.s.SANDBOX, "https://cors.api.sandbox.paypal.com"), 
-                _defineProperty(_ref4, constants.s.PRODUCTION, "https://cors.api.paypal.com"), _defineProperty(_ref4, constants.s.TEST, window.location.protocol + "//" + window.location.host), 
+                return (_ref4 = {})[constants.s.LOCAL] = "https://" + config.apiStageUrl + ":12326", 
+                _ref4[constants.s.STAGE] = "https://" + config.apiStageUrl + ":12326", _ref4[constants.s.SANDBOX] = "https://cors.api.sandbox.paypal.com", 
+                _ref4[constants.s.PRODUCTION] = "https://cors.api.paypal.com", _ref4[constants.s.TEST] = window.location.protocol + "//" + window.location.host, 
                 _ref4;
             },
             get apiUrls() {
                 var _ref5, domain = window.location.protocol + "//" + window.location.host, corsApiUrls = config.corsApiUrls, wwwApiUrls = config.wwwApiUrls;
-                return _defineProperty(_ref5 = {}, constants.s.LOCAL, domain === wwwApiUrls.local ? wwwApiUrls.local : corsApiUrls.local), 
-                _defineProperty(_ref5, constants.s.STAGE, domain === wwwApiUrls.stage ? wwwApiUrls.stage : corsApiUrls.stage), 
-                _defineProperty(_ref5, constants.s.SANDBOX, domain === wwwApiUrls.sandbox ? wwwApiUrls.sandbox : corsApiUrls.sandbox), 
-                _defineProperty(_ref5, constants.s.PRODUCTION, domain === wwwApiUrls.production ? wwwApiUrls.production : corsApiUrls.production), 
-                _defineProperty(_ref5, constants.s.TEST, domain === wwwApiUrls.test ? wwwApiUrls.test : corsApiUrls.test), 
+                return (_ref5 = {})[constants.s.LOCAL] = domain === wwwApiUrls.local ? wwwApiUrls.local : corsApiUrls.local, 
+                _ref5[constants.s.STAGE] = domain === wwwApiUrls.stage ? wwwApiUrls.stage : corsApiUrls.stage, 
+                _ref5[constants.s.SANDBOX] = domain === wwwApiUrls.sandbox ? wwwApiUrls.sandbox : corsApiUrls.sandbox, 
+                _ref5[constants.s.PRODUCTION] = domain === wwwApiUrls.production ? wwwApiUrls.production : corsApiUrls.production, 
+                _ref5[constants.s.TEST] = domain === wwwApiUrls.test ? wwwApiUrls.test : corsApiUrls.test, 
                 _ref5;
             },
-            checkoutUris: (_checkoutUris = {}, _defineProperty(_checkoutUris, constants.s.LOCAL, "/webapps/hermes?ul=0"), 
-            _defineProperty(_checkoutUris, constants.s.STAGE, "/webapps/hermes"), _defineProperty(_checkoutUris, constants.s.SANDBOX, "/checkoutnow"), 
-            _defineProperty(_checkoutUris, constants.s.PRODUCTION, "/checkoutnow"), _defineProperty(_checkoutUris, constants.s.TEST, "/base/test/windows/checkout/index.htm?checkouturl=true"), 
-            _defineProperty(_checkoutUris, constants.s.DEMO, "/demo/dev/checkout.htm"), _checkoutUris),
-            altpayUris: (_altpayUris = {}, _defineProperty(_altpayUris, constants.s.LOCAL, "/latinumcheckout"), 
-            _defineProperty(_altpayUris, constants.s.STAGE, "/latinumcheckout"), _defineProperty(_altpayUris, constants.s.SANDBOX, "/latinumcheckout"), 
-            _defineProperty(_altpayUris, constants.s.PRODUCTION, "/latinumcheckout"), _defineProperty(_altpayUris, constants.s.TEST, "/base/test/windows/checkout/index.htm?checkouturl=true"), 
-            _defineProperty(_altpayUris, constants.s.DEMO, "/demo/dev/checkout.htm"), _altpayUris),
-            guestUris: (_guestUris = {}, _defineProperty(_guestUris, constants.s.LOCAL, "/webapps/xoonboarding"), 
-            _defineProperty(_guestUris, constants.s.STAGE, "/webapps/xoonboarding"), _defineProperty(_guestUris, constants.s.SANDBOX, "/webapps/xoonboarding"), 
-            _defineProperty(_guestUris, constants.s.PRODUCTION, "/webapps/xoonboarding"), _defineProperty(_guestUris, constants.s.TEST, "/base/test/windows/checkout/index.htm?guesturl=true"), 
-            _defineProperty(_guestUris, constants.s.DEMO, "/demo/dev/guest.htm"), _guestUris),
-            billingUris: (_billingUris = {}, _defineProperty(_billingUris, constants.s.LOCAL, "/webapps/hermes/agreements?ul=0"), 
-            _defineProperty(_billingUris, constants.s.STAGE, "/webapps/hermes/agreements"), 
-            _defineProperty(_billingUris, constants.s.SANDBOX, "/agreements/approve"), _defineProperty(_billingUris, constants.s.PRODUCTION, "/agreements/approve"), 
-            _defineProperty(_billingUris, constants.s.TEST, "/base/test/windows/checkout/index.htm?billingurl=true"), 
-            _defineProperty(_billingUris, constants.s.DEMO, "/demo/dev/checkout.htm"), _billingUris),
-            buttonUris: (_buttonUris = {}, _defineProperty(_buttonUris, constants.s.LOCAL, "/webapps/hermes/button"), 
-            _defineProperty(_buttonUris, constants.s.STAGE, "/webapps/hermes/button"), _defineProperty(_buttonUris, constants.s.SANDBOX, "/webapps/hermes/button"), 
-            _defineProperty(_buttonUris, constants.s.PRODUCTION, "/webapps/hermes/button"), 
-            _defineProperty(_buttonUris, constants.s.TEST, "/base/test/windows/button/index.htm"), 
-            _defineProperty(_buttonUris, constants.s.DEMO, "/demo/dev/button.htm"), _buttonUris),
-            inlinedCardFieldUris: (_inlinedCardFieldUris = {}, _defineProperty(_inlinedCardFieldUris, constants.s.LOCAL, "/webapps/hermes/card-fields"), 
-            _defineProperty(_inlinedCardFieldUris, constants.s.STAGE, "/webapps/hermes/card-fields"), 
-            _defineProperty(_inlinedCardFieldUris, constants.s.SANDBOX, "/webapps/hermes/card-fields"), 
-            _defineProperty(_inlinedCardFieldUris, constants.s.PRODUCTION, "/webapps/hermes/card-fields"), 
-            _defineProperty(_inlinedCardFieldUris, constants.s.TEST, "/base/test/windows/card-fields/index.htm"), 
-            _defineProperty(_inlinedCardFieldUris, constants.s.DEMO, "/demo/dev/card.htm"), 
-            _inlinedCardFieldUris),
-            postBridgeUris: (_postBridgeUris = {}, _defineProperty(_postBridgeUris, constants.s.LOCAL, "/webapps/hermes/component-meta"), 
-            _defineProperty(_postBridgeUris, constants.s.STAGE, "/webapps/hermes/component-meta"), 
-            _defineProperty(_postBridgeUris, constants.s.SANDBOX, "/webapps/hermes/component-meta"), 
-            _defineProperty(_postBridgeUris, constants.s.PRODUCTION, "/webapps/hermes/component-meta"), 
-            _defineProperty(_postBridgeUris, constants.s.TEST, "/base/test/windows/component-meta/index.htm"), 
-            _defineProperty(_postBridgeUris, constants.s.DEMO, "/demo/dev/bridge.htm"), _postBridgeUris),
-            legacyCheckoutUris: (_legacyCheckoutUris = {}, _defineProperty(_legacyCheckoutUris, constants.s.LOCAL, "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true"), 
-            _defineProperty(_legacyCheckoutUris, constants.s.STAGE, "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true"), 
-            _defineProperty(_legacyCheckoutUris, constants.s.SANDBOX, "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true"), 
-            _defineProperty(_legacyCheckoutUris, constants.s.PRODUCTION, "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true"), 
-            _defineProperty(_legacyCheckoutUris, constants.s.TEST, "#fallback"), _legacyCheckoutUris),
-            buttonJSUrls: (_buttonJSUrls = {}, _defineProperty(_buttonJSUrls, constants.s.LOCAL, "https://www.paypalobjects.com/api/button.js"), 
-            _defineProperty(_buttonJSUrls, constants.s.STAGE, "https://www.paypalobjects.com/api/button.js"), 
-            _defineProperty(_buttonJSUrls, constants.s.SANDBOX, "https://www.paypalobjects.com/api/button.js"), 
-            _defineProperty(_buttonJSUrls, constants.s.PRODUCTION, "https://www.paypalobjects.com/api/button.js"), 
-            _defineProperty(_buttonJSUrls, constants.s.TEST, "/base/test/lib/button.js"), _defineProperty(_buttonJSUrls, constants.s.DEMO, "https://www.paypalobjects.com/api/button.js"), 
+            checkoutUris: (_checkoutUris = {}, _checkoutUris[constants.s.LOCAL] = "/webapps/hermes?ul=0", 
+            _checkoutUris[constants.s.STAGE] = "/webapps/hermes", _checkoutUris[constants.s.SANDBOX] = "/checkoutnow", 
+            _checkoutUris[constants.s.PRODUCTION] = "/checkoutnow", _checkoutUris[constants.s.TEST] = "/base/test/windows/checkout/index.htm?checkouturl=true", 
+            _checkoutUris[constants.s.DEMO] = "/demo/dev/checkout.htm", _checkoutUris),
+            altpayUris: (_altpayUris = {}, _altpayUris[constants.s.LOCAL] = "/latinumcheckout", 
+            _altpayUris[constants.s.STAGE] = "/latinumcheckout", _altpayUris[constants.s.SANDBOX] = "/latinumcheckout", 
+            _altpayUris[constants.s.PRODUCTION] = "/latinumcheckout", _altpayUris[constants.s.TEST] = "/base/test/windows/checkout/index.htm?checkouturl=true", 
+            _altpayUris[constants.s.DEMO] = "/demo/dev/checkout.htm", _altpayUris),
+            guestUris: (_guestUris = {}, _guestUris[constants.s.LOCAL] = "/webapps/xoonboarding", 
+            _guestUris[constants.s.STAGE] = "/webapps/xoonboarding", _guestUris[constants.s.SANDBOX] = "/webapps/xoonboarding", 
+            _guestUris[constants.s.PRODUCTION] = "/webapps/xoonboarding", _guestUris[constants.s.TEST] = "/base/test/windows/checkout/index.htm?guesturl=true", 
+            _guestUris[constants.s.DEMO] = "/demo/dev/guest.htm", _guestUris),
+            billingUris: (_billingUris = {}, _billingUris[constants.s.LOCAL] = "/webapps/hermes/agreements?ul=0", 
+            _billingUris[constants.s.STAGE] = "/webapps/hermes/agreements", _billingUris[constants.s.SANDBOX] = "/agreements/approve", 
+            _billingUris[constants.s.PRODUCTION] = "/agreements/approve", _billingUris[constants.s.TEST] = "/base/test/windows/checkout/index.htm?billingurl=true", 
+            _billingUris[constants.s.DEMO] = "/demo/dev/checkout.htm", _billingUris),
+            buttonUris: (_buttonUris = {}, _buttonUris[constants.s.LOCAL] = "/webapps/hermes/button", 
+            _buttonUris[constants.s.STAGE] = "/webapps/hermes/button", _buttonUris[constants.s.SANDBOX] = "/webapps/hermes/button", 
+            _buttonUris[constants.s.PRODUCTION] = "/webapps/hermes/button", _buttonUris[constants.s.TEST] = "/base/test/windows/button/index.htm", 
+            _buttonUris[constants.s.DEMO] = "/demo/dev/button.htm", _buttonUris),
+            inlinedCardFieldUris: (_inlinedCardFieldUris = {}, _inlinedCardFieldUris[constants.s.LOCAL] = "/webapps/hermes/card-fields", 
+            _inlinedCardFieldUris[constants.s.STAGE] = "/webapps/hermes/card-fields", _inlinedCardFieldUris[constants.s.SANDBOX] = "/webapps/hermes/card-fields", 
+            _inlinedCardFieldUris[constants.s.PRODUCTION] = "/webapps/hermes/card-fields", _inlinedCardFieldUris[constants.s.TEST] = "/base/test/windows/card-fields/index.htm", 
+            _inlinedCardFieldUris[constants.s.DEMO] = "/demo/dev/card.htm", _inlinedCardFieldUris),
+            postBridgeUris: (_postBridgeUris = {}, _postBridgeUris[constants.s.LOCAL] = "/webapps/hermes/component-meta", 
+            _postBridgeUris[constants.s.STAGE] = "/webapps/hermes/component-meta", _postBridgeUris[constants.s.SANDBOX] = "/webapps/hermes/component-meta", 
+            _postBridgeUris[constants.s.PRODUCTION] = "/webapps/hermes/component-meta", _postBridgeUris[constants.s.TEST] = "/base/test/windows/component-meta/index.htm", 
+            _postBridgeUris[constants.s.DEMO] = "/demo/dev/bridge.htm", _postBridgeUris),
+            legacyCheckoutUris: (_legacyCheckoutUris = {}, _legacyCheckoutUris[constants.s.LOCAL] = "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true", 
+            _legacyCheckoutUris[constants.s.STAGE] = "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true", 
+            _legacyCheckoutUris[constants.s.SANDBOX] = "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true", 
+            _legacyCheckoutUris[constants.s.PRODUCTION] = "/cgi-bin/webscr?cmd=_express-checkout&xo_node_fallback=true", 
+            _legacyCheckoutUris[constants.s.TEST] = "#fallback", _legacyCheckoutUris),
+            buttonJSUrls: (_buttonJSUrls = {}, _buttonJSUrls[constants.s.LOCAL] = "https://www.paypalobjects.com/api/button.js", 
+            _buttonJSUrls[constants.s.STAGE] = "https://www.paypalobjects.com/api/button.js", 
+            _buttonJSUrls[constants.s.SANDBOX] = "https://www.paypalobjects.com/api/button.js", 
+            _buttonJSUrls[constants.s.PRODUCTION] = "https://www.paypalobjects.com/api/button.js", 
+            _buttonJSUrls[constants.s.TEST] = "/base/test/lib/button.js", _buttonJSUrls[constants.s.DEMO] = "https://www.paypalobjects.com/api/button.js", 
             _buttonJSUrls),
             get buttonJSUrl() {
                 return config.buttonJSUrls[config.env];
@@ -2325,147 +2127,123 @@
             trackingApiUri: "/v1/risk/transaction-contexts",
             get checkoutUrls() {
                 var _ref6, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref6 = {}, constants.s.LOCAL, "" + paypalUrls.local + config.checkoutUris.local.replace(":" + config.ports.default, ":" + config.ports.checkout)), 
-                _defineProperty(_ref6, constants.s.STAGE, "" + paypalUrls.stage + config.checkoutUris.stage), 
-                _defineProperty(_ref6, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.checkoutUris.sandbox), 
-                _defineProperty(_ref6, constants.s.PRODUCTION, "" + paypalUrls.production + config.checkoutUris.production), 
-                _defineProperty(_ref6, constants.s.TEST, "" + paypalUrls.test + config.checkoutUris.test), 
-                _defineProperty(_ref6, constants.s.DEMO, "" + paypalUrls.test + config.checkoutUris.demo), 
+                return (_ref6 = {})[constants.s.LOCAL] = "" + paypalUrls.local + config.checkoutUris.local.replace(":" + config.ports.default, ":" + config.ports.checkout), 
+                _ref6[constants.s.STAGE] = "" + paypalUrls.stage + config.checkoutUris.stage, _ref6[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.checkoutUris.sandbox, 
+                _ref6[constants.s.PRODUCTION] = "" + paypalUrls.production + config.checkoutUris.production, 
+                _ref6[constants.s.TEST] = "" + paypalUrls.test + config.checkoutUris.test, _ref6[constants.s.DEMO] = "" + paypalUrls.test + config.checkoutUris.demo, 
                 _ref6;
             },
             get guestUrls() {
                 var _ref7, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref7 = {}, constants.s.LOCAL, "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.guest) + config.guestUris.local), 
-                _defineProperty(_ref7, constants.s.STAGE, "" + paypalUrls.stage + config.guestUris.stage), 
-                _defineProperty(_ref7, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.guestUris.sandbox), 
-                _defineProperty(_ref7, constants.s.PRODUCTION, "" + paypalUrls.production + config.guestUris.production), 
-                _defineProperty(_ref7, constants.s.TEST, "" + paypalUrls.test + config.guestUris.test), 
-                _defineProperty(_ref7, constants.s.DEMO, "" + paypalUrls.test + config.guestUris.demo), 
+                return (_ref7 = {})[constants.s.LOCAL] = "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.guest) + config.guestUris.local, 
+                _ref7[constants.s.STAGE] = "" + paypalUrls.stage + config.guestUris.stage, _ref7[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.guestUris.sandbox, 
+                _ref7[constants.s.PRODUCTION] = "" + paypalUrls.production + config.guestUris.production, 
+                _ref7[constants.s.TEST] = "" + paypalUrls.test + config.guestUris.test, _ref7[constants.s.DEMO] = "" + paypalUrls.test + config.guestUris.demo, 
                 _ref7;
             },
             get altpayUrls() {
                 var _ref8, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref8 = {}, constants.s.LOCAL, "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.altpay) + config.altpayUris.local), 
-                _defineProperty(_ref8, constants.s.STAGE, "" + paypalUrls.stage + config.altpayUris.stage), 
-                _defineProperty(_ref8, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.altpayUris.sandbox), 
-                _defineProperty(_ref8, constants.s.PRODUCTION, "" + paypalUrls.production + config.altpayUris.production), 
-                _defineProperty(_ref8, constants.s.TEST, "" + paypalUrls.test + config.altpayUris.test), 
-                _defineProperty(_ref8, constants.s.DEMO, "" + paypalUrls.test + config.altpayUris.demo), 
+                return (_ref8 = {})[constants.s.LOCAL] = "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.altpay) + config.altpayUris.local, 
+                _ref8[constants.s.STAGE] = "" + paypalUrls.stage + config.altpayUris.stage, _ref8[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.altpayUris.sandbox, 
+                _ref8[constants.s.PRODUCTION] = "" + paypalUrls.production + config.altpayUris.production, 
+                _ref8[constants.s.TEST] = "" + paypalUrls.test + config.altpayUris.test, _ref8[constants.s.DEMO] = "" + paypalUrls.test + config.altpayUris.demo, 
                 _ref8;
             },
             get billingUrls() {
                 var _ref9, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref9 = {}, constants.s.LOCAL, "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.checkout) + config.billingUris.local), 
-                _defineProperty(_ref9, constants.s.STAGE, "" + paypalUrls.stage + config.billingUris.stage), 
-                _defineProperty(_ref9, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.billingUris.sandbox), 
-                _defineProperty(_ref9, constants.s.PRODUCTION, "" + paypalUrls.production + config.billingUris.production), 
-                _defineProperty(_ref9, constants.s.TEST, "" + paypalUrls.test + config.billingUris.test), 
-                _defineProperty(_ref9, constants.s.DEMO, "" + paypalUrls.test + config.billingUris.demo), 
+                return (_ref9 = {})[constants.s.LOCAL] = "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.checkout) + config.billingUris.local, 
+                _ref9[constants.s.STAGE] = "" + paypalUrls.stage + config.billingUris.stage, _ref9[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.billingUris.sandbox, 
+                _ref9[constants.s.PRODUCTION] = "" + paypalUrls.production + config.billingUris.production, 
+                _ref9[constants.s.TEST] = "" + paypalUrls.test + config.billingUris.test, _ref9[constants.s.DEMO] = "" + paypalUrls.test + config.billingUris.demo, 
                 _ref9;
             },
             get buttonUrls() {
                 var _ref10, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref10 = {}, constants.s.LOCAL, "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.button) + config.buttonUris.local), 
-                _defineProperty(_ref10, constants.s.STAGE, "" + paypalUrls.stage + config.buttonUris.stage), 
-                _defineProperty(_ref10, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.buttonUris.sandbox), 
-                _defineProperty(_ref10, constants.s.PRODUCTION, "" + paypalUrls.production + config.buttonUris.production), 
-                _defineProperty(_ref10, constants.s.TEST, "" + paypalUrls.test + config.buttonUris.test), 
-                _defineProperty(_ref10, constants.s.DEMO, "" + paypalUrls.demo + config.buttonUris.demo), 
+                return (_ref10 = {})[constants.s.LOCAL] = "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.button) + config.buttonUris.local, 
+                _ref10[constants.s.STAGE] = "" + paypalUrls.stage + config.buttonUris.stage, _ref10[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.buttonUris.sandbox, 
+                _ref10[constants.s.PRODUCTION] = "" + paypalUrls.production + config.buttonUris.production, 
+                _ref10[constants.s.TEST] = "" + paypalUrls.test + config.buttonUris.test, _ref10[constants.s.DEMO] = "" + paypalUrls.demo + config.buttonUris.demo, 
                 _ref10;
             },
             get inlinedCardFieldUrls() {
                 var _ref11, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref11 = {}, constants.s.LOCAL, "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.button) + config.inlinedCardFieldUris.local), 
-                _defineProperty(_ref11, constants.s.STAGE, "" + paypalUrls.stage + config.inlinedCardFieldUris.stage), 
-                _defineProperty(_ref11, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.inlinedCardFieldUris.sandbox), 
-                _defineProperty(_ref11, constants.s.PRODUCTION, "" + paypalUrls.production + config.inlinedCardFieldUris.production), 
-                _defineProperty(_ref11, constants.s.TEST, "" + paypalUrls.test + config.inlinedCardFieldUris.test), 
-                _defineProperty(_ref11, constants.s.DEMO, "" + paypalUrls.demo + config.inlinedCardFieldUris.demo), 
+                return (_ref11 = {})[constants.s.LOCAL] = "" + paypalUrls.local.replace(":" + config.ports.default, ":" + config.ports.button) + config.inlinedCardFieldUris.local, 
+                _ref11[constants.s.STAGE] = "" + paypalUrls.stage + config.inlinedCardFieldUris.stage, 
+                _ref11[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.inlinedCardFieldUris.sandbox, 
+                _ref11[constants.s.PRODUCTION] = "" + paypalUrls.production + config.inlinedCardFieldUris.production, 
+                _ref11[constants.s.TEST] = "" + paypalUrls.test + config.inlinedCardFieldUris.test, 
+                _ref11[constants.s.DEMO] = "" + paypalUrls.demo + config.inlinedCardFieldUris.demo, 
                 _ref11;
             },
             get loginUrls() {
                 var _ref12, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref12 = {}, constants.s.LOCAL, "" + paypalUrls.stage + config.loginUri), 
-                _defineProperty(_ref12, constants.s.STAGE, "" + paypalUrls.stage + config.loginUri), 
-                _defineProperty(_ref12, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.loginUri), 
-                _defineProperty(_ref12, constants.s.PRODUCTION, "" + paypalUrls.production + config.loginUri), 
-                _defineProperty(_ref12, constants.s.TEST, "" + paypalUrls.test + config.loginUri), 
+                return (_ref12 = {})[constants.s.LOCAL] = "" + paypalUrls.stage + config.loginUri, 
+                _ref12[constants.s.STAGE] = "" + paypalUrls.stage + config.loginUri, _ref12[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.loginUri, 
+                _ref12[constants.s.PRODUCTION] = "" + paypalUrls.production + config.loginUri, _ref12[constants.s.TEST] = "" + paypalUrls.test + config.loginUri, 
                 _ref12;
             },
             get paymentsStandardUrls() {
                 var _ref13, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref13 = {}, constants.s.LOCAL, "" + paypalUrls.local + config.paymentStandardUri), 
-                _defineProperty(_ref13, constants.s.STAGE, "" + paypalUrls.stage + config.paymentStandardUri), 
-                _defineProperty(_ref13, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.paymentStandardUri), 
-                _defineProperty(_ref13, constants.s.PRODUCTION, "" + paypalUrls.production + config.paymentStandardUri), 
-                _defineProperty(_ref13, constants.s.TEST, "" + paypalUrls.test + config.paymentStandardUri), 
-                _ref13;
+                return (_ref13 = {})[constants.s.LOCAL] = "" + paypalUrls.local + config.paymentStandardUri, 
+                _ref13[constants.s.STAGE] = "" + paypalUrls.stage + config.paymentStandardUri, _ref13[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.paymentStandardUri, 
+                _ref13[constants.s.PRODUCTION] = "" + paypalUrls.production + config.paymentStandardUri, 
+                _ref13[constants.s.TEST] = "" + paypalUrls.test + config.paymentStandardUri, _ref13;
             },
             get metaFrameUrls() {
                 var _ref14, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref14 = {}, constants.s.LOCAL, "" + paypalUrls.local + config.postBridgeUri + "&env=local"), 
-                _defineProperty(_ref14, constants.s.STAGE, "" + paypalUrls.stage + config.postBridgeUri + "&env=stage&stage=" + config.stage), 
-                _defineProperty(_ref14, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.postBridgeUri + "&env=sandbox"), 
-                _defineProperty(_ref14, constants.s.PRODUCTION, "" + paypalUrls.production + config.postBridgeUri + "&env=production"), 
-                _defineProperty(_ref14, constants.s.TEST, "" + paypalUrls.test + config.postBridgeUri + "&env=test"), 
-                _defineProperty(_ref14, constants.s.DEMO, "" + paypalUrls.demo + config.postBridgeUri + "&env=demo"), 
+                return (_ref14 = {})[constants.s.LOCAL] = "" + paypalUrls.local + config.postBridgeUri + "&env=local", 
+                _ref14[constants.s.STAGE] = "" + paypalUrls.stage + config.postBridgeUri + "&env=stage&stage=" + config.stage, 
+                _ref14[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.postBridgeUri + "&env=sandbox", 
+                _ref14[constants.s.PRODUCTION] = "" + paypalUrls.production + config.postBridgeUri + "&env=production", 
+                _ref14[constants.s.TEST] = "" + paypalUrls.test + config.postBridgeUri + "&env=test", 
+                _ref14[constants.s.DEMO] = "" + paypalUrls.demo + config.postBridgeUri + "&env=demo", 
                 _ref14;
             },
             get legacyCheckoutUrls() {
                 var _ref15, paypalUrls = config.paypalUrls;
-                return _defineProperty(_ref15 = {}, constants.s.LOCAL, "" + paypalUrls.stage + config.legacyCheckoutUris.local), 
-                _defineProperty(_ref15, constants.s.STAGE, "" + paypalUrls.stage + config.legacyCheckoutUris.stage), 
-                _defineProperty(_ref15, constants.s.SANDBOX, "" + paypalUrls.sandbox + config.legacyCheckoutUris.sandbox), 
-                _defineProperty(_ref15, constants.s.PRODUCTION, "" + paypalUrls.production + config.legacyCheckoutUris.production), 
-                _defineProperty(_ref15, constants.s.TEST, "" + paypalUrls.test + config.legacyCheckoutUris.test), 
+                return (_ref15 = {})[constants.s.LOCAL] = "" + paypalUrls.stage + config.legacyCheckoutUris.local, 
+                _ref15[constants.s.STAGE] = "" + paypalUrls.stage + config.legacyCheckoutUris.stage, 
+                _ref15[constants.s.SANDBOX] = "" + paypalUrls.sandbox + config.legacyCheckoutUris.sandbox, 
+                _ref15[constants.s.PRODUCTION] = "" + paypalUrls.production + config.legacyCheckoutUris.production, 
+                _ref15[constants.s.TEST] = "" + paypalUrls.test + config.legacyCheckoutUris.test, 
                 _ref15;
             },
             get authApiUrls() {
                 var _ref16, apiUrls = config.apiUrls, authApiUri = config.authApiUri;
-                return _defineProperty(_ref16 = {}, constants.s.LOCAL, "" + apiUrls.local + authApiUri), 
-                _defineProperty(_ref16, constants.s.STAGE, "" + apiUrls.stage + authApiUri), _defineProperty(_ref16, constants.s.SANDBOX, "" + apiUrls.sandbox + authApiUri), 
-                _defineProperty(_ref16, constants.s.PRODUCTION, "" + apiUrls.production + authApiUri), 
-                _defineProperty(_ref16, constants.s.TEST, "" + apiUrls.test + authApiUri), _ref16;
+                return (_ref16 = {})[constants.s.LOCAL] = "" + apiUrls.local + authApiUri, _ref16[constants.s.STAGE] = "" + apiUrls.stage + authApiUri, 
+                _ref16[constants.s.SANDBOX] = "" + apiUrls.sandbox + authApiUri, _ref16[constants.s.PRODUCTION] = "" + apiUrls.production + authApiUri, 
+                _ref16[constants.s.TEST] = "" + apiUrls.test + authApiUri, _ref16;
             },
             get paymentApiUrls() {
                 var _ref17, apiUrls = config.apiUrls, paymentApiUri = config.paymentApiUri;
-                return _defineProperty(_ref17 = {}, constants.s.LOCAL, "" + apiUrls.local + paymentApiUri), 
-                _defineProperty(_ref17, constants.s.STAGE, "" + apiUrls.stage + paymentApiUri), 
-                _defineProperty(_ref17, constants.s.SANDBOX, "" + apiUrls.sandbox + paymentApiUri), 
-                _defineProperty(_ref17, constants.s.PRODUCTION, "" + apiUrls.production + paymentApiUri), 
-                _defineProperty(_ref17, constants.s.TEST, "" + apiUrls.test + paymentApiUri), _ref17;
+                return (_ref17 = {})[constants.s.LOCAL] = "" + apiUrls.local + paymentApiUri, _ref17[constants.s.STAGE] = "" + apiUrls.stage + paymentApiUri, 
+                _ref17[constants.s.SANDBOX] = "" + apiUrls.sandbox + paymentApiUri, _ref17[constants.s.PRODUCTION] = "" + apiUrls.production + paymentApiUri, 
+                _ref17[constants.s.TEST] = "" + apiUrls.test + paymentApiUri, _ref17;
             },
             get orderApiUrls() {
                 var _ref18, apiUrls = config.apiUrls, orderApiUri = config.orderApiUri;
-                return _defineProperty(_ref18 = {}, constants.s.LOCAL, "" + apiUrls.local + orderApiUri), 
-                _defineProperty(_ref18, constants.s.STAGE, "" + apiUrls.stage + orderApiUri), _defineProperty(_ref18, constants.s.SANDBOX, "" + apiUrls.sandbox + orderApiUri), 
-                _defineProperty(_ref18, constants.s.PRODUCTION, "" + apiUrls.production + orderApiUri), 
-                _defineProperty(_ref18, constants.s.TEST, "" + apiUrls.test + orderApiUri), _ref18;
+                return (_ref18 = {})[constants.s.LOCAL] = "" + apiUrls.local + orderApiUri, _ref18[constants.s.STAGE] = "" + apiUrls.stage + orderApiUri, 
+                _ref18[constants.s.SANDBOX] = "" + apiUrls.sandbox + orderApiUri, _ref18[constants.s.PRODUCTION] = "" + apiUrls.production + orderApiUri, 
+                _ref18[constants.s.TEST] = "" + apiUrls.test + orderApiUri, _ref18;
             },
             get billingApiUrls() {
                 var _ref19, apiUrls = config.apiUrls, billingApiUri = config.billingApiUri;
-                return _defineProperty(_ref19 = {}, constants.s.LOCAL, "" + apiUrls.local + billingApiUri), 
-                _defineProperty(_ref19, constants.s.STAGE, "" + apiUrls.stage + billingApiUri), 
-                _defineProperty(_ref19, constants.s.SANDBOX, "" + apiUrls.sandbox + billingApiUri), 
-                _defineProperty(_ref19, constants.s.PRODUCTION, "" + apiUrls.production + billingApiUri), 
-                _defineProperty(_ref19, constants.s.TEST, "" + apiUrls.test + billingApiUri), _ref19;
+                return (_ref19 = {})[constants.s.LOCAL] = "" + apiUrls.local + billingApiUri, _ref19[constants.s.STAGE] = "" + apiUrls.stage + billingApiUri, 
+                _ref19[constants.s.SANDBOX] = "" + apiUrls.sandbox + billingApiUri, _ref19[constants.s.PRODUCTION] = "" + apiUrls.production + billingApiUri, 
+                _ref19[constants.s.TEST] = "" + apiUrls.test + billingApiUri, _ref19;
             },
             get experienceApiUrls() {
                 var _ref20, apiUrls = config.apiUrls, experienceApiUri = config.experienceApiUri;
-                return _defineProperty(_ref20 = {}, constants.s.LOCAL, "" + apiUrls.local + experienceApiUri), 
-                _defineProperty(_ref20, constants.s.STAGE, "" + apiUrls.stage + experienceApiUri), 
-                _defineProperty(_ref20, constants.s.SANDBOX, "" + apiUrls.sandbox + experienceApiUri), 
-                _defineProperty(_ref20, constants.s.PRODUCTION, "" + apiUrls.production + experienceApiUri), 
-                _defineProperty(_ref20, constants.s.TEST, "" + apiUrls.test + experienceApiUri), 
+                return (_ref20 = {})[constants.s.LOCAL] = "" + apiUrls.local + experienceApiUri, 
+                _ref20[constants.s.STAGE] = "" + apiUrls.stage + experienceApiUri, _ref20[constants.s.SANDBOX] = "" + apiUrls.sandbox + experienceApiUri, 
+                _ref20[constants.s.PRODUCTION] = "" + apiUrls.production + experienceApiUri, _ref20[constants.s.TEST] = "" + apiUrls.test + experienceApiUri, 
                 _ref20;
             },
             get trackingApiUrls() {
                 var _ref21, apiUrls = config.apiUrls, trackingApiUri = config.trackingApiUri;
-                return _defineProperty(_ref21 = {}, constants.s.LOCAL, "" + apiUrls.local + trackingApiUri), 
-                _defineProperty(_ref21, constants.s.STAGE, "" + apiUrls.stage + trackingApiUri), 
-                _defineProperty(_ref21, constants.s.SANDBOX, "" + apiUrls.sandbox + trackingApiUri), 
-                _defineProperty(_ref21, constants.s.PRODUCTION, "" + apiUrls.production + trackingApiUri), 
-                _defineProperty(_ref21, constants.s.TEST, "" + apiUrls.test + trackingApiUri), _ref21;
+                return (_ref21 = {})[constants.s.LOCAL] = "" + apiUrls.local + trackingApiUri, _ref21[constants.s.STAGE] = "" + apiUrls.stage + trackingApiUri, 
+                _ref21[constants.s.SANDBOX] = "" + apiUrls.sandbox + trackingApiUri, _ref21[constants.s.PRODUCTION] = "" + apiUrls.production + trackingApiUri, 
+                _ref21[constants.s.TEST] = "" + apiUrls.test + trackingApiUri, _ref21;
             },
             _paypalUrl: "",
             get paypalUrl() {
@@ -2530,161 +2308,160 @@
                 country: constants.q.US,
                 lang: constants.v.EN
             },
-            locales: (_locales = {}, _defineProperty(_locales, constants.q.AD, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AE, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH, constants.v.AR ]), 
-            _defineProperty(_locales, constants.q.AG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AI, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AL, [ constants.v.EN ]), _defineProperty(_locales, constants.q.AM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AN, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AO, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AR, [ constants.v.ES, constants.v.EN ]), _defineProperty(_locales, constants.q.AT, [ constants.v.DE, constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.AU, [ constants.v.EN ]), _defineProperty(_locales, constants.q.AW, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.AZ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BA, [ constants.v.EN ]), _defineProperty(_locales, constants.q.BB, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BE, [ constants.v.EN, constants.v.NL, constants.v.FR ]), 
-            _defineProperty(_locales, constants.q.BF, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BG, [ constants.v.EN ]), _defineProperty(_locales, constants.q.BH, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BI, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BJ, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BN, [ constants.v.EN ]), _defineProperty(_locales, constants.q.BO, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BR, [ constants.v.PT, constants.v.EN ]), _defineProperty(_locales, constants.q.BS, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BT, [ constants.v.EN ]), _defineProperty(_locales, constants.q.BW, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.BY, [ constants.v.EN ]), _defineProperty(_locales, constants.q.BZ, [ constants.v.EN, constants.v.ES, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.C2, [ constants.v.ZH, constants.v.EN ]), _defineProperty(_locales, constants.q.CA, [ constants.v.EN, constants.v.FR ]), 
-            _defineProperty(_locales, constants.q.CD, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CH, [ constants.v.DE, constants.v.FR, constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.CI, [ constants.v.FR, constants.v.EN ]), _defineProperty(_locales, constants.q.CK, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CL, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CM, [ constants.v.FR, constants.v.EN ]), _defineProperty(_locales, constants.q.CN, [ constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CO, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CR, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CV, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.CY, [ constants.v.EN ]), _defineProperty(_locales, constants.q.CZ, [ constants.v.CS, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.DE, [ constants.v.DE, constants.v.EN ]), _defineProperty(_locales, constants.q.DJ, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.DK, [ constants.v.DA, constants.v.EN ]), _defineProperty(_locales, constants.q.DM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.DO, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.DZ, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.EC, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.EE, [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.EG, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ER, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ES, [ constants.v.ES, constants.v.EN ]), _defineProperty(_locales, constants.q.ET, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.FI, [ constants.v.FI, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.FJ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.FK, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.FM, [ constants.v.EN ]), _defineProperty(_locales, constants.q.FO, [ constants.v.DA, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.FR, [ constants.v.FR, constants.v.EN ]), _defineProperty(_locales, constants.q.GA, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GB, [ constants.v.EN ]), _defineProperty(_locales, constants.q.GD, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GE, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GF, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GI, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GL, [ constants.v.DA, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GN, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GP, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GR, [ constants.v.EL, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GT, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GW, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.GY, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.HK, [ constants.v.EN, constants.v.ZH ]), _defineProperty(_locales, constants.q.HN, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.HR, [ constants.v.EN ]), _defineProperty(_locales, constants.q.HU, [ constants.v.HU, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ID, [ constants.v.ID, constants.v.EN ]), _defineProperty(_locales, constants.q.IE, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.IL, [ constants.v.HE, constants.v.EN ]), _defineProperty(_locales, constants.q.IN, [ constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.IS, [ constants.v.EN ]), _defineProperty(_locales, constants.q.IT, [ constants.v.IT, constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.JM, [ constants.v.EN, constants.v.ES, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.JO, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.JP, [ constants.v.JA, constants.v.EN ]), _defineProperty(_locales, constants.q.KE, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KH, [ constants.v.EN ]), _defineProperty(_locales, constants.q.KI, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KM, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KN, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KR, [ constants.v.KO, constants.v.EN ]), _defineProperty(_locales, constants.q.KW, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KY, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.KZ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.LA, [ constants.v.EN ]), _defineProperty(_locales, constants.q.LC, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.LI, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.LK, [ constants.v.EN ]), _defineProperty(_locales, constants.q.LS, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.LT, [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.LU, [ constants.v.EN, constants.v.DE, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.LV, [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MA, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MC, [ constants.v.FR, constants.v.EN ]), _defineProperty(_locales, constants.q.MD, [ constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.ME, [ constants.v.EN ]), _defineProperty(_locales, constants.q.MG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MH, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MK, [ constants.v.EN ]), _defineProperty(_locales, constants.q.ML, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MN, [ constants.v.EN ]), _defineProperty(_locales, constants.q.MQ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MR, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MS, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MT, [ constants.v.EN ]), _defineProperty(_locales, constants.q.MU, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MV, [ constants.v.EN ]), _defineProperty(_locales, constants.q.MW, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.MX, [ constants.v.ES, constants.v.EN ]), _defineProperty(_locales, constants.q.MY, [ constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.MZ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NA, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NC, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NE, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NF, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NG, [ constants.v.EN ]), _defineProperty(_locales, constants.q.NI, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NL, [ constants.v.NL, constants.v.EN ]), _defineProperty(_locales, constants.q.NO, [ constants.v.NO, constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.NP, [ constants.v.EN ]), _defineProperty(_locales, constants.q.NR, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NU, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.NZ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.OM, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PA, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PE, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PF, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PH, [ constants.v.EN ]), _defineProperty(_locales, constants.q.PL, [ constants.v.PL, constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.PM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PN, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PT, [ constants.v.PT, constants.v.EN ]), _defineProperty(_locales, constants.q.PW, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.PY, [ constants.v.ES, constants.v.EN ]), _defineProperty(_locales, constants.q.QA, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH, constants.v.AR ]), 
-            _defineProperty(_locales, constants.q.RE, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.RO, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.RS, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.RU, [ constants.v.RU, constants.v.EN ]), _defineProperty(_locales, constants.q.RW, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SA, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SB, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SC, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SE, [ constants.v.SV, constants.v.EN ]), _defineProperty(_locales, constants.q.SG, [ constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.SH, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SI, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SJ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SK, [ constants.v.SK, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SL, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SN, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SO, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SR, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ST, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SV, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.SZ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TC, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TD, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TG, [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TH, [ constants.v.TH, constants.v.EN ]), _defineProperty(_locales, constants.q.TJ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TN, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TO, [ constants.v.EN ]), _defineProperty(_locales, constants.q.TR, [ constants.v.TR, constants.v.EN ]), 
-            _defineProperty(_locales, constants.q.TT, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TV, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.TW, [ constants.v.ZH, constants.v.EN ]), _defineProperty(_locales, constants.q.TZ, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.UA, [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.UG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.US, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.UY, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.VA, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.VC, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.VE, [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.VG, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.VN, [ constants.v.EN ]), _defineProperty(_locales, constants.q.VU, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.WF, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.WS, [ constants.v.EN ]), _defineProperty(_locales, constants.q.YE, [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.YT, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ZA, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ZM, [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ]), 
-            _defineProperty(_locales, constants.q.ZW, [ constants.v.EN ]), _locales)
+            locales: (_locales = {}, _locales[constants.q.AD] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AE] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH, constants.v.AR ], 
+            _locales[constants.q.AG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AI] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AL] = [ constants.v.EN ], _locales[constants.q.AM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AN] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AO] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AR] = [ constants.v.ES, constants.v.EN ], _locales[constants.q.AT] = [ constants.v.DE, constants.v.EN ], 
+            _locales[constants.q.AU] = [ constants.v.EN ], _locales[constants.q.AW] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.AZ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BA] = [ constants.v.EN ], _locales[constants.q.BB] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BE] = [ constants.v.EN, constants.v.NL, constants.v.FR ], _locales[constants.q.BF] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BG] = [ constants.v.EN ], _locales[constants.q.BH] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BI] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BJ] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BN] = [ constants.v.EN ], _locales[constants.q.BO] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.BR] = [ constants.v.PT, constants.v.EN ], _locales[constants.q.BS] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BT] = [ constants.v.EN ], _locales[constants.q.BW] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.BY] = [ constants.v.EN ], _locales[constants.q.BZ] = [ constants.v.EN, constants.v.ES, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.C2] = [ constants.v.ZH, constants.v.EN ], _locales[constants.q.CA] = [ constants.v.EN, constants.v.FR ], 
+            _locales[constants.q.CD] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.CG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.CH] = [ constants.v.DE, constants.v.FR, constants.v.EN ], _locales[constants.q.CI] = [ constants.v.FR, constants.v.EN ], 
+            _locales[constants.q.CK] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.CL] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.CM] = [ constants.v.FR, constants.v.EN ], _locales[constants.q.CN] = [ constants.v.ZH ], 
+            _locales[constants.q.CO] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.CR] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.CV] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.CY] = [ constants.v.EN ], _locales[constants.q.CZ] = [ constants.v.CS, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.DE] = [ constants.v.DE, constants.v.EN ], _locales[constants.q.DJ] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.DK] = [ constants.v.DA, constants.v.EN ], _locales[constants.q.DM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.DO] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.DZ] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.EC] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.EE] = [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.EG] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ER] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ES] = [ constants.v.ES, constants.v.EN ], _locales[constants.q.ET] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.FI] = [ constants.v.FI, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.FJ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.FK] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.FM] = [ constants.v.EN ], _locales[constants.q.FO] = [ constants.v.DA, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.FR] = [ constants.v.FR, constants.v.EN ], _locales[constants.q.GA] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GB] = [ constants.v.EN ], _locales[constants.q.GD] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GE] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GF] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GI] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GL] = [ constants.v.DA, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GN] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GP] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GR] = [ constants.v.EL, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GT] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.GW] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.GY] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.HK] = [ constants.v.EN, constants.v.ZH ], _locales[constants.q.HN] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.HR] = [ constants.v.EN ], _locales[constants.q.HU] = [ constants.v.HU, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ID] = [ constants.v.ID, constants.v.EN ], _locales[constants.q.IE] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.IL] = [ constants.v.HE, constants.v.EN ], _locales[constants.q.IN] = [ constants.v.EN ], 
+            _locales[constants.q.IS] = [ constants.v.EN ], _locales[constants.q.IT] = [ constants.v.IT, constants.v.EN ], 
+            _locales[constants.q.JM] = [ constants.v.EN, constants.v.ES, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.JO] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.JP] = [ constants.v.JA, constants.v.EN ], _locales[constants.q.KE] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KH] = [ constants.v.EN ], _locales[constants.q.KI] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KM] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KN] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KR] = [ constants.v.KO, constants.v.EN ], _locales[constants.q.KW] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KY] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.KZ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.LA] = [ constants.v.EN ], _locales[constants.q.LC] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.LI] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.LK] = [ constants.v.EN ], _locales[constants.q.LS] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.LT] = [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.LU] = [ constants.v.EN, constants.v.DE, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.LV] = [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MA] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MC] = [ constants.v.FR, constants.v.EN ], _locales[constants.q.MD] = [ constants.v.EN ], 
+            _locales[constants.q.ME] = [ constants.v.EN ], _locales[constants.q.MG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MH] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MK] = [ constants.v.EN ], _locales[constants.q.ML] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MN] = [ constants.v.EN ], _locales[constants.q.MQ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MR] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MS] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MT] = [ constants.v.EN ], _locales[constants.q.MU] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MV] = [ constants.v.EN ], _locales[constants.q.MW] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.MX] = [ constants.v.ES, constants.v.EN ], _locales[constants.q.MY] = [ constants.v.EN ], 
+            _locales[constants.q.MZ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NA] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NC] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NE] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NF] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NG] = [ constants.v.EN ], _locales[constants.q.NI] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.NL] = [ constants.v.NL, constants.v.EN ], _locales[constants.q.NO] = [ constants.v.NO, constants.v.EN ], 
+            _locales[constants.q.NP] = [ constants.v.EN ], _locales[constants.q.NR] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NU] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.NZ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.OM] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.PA] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.PE] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.PF] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.PG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.PH] = [ constants.v.EN ], _locales[constants.q.PL] = [ constants.v.PL, constants.v.EN ], 
+            _locales[constants.q.PM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.PN] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.PT] = [ constants.v.PT, constants.v.EN ], _locales[constants.q.PW] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.PY] = [ constants.v.ES, constants.v.EN ], _locales[constants.q.QA] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH, constants.v.AR ], 
+            _locales[constants.q.RE] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.RO] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.RS] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.RU] = [ constants.v.RU, constants.v.EN ], _locales[constants.q.RW] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SA] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SB] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SC] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SE] = [ constants.v.SV, constants.v.EN ], _locales[constants.q.SG] = [ constants.v.EN ], 
+            _locales[constants.q.SH] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SI] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SJ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SK] = [ constants.v.SK, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SL] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SN] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SO] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SR] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ST] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.SV] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.SZ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TC] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TD] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TG] = [ constants.v.FR, constants.v.EN, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TH] = [ constants.v.TH, constants.v.EN ], _locales[constants.q.TJ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TN] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TO] = [ constants.v.EN ], _locales[constants.q.TR] = [ constants.v.TR, constants.v.EN ], 
+            _locales[constants.q.TT] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TV] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.TW] = [ constants.v.ZH, constants.v.EN ], _locales[constants.q.TZ] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.UA] = [ constants.v.EN, constants.v.RU, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.UG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.US] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.UY] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.VA] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.VC] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.VE] = [ constants.v.ES, constants.v.EN, constants.v.FR, constants.v.ZH ], 
+            _locales[constants.q.VG] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.VN] = [ constants.v.EN ], _locales[constants.q.VU] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.WF] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.WS] = [ constants.v.EN ], _locales[constants.q.YE] = [ constants.v.AR, constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.YT] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ZA] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ZM] = [ constants.v.EN, constants.v.FR, constants.v.ES, constants.v.ZH ], 
+            _locales[constants.q.ZW] = [ constants.v.EN ], _locales)
         };
         __webpack_require__.d(__webpack_exports__, "a", function() {
             return config;
@@ -2692,7 +2469,7 @@
     },
     "./src/constants/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var _CONTEXT_TYPE, BUTTON_STYLE_OPTIONS = {
+        var _CONTEXT_TYPE, _LANG_TO_DEFAULT_COUN, BUTTON_STYLE_OPTIONS = {
             LABEL: "label",
             SIZE: "size",
             SHAPE: "shape",
@@ -2835,17 +2612,7 @@
         }, PLATFORM = {
             DESKTOP: "desktop",
             MOBILE: "mobile"
-        };
-        function _defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var _LANG_TO_DEFAULT_COUN, FPTI = {
+        }, FPTI = {
             KEY: {
                 FEED: "feed_name",
                 STATE: "state_name",
@@ -2883,8 +2650,8 @@
             },
             CONTEXT_TYPE: (_CONTEXT_TYPE = {
                 BUTTON_SESSION_ID: "button_session_id"
-            }, _defineProperty(_CONTEXT_TYPE, PAYMENT_TYPE.PAY_ID, "Pay-ID"), _defineProperty(_CONTEXT_TYPE, PAYMENT_TYPE.EC_TOKEN, "EC-Token"), 
-            _defineProperty(_CONTEXT_TYPE, PAYMENT_TYPE.BA_TOKEN, "EC-Token"), _CONTEXT_TYPE),
+            }, _CONTEXT_TYPE[PAYMENT_TYPE.PAY_ID] = "Pay-ID", _CONTEXT_TYPE[PAYMENT_TYPE.EC_TOKEN] = "EC-Token", 
+            _CONTEXT_TYPE[PAYMENT_TYPE.BA_TOKEN] = "EC-Token", _CONTEXT_TYPE),
             FEED: {
                 CHECKOUTJS: "checkoutjs"
             },
@@ -2912,17 +2679,7 @@
                 PPTM_LOADED: "process_pptm_loaded",
                 PXP: "process_pxp_check"
             }
-        };
-        function country__defineProperty(obj, key, value) {
-            key in obj ? Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: !0,
-                configurable: !0,
-                writable: !0
-            }) : obj[key] = value;
-            return obj;
-        }
-        var COUNTRY = {
+        }, COUNTRY = {
             AD: "AD",
             AE: "AE",
             AG: "AG",
@@ -3153,19 +2910,19 @@
             TH: "th",
             TR: "tr",
             ZH: "zh"
-        }, LANG_TO_DEFAULT_COUNTRY = (country__defineProperty(_LANG_TO_DEFAULT_COUN = {}, LANG.AR, COUNTRY.SA), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.CS, COUNTRY.CZ), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.DA, COUNTRY.DK), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.DE, COUNTRY.DE), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.EL, COUNTRY.GR), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.EN, COUNTRY.US), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.ES, COUNTRY.ES), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.FI, COUNTRY.FI), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.FR, COUNTRY.FR), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.HE, COUNTRY.IL), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.HU, COUNTRY.HU), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.ID, COUNTRY.ID), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.IT, COUNTRY.IT), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.JA, COUNTRY.JP), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.KO, COUNTRY.KR), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.NL, COUNTRY.NL), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.NO, COUNTRY.NO), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.PL, COUNTRY.PL), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.PT, COUNTRY.PT), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.RU, COUNTRY.RU), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.SK, COUNTRY.SK), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.SV, COUNTRY.SE), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.TH, COUNTRY.TH), 
-        country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.TR, COUNTRY.TR), country__defineProperty(_LANG_TO_DEFAULT_COUN, LANG.ZH, COUNTRY.CN), 
+        }, LANG_TO_DEFAULT_COUNTRY = ((_LANG_TO_DEFAULT_COUN = {})[LANG.AR] = COUNTRY.SA, 
+        _LANG_TO_DEFAULT_COUN[LANG.CS] = COUNTRY.CZ, _LANG_TO_DEFAULT_COUN[LANG.DA] = COUNTRY.DK, 
+        _LANG_TO_DEFAULT_COUN[LANG.DE] = COUNTRY.DE, _LANG_TO_DEFAULT_COUN[LANG.EL] = COUNTRY.GR, 
+        _LANG_TO_DEFAULT_COUN[LANG.EN] = COUNTRY.US, _LANG_TO_DEFAULT_COUN[LANG.ES] = COUNTRY.ES, 
+        _LANG_TO_DEFAULT_COUN[LANG.FI] = COUNTRY.FI, _LANG_TO_DEFAULT_COUN[LANG.FR] = COUNTRY.FR, 
+        _LANG_TO_DEFAULT_COUN[LANG.HE] = COUNTRY.IL, _LANG_TO_DEFAULT_COUN[LANG.HU] = COUNTRY.HU, 
+        _LANG_TO_DEFAULT_COUN[LANG.ID] = COUNTRY.ID, _LANG_TO_DEFAULT_COUN[LANG.IT] = COUNTRY.IT, 
+        _LANG_TO_DEFAULT_COUN[LANG.JA] = COUNTRY.JP, _LANG_TO_DEFAULT_COUN[LANG.KO] = COUNTRY.KR, 
+        _LANG_TO_DEFAULT_COUN[LANG.NL] = COUNTRY.NL, _LANG_TO_DEFAULT_COUN[LANG.NO] = COUNTRY.NO, 
+        _LANG_TO_DEFAULT_COUN[LANG.PL] = COUNTRY.PL, _LANG_TO_DEFAULT_COUN[LANG.PT] = COUNTRY.PT, 
+        _LANG_TO_DEFAULT_COUN[LANG.RU] = COUNTRY.RU, _LANG_TO_DEFAULT_COUN[LANG.SK] = COUNTRY.SK, 
+        _LANG_TO_DEFAULT_COUN[LANG.SV] = COUNTRY.SE, _LANG_TO_DEFAULT_COUN[LANG.TH] = COUNTRY.TH, 
+        _LANG_TO_DEFAULT_COUN[LANG.TR] = COUNTRY.TR, _LANG_TO_DEFAULT_COUN[LANG.ZH] = COUNTRY.CN, 
         _LANG_TO_DEFAULT_COUN), ALLOWED_INSTALLMENT_COUNTRIES = [ COUNTRY.BR, COUNTRY.MX ], ALLOWED_INSTALLMENT_PERIOD = {
             BR: [ 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
             MX: [ 3, 6, 9, 12 ]
