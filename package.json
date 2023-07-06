@@ -9,7 +9,9 @@
     "reinstall": "rm -rf node_modules flow-typed && npm install && flow-typed install",
     "demo": "serve ./demo --port 1337",
     "eslint-find-rules": "eslint-find-rules --current .eslintrc.js --unused --plugin",
-    "buttondiff": "jest test/screenshot/screenshot.test.js "
+    "buttondiff": "jest test/screenshot/screenshot.test.js ",
+    "karma": "gulp karma",
+    "webpack": "gulp webpack"
   },
   "files": [
     "dist/checkout.lib.js",
