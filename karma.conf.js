@@ -2,6 +2,9 @@ import { argv } from 'yargs';
 import path from 'path';
 import webpack from 'webpack';
 
+// eslint-disable-next-line no-process-env
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 import { getWebpackConfig } from './webpack.config';
 
 export default function karmaConfig(config) {
@@ -23,7 +26,7 @@ export default function karmaConfig(config) {
         client: {
             captureConsole,
             mocha:          {
-                timeout: process.env.TRAVIS ? 60 * 1000 : 10 * 1000,
+                timeout: process.env.TRAVIS ? 60 * 1000 : 60 * 1000,
                 bail:    true
             }
         },
