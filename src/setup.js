@@ -6,7 +6,7 @@ import { ZalgoPromise } from 'zalgo-promise/src';
 import { config, FPTI } from './config';
 import { initLogger, checkForCommonErrors, setLogLevel, stringifyError,
     stringifyErrorMessage, getResourceLoadTime, isPayPalDomain, isEligible,
-    getDomainSetting, once, openMetaFrame, precacheRememberedFunding } from './lib';
+    getDomainSetting, once, openMetaFrame, precacheRememberedFunding, checkForDeprecatedIntegration } from './lib';
 import { createPptmScript } from './lib/pptm';
 
 function domainToEnv(domain : string) : ?string {
@@ -144,6 +144,8 @@ export let init = once(({ precacheRemembered }) => {
     if (!isPayPalDomain()) {
         createPptmScript();
     }
+
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     if (precacheRemembered) {
         precacheRememberedFunding();
