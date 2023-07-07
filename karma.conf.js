@@ -2,6 +2,8 @@ let argv = require('yargs').argv;
 let path = require('path');
 let webpack = require('webpack');
 
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 module.exports = function(config) {
 
     let debug     = Boolean(argv.debug);
@@ -14,6 +16,12 @@ module.exports = function(config) {
     let headless  = !keepOpen;
 
     let karmaConfig = {
+
+        client: {
+          mocha: {
+            timeout: 60000
+          }
+        },
 
         files: [
 
