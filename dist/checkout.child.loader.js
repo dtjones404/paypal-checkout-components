@@ -52,16 +52,53 @@
     __webpack_require__.p = "https://www.paypalobjects.com/api/";
     return __webpack_require__(__webpack_require__.s = 0);
 }({
+    "./node_modules/webpack/buildin/global.js": function(module, exports) {
+        var g, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        g = function() {
+            return this;
+        }();
+        try {
+            g = g || Function("return this")() || (0, eval)("this");
+        } catch (e) {
+            "object" === ("undefined" == typeof window ? "undefined" : _typeof(window)) && (g = window);
+        }
+        module.exports = g;
+    },
+    "./node_modules/zalgo-promise/src/global.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        (function(global) {
+            function getGlobal() {
+                var glob = void 0;
+                if ("undefined" != typeof window) glob = window; else {
+                    if (void 0 === global) throw new Error("Can not find global");
+                    glob = global;
+                }
+                glob.__zalgopromise__ || (glob.__zalgopromise__ = {
+                    flushPromises: [],
+                    activeCount: 0,
+                    possiblyUnhandledPromiseHandlers: [],
+                    dispatchedErrors: []
+                });
+                return glob.__zalgopromise__;
+            }
+            __webpack_exports__.a = getGlobal;
+        }).call(__webpack_exports__, __webpack_require__("./node_modules/webpack/buildin/global.js"));
+    },
     "./node_modules/zalgo-promise/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function utils_isPromise(item) {
             try {
                 if (!item) return !1;
-                if (window.Promise && item instanceof window.Promise) return !0;
-                if (window.Window && item instanceof window.Window) return !1;
-                if (window.constructor && item instanceof window.constructor) return !1;
-                if (utils_toString) {
-                    var name = utils_toString.call(item);
+                if ("undefined" != typeof Promise && item instanceof Promise) return !0;
+                if ("undefined" != typeof window && window.Window && item instanceof window.Window) return !1;
+                if ("undefined" != typeof window && window.constructor && item instanceof window.constructor) return !1;
+                var _toString = {}.toString;
+                if (_toString) {
+                    var name = _toString.call(item);
                     if ("[object Window]" === name || "[object global]" === name || "[object DOMWindow]" === name) return !1;
                 }
                 if ("function" == typeof item.then) return !0;
@@ -71,19 +108,19 @@
             return !1;
         }
         function dispatchPossiblyUnhandledError(err) {
-            if (-1 === dispatchedErrors.indexOf(err)) {
-                dispatchedErrors.push(err);
+            if (-1 === Object(global.a)().dispatchedErrors.indexOf(err)) {
+                Object(global.a)().dispatchedErrors.push(err);
                 setTimeout(function() {
                     throw err;
                 }, 1);
-                for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) possiblyUnhandledPromiseHandlers[j](err);
+                for (var j = 0; j < Object(global.a)().possiblyUnhandledPromiseHandlers.length; j++) Object(global.a)().possiblyUnhandledPromiseHandlers[j](err);
             }
         }
         function exceptions_onPossiblyUnhandledException(handler) {
-            possiblyUnhandledPromiseHandlers.push(handler);
+            Object(global.a)().possiblyUnhandledPromiseHandlers.push(handler);
             return {
                 cancel: function() {
-                    possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+                    Object(global.a)().possiblyUnhandledPromiseHandlers.splice(Object(global.a)().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
                 }
             };
         }
@@ -93,10 +130,7 @@
         Object.defineProperty(__webpack_exports__, "__esModule", {
             value: !0
         });
-        var utils_toString = {}.toString, possiblyUnhandledPromiseHandlers = [], dispatchedErrors = [], global = window.__zalgopromise__ = window.__zalgopromise__ || {
-            flushPromises: [],
-            activeCount: 0
-        }, promise_ZalgoPromise = function() {
+        var global = __webpack_require__("./node_modules/zalgo-promise/src/global.js"), promise_ZalgoPromise = function() {
             function ZalgoPromise(handler) {
                 var _this = this;
                 _classCallCheck(this, ZalgoPromise);
@@ -158,7 +192,7 @@
                 var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                 if (!dispatching && (resolved || rejected)) {
                     this.dispatching = !0;
-                    global.activeCount += 1;
+                    Object(global.a)().activeCount += 1;
                     for (var i = 0; i < handlers.length; i++) {
                         (function(i) {
                             var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
@@ -191,8 +225,8 @@
                     }
                     handlers.length = 0;
                     this.dispatching = !1;
-                    global.activeCount -= 1;
-                    0 === global.activeCount && ZalgoPromise.flushQueue();
+                    Object(global.a)().activeCount -= 1;
+                    0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
                 }
             };
             ZalgoPromise.prototype.then = function(onSuccess, onError) {
@@ -234,8 +268,8 @@
                 });
             };
             ZalgoPromise.prototype.toPromise = function() {
-                if (!window.Promise) throw new Error("Could not find window.Promise");
-                return window.Promise.resolve(this);
+                if ("undefined" == typeof Promise) throw new Error("Could not find Promise");
+                return Promise.resolve(this);
             };
             ZalgoPromise.resolve = function(value) {
                 return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
@@ -312,13 +346,13 @@
             };
             ZalgoPromise.flush = function() {
                 var promise = new ZalgoPromise();
-                global.flushPromises.push(promise);
-                0 === global.activeCount && ZalgoPromise.flushQueue();
+                Object(global.a)().flushPromises.push(promise);
+                0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
                 return promise;
             };
             ZalgoPromise.flushQueue = function() {
-                var promisesToFlush = global.flushPromises;
-                global.flushPromises = [];
+                var promisesToFlush = Object(global.a)().flushPromises;
+                Object(global.a)().flushPromises = [];
                 for (var _iterator = promisesToFlush, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                     var _ref;
                     if (_isArray) {
