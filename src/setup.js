@@ -6,7 +6,7 @@ import { bridge } from 'post-robot/src';
 import { config, FPTI } from './config';
 import { initLogger, checkForCommonErrors, setLogLevel, stringifyError,
     stringifyErrorMessage, getResourceLoadTime, isPayPalDomain, isEligible,
-    getDomainSetting, once } from './lib';
+    getDomainSetting, once, checkForDeprecatedIntegration } from './lib';
 import { createPptmScript } from './lib/pptm';
 
 import { ZalgoPromise } from 'zalgo-promise/src';
@@ -141,6 +141,7 @@ export let init = once(() => {
     }
 
     initLogger();
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     if (getDomainSetting('force_bridge') && bridge && !isPayPalDomain()) {
         bridge.openBridge(config.postBridgeUrls[config.env], config.paypalDomains[config.env]);
