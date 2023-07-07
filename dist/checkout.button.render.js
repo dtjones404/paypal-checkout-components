@@ -481,46 +481,8 @@
             return "[object RegExp]" === Object.prototype.toString.call(item);
         }
         function noop() {}
-        function getActualDomain(win) {
-            var location = win.location;
-            if (!location) throw new Error("Can not read window location");
-            var protocol = location.protocol;
-            if (!protocol) throw new Error("Can not read window protocol");
-            if (protocol === CONSTANTS.FILE_PROTOCOL) return CONSTANTS.FILE_PROTOCOL + "//";
-            var host = location.host;
-            if (!host) throw new Error("Can not read window host");
-            return protocol + "//" + host;
-        }
-        function getDomain(win) {
-            win = win || window;
-            var domain = getActualDomain(win);
-            return domain && win.mockDomain && 0 === win.mockDomain.indexOf(CONSTANTS.MOCK_PROTOCOL) ? win.mockDomain : domain;
-        }
-        function isBlankDomain(win) {
-            try {
-                if (!win.location.href) return !0;
-                if ("about:blank" === win.location.href) return !0;
-            } catch (err) {}
-            return !1;
-        }
-        function isActuallySameDomain(win) {
-            try {
-                var desc = Object.getOwnPropertyDescriptor(win, "location");
-                if (desc && !1 === desc.enumerable) return !1;
-            } catch (err) {}
-            try {
-                if (isBlankDomain(win)) return !0;
-                if (getActualDomain(win) === getActualDomain(window)) return !0;
-            } catch (err) {}
-            return !1;
-        }
-        function isSameDomain(win) {
-            if (!isActuallySameDomain(win)) return !1;
-            try {
-                if (isBlankDomain(win)) return !0;
-                if (getDomain(window) === getDomain(win)) return !0;
-            } catch (err) {}
-            return !1;
+        function isAboutProtocol() {
+            return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window).location.protocol === CONSTANTS.ABOUT_PROTOCOL;
         }
         function getParent(win) {
             if (win) try {
@@ -535,6 +497,57 @@
             } catch (err) {
                 return;
             }
+        }
+        function canReadFromWindow(win) {
+            try {
+                noop(win && win.location && win.location.href);
+                return !0;
+            } catch (err) {}
+            return !1;
+        }
+        function getActualDomain(win) {
+            var location = win.location;
+            if (!location) throw new Error("Can not read window location");
+            var protocol = location.protocol;
+            if (!protocol) throw new Error("Can not read window protocol");
+            if (protocol === CONSTANTS.FILE_PROTOCOL) return CONSTANTS.FILE_PROTOCOL + "//";
+            if (protocol === CONSTANTS.ABOUT_PROTOCOL) {
+                var parent = getParent(win);
+                return parent && canReadFromWindow(win) ? getActualDomain(parent) : CONSTANTS.ABOUT_PROTOCOL + "//";
+            }
+            var host = location.host;
+            if (!host) throw new Error("Can not read window host");
+            return protocol + "//" + host;
+        }
+        function getDomain(win) {
+            win = win || window;
+            var domain = getActualDomain(win);
+            return domain && win.mockDomain && 0 === win.mockDomain.indexOf(CONSTANTS.MOCK_PROTOCOL) ? win.mockDomain : domain;
+        }
+        function isActuallySameDomain(win) {
+            try {
+                if (win === window) return !0;
+            } catch (err) {}
+            try {
+                var desc = Object.getOwnPropertyDescriptor(win, "location");
+                if (desc && !1 === desc.enumerable) return !1;
+            } catch (err) {}
+            try {
+                if (isAboutProtocol(win) && canReadFromWindow(win)) return !0;
+            } catch (err) {}
+            try {
+                if (getActualDomain(win) === getActualDomain(window)) return !0;
+            } catch (err) {}
+            return !1;
+        }
+        function isSameDomain(win) {
+            if (!isActuallySameDomain(win)) return !1;
+            try {
+                if (win === window) return !0;
+                if (isAboutProtocol(win) && canReadFromWindow(win)) return !0;
+                if (getDomain(window) === getDomain(win)) return !0;
+            } catch (err) {}
+            return !1;
         }
         function getParents(win) {
             var result = [];
@@ -856,12 +869,12 @@
             }
             return !1;
         }
+        __webpack_exports__.h = getParent;
+        __webpack_exports__.g = getOpener;
         __webpack_exports__.a = getActualDomain;
         __webpack_exports__.c = getDomain;
         __webpack_exports__.j = isActuallySameDomain;
         __webpack_exports__.o = isSameDomain;
-        __webpack_exports__.h = getParent;
-        __webpack_exports__.g = getOpener;
         __webpack_exports__.f = getFrames;
         __webpack_exports__.r = isWindowClosed;
         __webpack_exports__.i = getUserAgent;
@@ -878,6 +891,7 @@
         var CONSTANTS = {
             MOCK_PROTOCOL: "mock:",
             FILE_PROTOCOL: "file:",
+            ABOUT_PROTOCOL: "about:",
             WILDCARD: "*"
         }, IE_WIN_ACCESS_ERROR = "Call was rejected by callee.\r\n", iframeWindows = [], iframeFrames = [];
     },
@@ -2325,16 +2339,37 @@
             return module;
         };
     },
+    "./node_modules/zalgo-promise/src/global.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        (function(global) {
+            function getGlobal() {
+                var glob = void 0;
+                if ("undefined" != typeof window) glob = window; else {
+                    if (void 0 === global) throw new Error("Can not find global");
+                    glob = global;
+                }
+                glob.__zalgopromise__ || (glob.__zalgopromise__ = {
+                    flushPromises: [],
+                    activeCount: 0,
+                    possiblyUnhandledPromiseHandlers: [],
+                    dispatchedErrors: []
+                });
+                return glob.__zalgopromise__;
+            }
+            __webpack_exports__.a = getGlobal;
+        }).call(__webpack_exports__, __webpack_require__("./node_modules/webpack/buildin/global.js"));
+    },
     "./node_modules/zalgo-promise/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function utils_isPromise(item) {
             try {
                 if (!item) return !1;
-                if (window.Promise && item instanceof window.Promise) return !0;
-                if (window.Window && item instanceof window.Window) return !1;
-                if (window.constructor && item instanceof window.constructor) return !1;
-                if (utils_toString) {
-                    var name = utils_toString.call(item);
+                if ("undefined" != typeof Promise && item instanceof Promise) return !0;
+                if ("undefined" != typeof window && window.Window && item instanceof window.Window) return !1;
+                if ("undefined" != typeof window && window.constructor && item instanceof window.constructor) return !1;
+                var _toString = {}.toString;
+                if (_toString) {
+                    var name = _toString.call(item);
                     if ("[object Window]" === name || "[object global]" === name || "[object DOMWindow]" === name) return !1;
                 }
                 if ("function" == typeof item.then) return !0;
@@ -2344,19 +2379,19 @@
             return !1;
         }
         function dispatchPossiblyUnhandledError(err) {
-            if (-1 === dispatchedErrors.indexOf(err)) {
-                dispatchedErrors.push(err);
+            if (-1 === Object(global.a)().dispatchedErrors.indexOf(err)) {
+                Object(global.a)().dispatchedErrors.push(err);
                 setTimeout(function() {
                     throw err;
                 }, 1);
-                for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) possiblyUnhandledPromiseHandlers[j](err);
+                for (var j = 0; j < Object(global.a)().possiblyUnhandledPromiseHandlers.length; j++) Object(global.a)().possiblyUnhandledPromiseHandlers[j](err);
             }
         }
         function exceptions_onPossiblyUnhandledException(handler) {
-            possiblyUnhandledPromiseHandlers.push(handler);
+            Object(global.a)().possiblyUnhandledPromiseHandlers.push(handler);
             return {
                 cancel: function() {
-                    possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+                    Object(global.a)().possiblyUnhandledPromiseHandlers.splice(Object(global.a)().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
                 }
             };
         }
@@ -2366,10 +2401,7 @@
         Object.defineProperty(__webpack_exports__, "__esModule", {
             value: !0
         });
-        var utils_toString = {}.toString, possiblyUnhandledPromiseHandlers = [], dispatchedErrors = [], global = window.__zalgopromise__ = window.__zalgopromise__ || {
-            flushPromises: [],
-            activeCount: 0
-        }, promise_ZalgoPromise = function() {
+        var global = __webpack_require__("./node_modules/zalgo-promise/src/global.js"), promise_ZalgoPromise = function() {
             function ZalgoPromise(handler) {
                 var _this = this;
                 _classCallCheck(this, ZalgoPromise);
@@ -2431,7 +2463,7 @@
                 var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                 if (!dispatching && (resolved || rejected)) {
                     this.dispatching = !0;
-                    global.activeCount += 1;
+                    Object(global.a)().activeCount += 1;
                     for (var i = 0; i < handlers.length; i++) {
                         (function(i) {
                             var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
@@ -2464,8 +2496,8 @@
                     }
                     handlers.length = 0;
                     this.dispatching = !1;
-                    global.activeCount -= 1;
-                    0 === global.activeCount && ZalgoPromise.flushQueue();
+                    Object(global.a)().activeCount -= 1;
+                    0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
                 }
             };
             ZalgoPromise.prototype.then = function(onSuccess, onError) {
@@ -2507,8 +2539,8 @@
                 });
             };
             ZalgoPromise.prototype.toPromise = function() {
-                if (!window.Promise) throw new Error("Could not find window.Promise");
-                return window.Promise.resolve(this);
+                if ("undefined" == typeof Promise) throw new Error("Could not find Promise");
+                return Promise.resolve(this);
             };
             ZalgoPromise.resolve = function(value) {
                 return value instanceof ZalgoPromise ? value : utils_isPromise(value) ? new ZalgoPromise(function(resolve, reject) {
@@ -2585,13 +2617,13 @@
             };
             ZalgoPromise.flush = function() {
                 var promise = new ZalgoPromise();
-                global.flushPromises.push(promise);
-                0 === global.activeCount && ZalgoPromise.flushQueue();
+                Object(global.a)().flushPromises.push(promise);
+                0 === Object(global.a)().activeCount && ZalgoPromise.flushQueue();
                 return promise;
             };
             ZalgoPromise.flushQueue = function() {
-                var promisesToFlush = global.flushPromises;
-                global.flushPromises = [];
+                var promisesToFlush = Object(global.a)().flushPromises;
+                Object(global.a)().flushPromises = [];
                 for (var _iterator = promisesToFlush, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                     var _ref;
                     if (_isArray) {
