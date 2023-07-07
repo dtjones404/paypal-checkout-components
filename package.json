@@ -134,7 +134,7 @@
     "bowser": "^1.7.1",
     "cross-domain-utils": "^2.0.1",
     "post-robot": "^8.0.0",
-    "xcomponent": "^6.0.0",
+    "xcomponent": "6.0.29-patch2",
     "zalgo-promise": "^1.0.10"
   }
 }
