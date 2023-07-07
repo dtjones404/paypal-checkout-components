@@ -126,10 +126,10 @@
   },
   "dependencies": {
     "Base64": "^1.0.0",
-    "beaver-logger": "^3.0.6",
+    "beaver-logger": "3.0.10",
     "bowser": "^1.7.1",
-    "post-robot": "^7.0.1",
-    "xcomponent": "^5.0.0",
-    "zalgo-promise": "^1.0.10"
+    "post-robot": "7.0.15",
+    "xcomponent": "5.0.3-patch1",
+    "zalgo-promise": "1.0.19"
   }
 }
