@@ -3,7 +3,7 @@
 import * as $logger from 'beaver-logger/client';
 
 import { config, FPTI } from './config';
-import { initLogger, checkForCommonErrors, setLogLevel, stringifyError } from './lib';
+import { initLogger, checkForCommonErrors, setLogLevel, stringifyError, checkForDeprecatedIntegration } from './lib';
 import { enableCheckoutIframe } from './components';
 import { createPptmScript } from './lib/pptm';
 import { isPayPalDomain, isEligible } from './lib';
@@ -149,6 +149,7 @@ export function setup({ env, stage, apiStage, paypalUrl, state, ppobjects, light
     }
 
     initLogger();
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     $logger.info(`setup_${config.env}`);
 
