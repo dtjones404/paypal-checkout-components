@@ -4,7 +4,7 @@ import * as $logger from 'beaver-logger/client';
 import { bridge } from 'post-robot/src';
 
 import { config, FPTI } from './config';
-import { initLogger, checkForCommonErrors, setLogLevel, stringifyError } from './lib';
+import { initLogger, checkForCommonErrors, setLogLevel, stringifyError, checkForDeprecatedIntegration } from './lib';
 import { enableCheckoutIframe } from './components';
 import { createPptmScript } from './lib/pptm';
 import { isPayPalDomain, isEligible, getDomainSetting } from './lib';
@@ -150,6 +150,7 @@ export function setup({ env, stage, apiStage, paypalUrl, state, ppobjects, light
     }
 
     initLogger();
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     if (getDomainSetting('force_bridge') && bridge) {
         bridge.openBridge(config.postBridgeUrls[config.env], config.paypalDomains[config.env]);
