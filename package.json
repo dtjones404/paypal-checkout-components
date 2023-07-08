@@ -7,7 +7,9 @@
     "test": "gulp test",
     "postinstall": "node postinstall.js",
     "reinstall": "rm -rf node_modules flow-typed && npm install && flow-typed install",
-    "demo": "serve . --port 1337"
+    "demo": "serve . --port 1337",
+    "karma": "gulp karma",
+    "webpack": "gulp webpack"
   },
   "files": [
     "dist/checkout.lib.js",
