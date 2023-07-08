@@ -6,7 +6,9 @@
   "scripts": {
     "test": "gulp test",
     "postinstall": "node postinstall.js",
-    "reinstall": "rm -rf node_modules flow-typed && npm install && flow-typed install"
+    "reinstall": "rm -rf node_modules flow-typed && npm install && flow-typed install",
+    "karma": "gulp karma",
+    "webpack": "gulp webpack"
   },
   "files": [
     "dist/checkout.lib.js",
