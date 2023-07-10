@@ -41,30 +41,59 @@
     return __webpack_require__(__webpack_require__.s = "./src/load.js");
 }({
     "./node_modules/Base64/base64.js": function(module, exports, __webpack_require__) {
-        !function() {
+        var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        !function(f) {
+            "use strict";
+            if ("object" === _typeof(exports) && null != exports && "number" != typeof exports.nodeType) module.exports = f(); else if (null != __webpack_require__("./node_modules/webpack/buildin/amd-options.js")) __WEBPACK_AMD_DEFINE_ARRAY__ = [], 
+            __WEBPACK_AMD_DEFINE_FACTORY__ = f, void 0 !== (__WEBPACK_AMD_DEFINE_RESULT__ = "function" == typeof __WEBPACK_AMD_DEFINE_FACTORY__ ? __WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__) : __WEBPACK_AMD_DEFINE_FACTORY__) && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__); else {
+                var base64 = f(), global = "undefined" != typeof self ? self : $.global;
+                "function" != typeof global.btoa && (global.btoa = base64.btoa);
+                "function" != typeof global.atob && (global.atob = base64.atob);
+            }
+        }(function() {
+            "use strict";
             function InvalidCharacterError(message) {
                 this.message = message;
             }
-            var object = exports, chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-            InvalidCharacterError.prototype = new Error();
-            InvalidCharacterError.prototype.name = "InvalidCharacterError";
-            object.btoa || (object.btoa = function(input) {
-                for (var block, charCode, str = String(input), idx = 0, map = chars, output = ""; str.charAt(0 | idx) || (map = "=", 
-                idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-                    charCode = str.charCodeAt(idx += .75);
-                    if (charCode > 255) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-                    block = block << 8 | charCode;
+            function btoa(input) {
+                for (var o1, o2, o3, bits, data = String(input), i = 0, acc = ""; i < data.length; ) {
+                    o1 = data.charCodeAt(i++);
+                    o2 = data.charCodeAt(i++);
+                    o3 = data.charCodeAt(i++);
+                    if (o1 > 128 || o2 > 128 || o3 > 128) throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                    bits = o1 << 16 | o2 << 8 | o3;
+                    acc += chars.charAt(bits >> 18 & 63) + chars.charAt(bits >> 12 & 63) + chars.charAt(bits >> 6 & 63) + chars.charAt(63 & bits);
                 }
-                return output;
-            });
-            object.atob || (object.atob = function(input) {
+                switch (data.length % 3) {
+                  case 0:
+                    return acc;
+
+                  case 1:
+                    return acc.slice(0, -2) + "==";
+
+                  case 2:
+                    return acc.slice(0, -1) + "=";
+                }
+            }
+            function atob(input) {
                 var str = String(input).replace(/[=]+$/, "");
                 if (str.length % 4 == 1) throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
                 for (var bs, buffer, bc = 0, idx = 0, output = ""; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? 64 * bs + buffer : buffer, 
                 bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) buffer = chars.indexOf(buffer);
                 return output;
-            });
-        }();
+            }
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+            InvalidCharacterError.prototype = new Error();
+            InvalidCharacterError.prototype.name = "InvalidCharacterError";
+            return {
+                btoa: btoa,
+                atob: atob
+            };
+        });
     },
     "./node_modules/beaver-logger/client/builders.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -130,10 +159,10 @@
         "use strict";
         var __WEBPACK_IMPORTED_MODULE_0__interface__ = __webpack_require__("./node_modules/beaver-logger/client/interface.js");
         __webpack_require__.d(__webpack_exports__, "a", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__interface__.logLevels;
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.track;
         });
         __webpack_require__.d(__webpack_exports__, "b", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__interface__.config;
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.flush;
         });
         __webpack_require__.d(__webpack_exports__, "c", function() {
             return __WEBPACK_IMPORTED_MODULE_0__interface__.info;
@@ -142,25 +171,25 @@
             return __WEBPACK_IMPORTED_MODULE_0__interface__.warn;
         });
         __webpack_require__.d(__webpack_exports__, "e", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__interface__.error;
-        });
-        __webpack_require__.d(__webpack_exports__, "f", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__interface__.flush;
-        });
-        __webpack_require__.d(__webpack_exports__, "g", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__interface__.track;
-        });
-        __webpack_require__.d(__webpack_exports__, "h", function() {
             return __WEBPACK_IMPORTED_MODULE_0__interface__.addPayloadBuilder;
         });
-        __webpack_require__.d(__webpack_exports__, "i", function() {
+        __webpack_require__.d(__webpack_exports__, "f", function() {
             return __WEBPACK_IMPORTED_MODULE_0__interface__.addMetaBuilder;
         });
-        __webpack_require__.d(__webpack_exports__, "j", function() {
+        __webpack_require__.d(__webpack_exports__, "g", function() {
             return __WEBPACK_IMPORTED_MODULE_0__interface__.addTrackingBuilder;
         });
-        __webpack_require__.d(__webpack_exports__, "k", function() {
+        __webpack_require__.d(__webpack_exports__, "h", function() {
             return __WEBPACK_IMPORTED_MODULE_0__interface__.init;
+        });
+        __webpack_require__.d(__webpack_exports__, "i", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.logLevels;
+        });
+        __webpack_require__.d(__webpack_exports__, "j", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.config;
+        });
+        __webpack_require__.d(__webpack_exports__, "k", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.error;
         });
         __webpack_require__.d(__webpack_exports__, "l", function() {
             return __WEBPACK_IMPORTED_MODULE_0__interface__.prefix;
@@ -375,11 +404,6 @@
             } : payload instanceof Error && (payload = {
                 error: payload.stack || payload.toString()
             });
-            try {
-                JSON.stringify(payload);
-            } catch (err) {
-                return;
-            }
             payload.timestamp = Date.now();
             for (var _iterator3 = __WEBPACK_IMPORTED_MODULE_1__builders__.a, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator](); ;) {
                 var _ref3;
@@ -437,11 +461,6 @@
         }
         function _track(payload) {
             if (payload) {
-                try {
-                    JSON.stringify(payload);
-                } catch (err) {
-                    return;
-                }
                 for (var _iterator4 = __WEBPACK_IMPORTED_MODULE_1__builders__.c, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator](); ;) {
                     var _ref4;
                     if (_isArray4) {
@@ -1620,12 +1639,11 @@
                 var winName = _ref2;
                 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.m)(__WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByName[winName].win) && delete __WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByName[winName];
             }
-            if (name) {
-                var winOptions = {
-                    name: name,
-                    domain: domain,
-                    win: win
-                };
+            if (name && win) {
+                var winOptions = __WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByWin.get(win) || __WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByName[name] || {};
+                winOptions.name = winOptions.name || name;
+                winOptions.win = winOptions.win || win;
+                winOptions.domain = winOptions.domain || domain;
                 __WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByWin.set(win, winOptions);
                 __WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByName[name] = winOptions;
             }
@@ -2024,10 +2042,12 @@
                     data: data
                 });
             }, function(err) {
+                var stack = err.stack, errmessage = err.message, error = void 0;
+                error = stack ? errmessage && -1 === stack.indexOf(errmessage) ? errmessage + "\n" + stack : stack : errmessage;
                 return respond({
                     type: __WEBPACK_IMPORTED_MODULE_0__conf__.a.POST_MESSAGE_TYPE.RESPONSE,
                     ack: __WEBPACK_IMPORTED_MODULE_0__conf__.a.POST_MESSAGE_ACK.ERROR,
-                    error: err.stack ? err.message + "\n" + err.stack : err.toString()
+                    error: error
                 });
             }) ]).catch(function(err) {
                 if (options && options.handleError) return options.handleError(err);
@@ -3750,6 +3770,11 @@
             });
         };
     },
+    "./node_modules/webpack/buildin/amd-options.js": function(module, exports) {
+        (function(__webpack_amd_options__) {
+            module.exports = __webpack_amd_options__;
+        }).call(exports, {});
+    },
     "./node_modules/webpack/buildin/global.js": function(module, exports) {
         var g, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
@@ -3765,6 +3790,635 @@
             "object" === ("undefined" == typeof window ? "undefined" : _typeof(window)) && (g = window);
         }
         module.exports = g;
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/builders.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function addPayloadBuilder(builder) {
+            payloadBuilders.push(builder);
+        }
+        function addMetaBuilder(builder) {
+            metaBuilders.push(builder);
+        }
+        function addTrackingBuilder(builder) {
+            trackingBuilders.push(builder);
+        }
+        function addHeaderBuilder(builder) {
+            headerBuilders.push(builder);
+        }
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return payloadBuilders;
+        });
+        __webpack_require__.d(__webpack_exports__, "b", function() {
+            return metaBuilders;
+        });
+        __webpack_require__.d(__webpack_exports__, "c", function() {
+            return trackingBuilders;
+        });
+        __webpack_require__.d(__webpack_exports__, "d", function() {
+            return headerBuilders;
+        });
+        __webpack_exports__.e = addPayloadBuilder;
+        __webpack_exports__.f = addMetaBuilder;
+        __webpack_exports__.g = addTrackingBuilder;
+        __webpack_exports__.h = addHeaderBuilder;
+        var payloadBuilders = [], metaBuilders = [], trackingBuilders = [], headerBuilders = [];
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/config.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return config;
+        });
+        __webpack_require__.d(__webpack_exports__, "b", function() {
+            return logLevels;
+        });
+        var config = {
+            uri: "",
+            prefix: "",
+            initial_state_name: "init",
+            flushInterval: 6e5,
+            debounceInterval: 10,
+            sizeLimit: 300,
+            silent: !1,
+            heartbeat: !0,
+            heartbeatConsoleLog: !0,
+            heartbeatInterval: 5e3,
+            heartbeatTooBusy: !1,
+            heartbeatTooBusyThreshold: 1e4,
+            logLevel: "debug",
+            autoLog: [ "warn", "error" ],
+            logUnload: !0,
+            logUnloadSync: !1,
+            logPerformance: !0
+        }, logLevels = [ "error", "warn", "info", "debug" ];
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/index.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        var __WEBPACK_IMPORTED_MODULE_0__interface__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/interface.js");
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.logLevels;
+        });
+        __webpack_require__.d(__webpack_exports__, "b", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.config;
+        });
+        __webpack_require__.d(__webpack_exports__, "c", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.info;
+        });
+        __webpack_require__.d(__webpack_exports__, "d", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.warn;
+        });
+        __webpack_require__.d(__webpack_exports__, "e", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.error;
+        });
+        __webpack_require__.d(__webpack_exports__, "f", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__interface__.flush;
+        });
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/init.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function init(conf) {
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__util__.d)(__WEBPACK_IMPORTED_MODULE_0__config__.a, conf || {});
+            if (!initiated) {
+                initiated = !0;
+                __WEBPACK_IMPORTED_MODULE_0__config__.a.logPerformance && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__performance__.c)();
+                __WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeat && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__performance__.d)();
+                if (__WEBPACK_IMPORTED_MODULE_0__config__.a.logUnload) {
+                    var async = !__WEBPACK_IMPORTED_MODULE_0__config__.a.logUnloadSync;
+                    window.addEventListener("beforeunload", function() {
+                        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__logger__.j)("window_beforeunload");
+                        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__logger__.e)(async);
+                    });
+                    window.addEventListener("unload", function() {
+                        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__logger__.j)("window_unload");
+                        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__logger__.e)(async);
+                    });
+                }
+                __WEBPACK_IMPORTED_MODULE_0__config__.a.flushInterval && setInterval(__WEBPACK_IMPORTED_MODULE_3__logger__.f, __WEBPACK_IMPORTED_MODULE_0__config__.a.flushInterval);
+                if (window.beaverLogQueue) {
+                    window.beaverLogQueue.forEach(function(payload) {
+                        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__logger__.g)(payload.level, payload.event, payload);
+                    });
+                    delete window.beaverLogQueue;
+                }
+            }
+        }
+        __webpack_exports__.a = init;
+        var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/config.js"), __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/util.js"), __WEBPACK_IMPORTED_MODULE_2__performance__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/performance.js"), __WEBPACK_IMPORTED_MODULE_3__logger__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/logger.js"), initiated = !1;
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/interface.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        Object.defineProperty(__webpack_exports__, "__esModule", {
+            value: !0
+        });
+        var __WEBPACK_IMPORTED_MODULE_0__logger__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/logger.js");
+        __webpack_require__.d(__webpack_exports__, "track", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.a;
+        });
+        __webpack_require__.d(__webpack_exports__, "buffer", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.b;
+        });
+        __webpack_require__.d(__webpack_exports__, "tracking", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.c;
+        });
+        __webpack_require__.d(__webpack_exports__, "print", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.d;
+        });
+        __webpack_require__.d(__webpack_exports__, "immediateFlush", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.e;
+        });
+        __webpack_require__.d(__webpack_exports__, "flush", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.f;
+        });
+        __webpack_require__.d(__webpack_exports__, "log", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.g;
+        });
+        __webpack_require__.d(__webpack_exports__, "prefix", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.h;
+        });
+        __webpack_require__.d(__webpack_exports__, "debug", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.i;
+        });
+        __webpack_require__.d(__webpack_exports__, "info", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.j;
+        });
+        __webpack_require__.d(__webpack_exports__, "warn", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.k;
+        });
+        __webpack_require__.d(__webpack_exports__, "error", function() {
+            return __WEBPACK_IMPORTED_MODULE_0__logger__.l;
+        });
+        var __WEBPACK_IMPORTED_MODULE_1__init__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/init.js");
+        __webpack_require__.d(__webpack_exports__, "init", function() {
+            return __WEBPACK_IMPORTED_MODULE_1__init__.a;
+        });
+        var __WEBPACK_IMPORTED_MODULE_2__transitions__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/transitions.js");
+        __webpack_require__.d(__webpack_exports__, "startTransition", function() {
+            return __WEBPACK_IMPORTED_MODULE_2__transitions__.a;
+        });
+        __webpack_require__.d(__webpack_exports__, "endTransition", function() {
+            return __WEBPACK_IMPORTED_MODULE_2__transitions__.b;
+        });
+        __webpack_require__.d(__webpack_exports__, "transition", function() {
+            return __WEBPACK_IMPORTED_MODULE_2__transitions__.c;
+        });
+        var __WEBPACK_IMPORTED_MODULE_3__builders__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/builders.js");
+        __webpack_require__.d(__webpack_exports__, "payloadBuilders", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.a;
+        });
+        __webpack_require__.d(__webpack_exports__, "metaBuilders", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.b;
+        });
+        __webpack_require__.d(__webpack_exports__, "trackingBuilders", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.c;
+        });
+        __webpack_require__.d(__webpack_exports__, "headerBuilders", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.d;
+        });
+        __webpack_require__.d(__webpack_exports__, "addPayloadBuilder", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.e;
+        });
+        __webpack_require__.d(__webpack_exports__, "addMetaBuilder", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.f;
+        });
+        __webpack_require__.d(__webpack_exports__, "addTrackingBuilder", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.g;
+        });
+        __webpack_require__.d(__webpack_exports__, "addHeaderBuilder", function() {
+            return __WEBPACK_IMPORTED_MODULE_3__builders__.h;
+        });
+        var __WEBPACK_IMPORTED_MODULE_4__config__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/config.js");
+        __webpack_require__.d(__webpack_exports__, "config", function() {
+            return __WEBPACK_IMPORTED_MODULE_4__config__.a;
+        });
+        __webpack_require__.d(__webpack_exports__, "logLevels", function() {
+            return __WEBPACK_IMPORTED_MODULE_4__config__.b;
+        });
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/logger.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function print(level, event, payload) {
+            if (!loaded) return setTimeout(function() {
+                return print(level, event, payload);
+            }, 1);
+            if (window.console && window.console.log) {
+                var logLevel = window.LOG_LEVEL || __WEBPACK_IMPORTED_MODULE_2__config__.a.logLevel;
+                if (!(__WEBPACK_IMPORTED_MODULE_2__config__.b.indexOf(level) > __WEBPACK_IMPORTED_MODULE_2__config__.b.indexOf(logLevel))) {
+                    payload = payload || {};
+                    var args = [ event ];
+                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.e)() && (payload = JSON.stringify(payload));
+                    args.push(payload);
+                    (payload.error || payload.warning) && args.push("\n\n", payload.error || payload.warning);
+                    try {
+                        window.console[level] && window.console[level].apply ? window.console[level].apply(window.console, args) : window.console.log && window.console.log.apply && window.console.log.apply(window.console, args);
+                    } catch (err) {}
+                }
+            }
+        }
+        function immediateFlush() {
+            var async = !(arguments.length > 0 && void 0 !== arguments[0]) || arguments[0];
+            if (__WEBPACK_IMPORTED_MODULE_2__config__.a.uri) {
+                var hasBuffer = buffer.length, hasTracking = tracking.length;
+                if (hasBuffer || hasTracking) {
+                    for (var meta = {}, _iterator = __WEBPACK_IMPORTED_MODULE_1__builders__.b, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
+                        var _ref;
+                        if (_isArray) {
+                            if (_i >= _iterator.length) break;
+                            _ref = _iterator[_i++];
+                        } else {
+                            _i = _iterator.next();
+                            if (_i.done) break;
+                            _ref = _i.value;
+                        }
+                        var builder = _ref;
+                        try {
+                            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.d)(meta, builder(), !1);
+                        } catch (err) {
+                            console.error("Error in custom meta builder:", err.stack || err.toString());
+                        }
+                    }
+                    for (var headers = {}, _iterator2 = __WEBPACK_IMPORTED_MODULE_1__builders__.d, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ;) {
+                        var _ref2;
+                        if (_isArray2) {
+                            if (_i2 >= _iterator2.length) break;
+                            _ref2 = _iterator2[_i2++];
+                        } else {
+                            _i2 = _iterator2.next();
+                            if (_i2.done) break;
+                            _ref2 = _i2.value;
+                        }
+                        var _builder = _ref2;
+                        try {
+                            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.d)(headers, _builder(), !1);
+                        } catch (err) {
+                            console.error("Error in custom header builder:", err.stack || err.toString());
+                        }
+                    }
+                    var events = buffer, req = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.f)("post", __WEBPACK_IMPORTED_MODULE_2__config__.a.uri, headers, {
+                        events: events,
+                        meta: meta,
+                        tracking: tracking
+                    }, async);
+                    buffer = [];
+                    tracking = [];
+                    return req;
+                }
+            }
+        }
+        function enqueue(level, event, payload) {
+            buffer.push({
+                level: level,
+                event: event,
+                payload: payload
+            });
+            __WEBPACK_IMPORTED_MODULE_2__config__.a.autoLog.indexOf(level) > -1 && _flush();
+        }
+        function log(level, event, payload) {
+            __WEBPACK_IMPORTED_MODULE_2__config__.a.prefix && (event = __WEBPACK_IMPORTED_MODULE_2__config__.a.prefix + "_" + event);
+            payload = payload || {};
+            "string" == typeof payload ? payload = {
+                message: payload
+            } : payload instanceof Error && (payload = {
+                error: payload.stack || payload.toString()
+            });
+            try {
+                JSON.stringify(payload);
+            } catch (err) {
+                return;
+            }
+            payload.timestamp = Date.now();
+            for (var _iterator3 = __WEBPACK_IMPORTED_MODULE_1__builders__.a, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator](); ;) {
+                var _ref3;
+                if (_isArray3) {
+                    if (_i3 >= _iterator3.length) break;
+                    _ref3 = _iterator3[_i3++];
+                } else {
+                    _i3 = _iterator3.next();
+                    if (_i3.done) break;
+                    _ref3 = _i3.value;
+                }
+                var builder = _ref3;
+                try {
+                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.d)(payload, builder(), !1);
+                } catch (err) {
+                    console.error("Error in custom payload builder:", err.stack || err.toString());
+                }
+            }
+            __WEBPACK_IMPORTED_MODULE_2__config__.a.silent || print(level, event, payload);
+            buffer.length === __WEBPACK_IMPORTED_MODULE_2__config__.a.sizeLimit ? enqueue("info", "logger_max_buffer_length") : buffer.length < __WEBPACK_IMPORTED_MODULE_2__config__.a.sizeLimit && enqueue(level, event, payload);
+        }
+        function prefix(name) {
+            return {
+                debug: function(event, payload) {
+                    return log("debug", name + "_" + event, payload);
+                },
+                info: function(event, payload) {
+                    return log("info", name + "_" + event, payload);
+                },
+                warn: function(event, payload) {
+                    return log("warn", name + "_" + event, payload);
+                },
+                error: function(event, payload) {
+                    return log("error", name + "_" + event, payload);
+                },
+                track: function(payload) {
+                    return _track(payload);
+                },
+                flush: function() {
+                    return _flush();
+                }
+            };
+        }
+        function debug(event, payload) {
+            return log("debug", event, payload);
+        }
+        function info(event, payload) {
+            return log("info", event, payload);
+        }
+        function warn(event, payload) {
+            return log("warn", event, payload);
+        }
+        function error(event, payload) {
+            return log("error", event, payload);
+        }
+        function _track(payload) {
+            if (payload) {
+                try {
+                    JSON.stringify(payload);
+                } catch (err) {
+                    return;
+                }
+                for (var _iterator4 = __WEBPACK_IMPORTED_MODULE_1__builders__.c, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator](); ;) {
+                    var _ref4;
+                    if (_isArray4) {
+                        if (_i4 >= _iterator4.length) break;
+                        _ref4 = _iterator4[_i4++];
+                    } else {
+                        _i4 = _iterator4.next();
+                        if (_i4.done) break;
+                        _ref4 = _i4.value;
+                    }
+                    var builder = _ref4;
+                    try {
+                        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.d)(payload, builder(), !1);
+                    } catch (err) {
+                        console.error("Error in custom tracking builder:", err.stack || err.toString());
+                    }
+                }
+                print("debug", "tracking", payload);
+                tracking.push(payload);
+            }
+        }
+        __webpack_require__.d(__webpack_exports__, "a", function() {
+            return _track;
+        });
+        __webpack_require__.d(__webpack_exports__, "b", function() {
+            return buffer;
+        });
+        __webpack_require__.d(__webpack_exports__, "c", function() {
+            return tracking;
+        });
+        __webpack_exports__.d = print;
+        __webpack_exports__.e = immediateFlush;
+        __webpack_require__.d(__webpack_exports__, "f", function() {
+            return _flush;
+        });
+        __webpack_exports__.g = log;
+        __webpack_exports__.h = prefix;
+        __webpack_exports__.i = debug;
+        __webpack_exports__.j = info;
+        __webpack_exports__.k = warn;
+        __webpack_exports__.l = error;
+        var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/util.js"), __WEBPACK_IMPORTED_MODULE_1__builders__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/builders.js"), __WEBPACK_IMPORTED_MODULE_2__config__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/config.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, buffer = [], tracking = [];
+        Function.prototype.bind && window.console && "object" === _typeof(console.log) && [ "log", "info", "warn", "error" ].forEach(function(method) {
+            console[method] = this.bind(console[method], console);
+        }, Function.prototype.call);
+        var loaded = !1;
+        setTimeout(function() {
+            loaded = !0;
+        }, 1);
+        var _flush = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.g)(immediateFlush, __WEBPACK_IMPORTED_MODULE_2__config__.a.debounceInterval);
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/performance.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function now() {
+            return enablePerformance ? performance.now() : Date.now();
+        }
+        function timer(startTime) {
+            startTime = void 0 !== startTime ? startTime : now();
+            return {
+                startTime: startTime,
+                elapsed: function() {
+                    return parseInt(now() - startTime, 10);
+                },
+                reset: function() {
+                    startTime = now();
+                }
+            };
+        }
+        function reqStartElapsed() {
+            if (enablePerformance) {
+                var timing = window.performance.timing;
+                return parseInt(timing.connectEnd - timing.navigationStart, 10);
+            }
+        }
+        function initHeartBeat() {
+            var heartBeatTimer = timer(), heartbeatCount = 0;
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util__.b)(function() {
+                if (!(__WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatMaxThreshold && heartbeatCount > __WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatMaxThreshold)) {
+                    heartbeatCount += 1;
+                    var elapsed = heartBeatTimer.elapsed(), lag = elapsed - __WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatInterval, heartbeatPayload = {
+                        count: heartbeatCount,
+                        elapsed: elapsed
+                    };
+                    if (__WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatTooBusy) {
+                        heartbeatPayload.lag = lag;
+                        lag >= __WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatTooBusyThreshold && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("toobusy", heartbeatPayload, {
+                            noConsole: !__WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatConsoleLog
+                        });
+                    }
+                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("heartbeat", heartbeatPayload, {
+                        noConsole: !__WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatConsoleLog
+                    });
+                }
+            }, __WEBPACK_IMPORTED_MODULE_0__config__.a.heartbeatInterval);
+        }
+        function initPerformance() {
+            if (!enablePerformance) return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("no_performance_data");
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__builders__.e)(function() {
+                var payload = {};
+                payload.client_elapsed = clientTimer.elapsed();
+                enablePerformance && (payload.req_elapsed = reqTimer.elapsed());
+                return payload;
+            });
+            __WEBPACK_IMPORTED_MODULE_3__util__.c.then(function() {
+                var keys = [ "connectEnd", "connectStart", "domComplete", "domContentLoadedEventEnd", "domContentLoadedEventStart", "domInteractive", "domLoading", "domainLookupEnd", "domainLookupStart", "fetchStart", "loadEventEnd", "loadEventStart", "navigationStart", "redirectEnd", "redirectStart", "requestStart", "responseEnd", "responseStart", "secureConnectionStart", "unloadEventEnd", "unloadEventStart" ], timing = {};
+                keys.forEach(function(key) {
+                    timing[key] = parseInt(window.performance.timing[key], 10) || 0;
+                });
+                var offset = timing.connectEnd - timing.navigationStart;
+                timing.connectEnd && Object.keys(timing).forEach(function(name) {
+                    var time = timing[name];
+                    time && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("timing_" + name, {
+                        client_elapsed: parseInt(time - timing.connectEnd - (clientTimer.startTime - offset), 10),
+                        req_elapsed: parseInt(time - timing.connectEnd, 10)
+                    });
+                });
+                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("timing", timing);
+                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("memory", window.performance.memory);
+                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)("navigation", window.performance.navigation);
+                window.performance.getEntries && window.performance.getEntries().forEach(function(resource) {
+                    [ "link", "script", "img", "css" ].indexOf(resource.initiatorType) > -1 && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)(resource.initiatorType, resource);
+                });
+            });
+        }
+        __webpack_exports__.a = now;
+        __webpack_exports__.b = reqStartElapsed;
+        __webpack_exports__.d = initHeartBeat;
+        __webpack_exports__.c = initPerformance;
+        var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/config.js"), __WEBPACK_IMPORTED_MODULE_1__logger__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/logger.js"), __WEBPACK_IMPORTED_MODULE_2__builders__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/builders.js"), __WEBPACK_IMPORTED_MODULE_3__util__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/util.js"), enablePerformance = window && window.performance && performance.now && performance.timing && performance.timing.connectEnd && performance.timing.navigationStart && Math.abs(performance.now() - Date.now()) > 1e3 && performance.now() - (performance.timing.connectEnd - performance.timing.navigationStart) > 0, clientTimer = timer(), reqTimer = timer(reqStartElapsed());
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/transitions.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function startTransition() {
+            startTime = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__performance__.a)();
+        }
+        function endTransition(toState) {
+            startTime = startTime || __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__performance__.b)();
+            var currentTime = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__performance__.a)(), elapsedTime = void 0;
+            void 0 !== startTime && (elapsedTime = parseInt(currentTime - startTime, 0));
+            var transitionName = "transition_" + currentState + "_to_" + toState;
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.j)(transitionName, {
+                duration: elapsedTime
+            });
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.a)({
+                transition: transitionName,
+                transition_time: elapsedTime
+            });
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__logger__.e)();
+            startTime = currentTime;
+            currentState = toState;
+            pageID = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util__.a)();
+        }
+        function transition(toState) {
+            startTransition();
+            endTransition(toState);
+        }
+        __webpack_exports__.a = startTransition;
+        __webpack_exports__.b = endTransition;
+        __webpack_exports__.c = transition;
+        var __WEBPACK_IMPORTED_MODULE_0__performance__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/performance.js"), __WEBPACK_IMPORTED_MODULE_1__logger__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/logger.js"), __WEBPACK_IMPORTED_MODULE_2__builders__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/builders.js"), __WEBPACK_IMPORTED_MODULE_3__util__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/util.js"), __WEBPACK_IMPORTED_MODULE_4__config__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/config.js"), windowID = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util__.a)(), pageID = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util__.a)(), currentState = __WEBPACK_IMPORTED_MODULE_4__config__.a.initial_state_name, startTime = void 0;
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__builders__.e)(function() {
+            return {
+                windowID: windowID,
+                pageID: pageID
+            };
+        });
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__builders__.f)(function() {
+            return {
+                state: "ui_" + currentState
+            };
+        });
+    },
+    "./node_modules/xcomponent/node_modules/beaver-logger/client/util.js": function(module, __webpack_exports__, __webpack_require__) {
+        "use strict";
+        function extend(dest, src) {
+            var over = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2];
+            dest = dest || {};
+            src = src || {};
+            for (var i in src) src.hasOwnProperty(i) && (!over && dest.hasOwnProperty(i) || (dest[i] = src[i]));
+            return dest;
+        }
+        function isSameProtocol(url) {
+            return window.location.protocol === url.split("/")[0];
+        }
+        function isSameDomain(url) {
+            var match = url.match(/https?:\/\/[^\/]+/);
+            return !match || match[0] === window.location.protocol + "//" + window.location.host;
+        }
+        function ajax(method, url) {
+            var headers = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}, data = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : {}, async = !(arguments.length > 4 && void 0 !== arguments[4]) || arguments[4];
+            return new __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a(function(resolve) {
+                var XRequest = window.XMLHttpRequest || window.ActiveXObject;
+                if (window.XDomainRequest && !isSameDomain(url)) {
+                    if (!isSameProtocol(url)) return resolve();
+                    XRequest = window.XDomainRequest;
+                }
+                var req = new XRequest("MSXML2.XMLHTTP.3.0");
+                req.open(method.toUpperCase(), url, async);
+                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                req.setRequestHeader("Content-type", "application/json");
+                for (var headerName in headers) headers.hasOwnProperty(headerName) && req.setRequestHeader(headerName, headers[headerName]);
+                req.onreadystatechange = function() {
+                    req.readyState > 3 && resolve();
+                };
+                req.send(JSON.stringify(data).replace(/&/g, "%26"));
+            });
+        }
+        function promiseDebounce(method, interval) {
+            var debounce = {};
+            return function() {
+                var args = arguments;
+                if (debounce.timeout) {
+                    clearTimeout(debounce.timeout);
+                    delete debounce.timeout;
+                }
+                debounce.timeout = setTimeout(function() {
+                    var resolver = debounce.resolver, rejector = debounce.rejector;
+                    delete debounce.promise;
+                    delete debounce.resolver;
+                    delete debounce.rejector;
+                    delete debounce.timeout;
+                    return __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a.resolve().then(function() {
+                        return method.apply(null, args);
+                    }).then(resolver, rejector);
+                }, interval);
+                debounce.promise = debounce.promise || new __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a(function(resolver, rejector) {
+                    debounce.resolver = resolver;
+                    debounce.rejector = rejector;
+                });
+                return debounce.promise;
+            };
+        }
+        function safeInterval(method, time) {
+            function loop() {
+                timeout = setTimeout(function() {
+                    method();
+                    loop();
+                }, time);
+            }
+            var timeout = void 0;
+            loop();
+            return {
+                cancel: function() {
+                    clearTimeout(timeout);
+                }
+            };
+        }
+        function uniqueID() {
+            var chars = "0123456789abcdef";
+            return "xxxxxxxxxx".replace(/./g, function() {
+                return chars.charAt(Math.floor(Math.random() * chars.length));
+            });
+        }
+        function isIE() {
+            return Boolean(window.document.documentMode);
+        }
+        __webpack_exports__.d = extend;
+        __webpack_exports__.f = ajax;
+        __webpack_exports__.g = promiseDebounce;
+        __webpack_require__.d(__webpack_exports__, "c", function() {
+            return windowReady;
+        });
+        __webpack_exports__.b = safeInterval;
+        __webpack_exports__.a = uniqueID;
+        __webpack_exports__.e = isIE;
+        var __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js"), windowReady = new __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a(function(resolve) {
+            "complete" === document.readyState && resolve();
+            window.addEventListener("load", resolve);
+        });
     },
     "./node_modules/xcomponent/src/component/base.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -3925,7 +4579,7 @@
         __webpack_require__.d(__webpack_exports__, "a", function() {
             return ChildComponent;
         });
-        var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1_post_robot_src_lib_windows__ = __webpack_require__("./node_modules/post-robot/src/lib/windows.js"), __WEBPACK_IMPORTED_MODULE_2_post_robot_src__ = __webpack_require__("./node_modules/post-robot/src/index.js"), __WEBPACK_IMPORTED_MODULE_3_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js"), __WEBPACK_IMPORTED_MODULE_4__base__ = __webpack_require__("./node_modules/xcomponent/src/component/base.js"), __WEBPACK_IMPORTED_MODULE_5__window__ = __webpack_require__("./node_modules/xcomponent/src/component/window.js"), __WEBPACK_IMPORTED_MODULE_6__lib__ = __webpack_require__("./node_modules/xcomponent/src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_7__constants__ = __webpack_require__("./node_modules/xcomponent/src/constants.js"), __WEBPACK_IMPORTED_MODULE_8__props__ = __webpack_require__("./node_modules/xcomponent/src/component/child/props.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+        var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1_post_robot_src_lib_windows__ = __webpack_require__("./node_modules/post-robot/src/lib/windows.js"), __WEBPACK_IMPORTED_MODULE_2_post_robot_src__ = __webpack_require__("./node_modules/post-robot/src/index.js"), __WEBPACK_IMPORTED_MODULE_3_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js"), __WEBPACK_IMPORTED_MODULE_4__base__ = __webpack_require__("./node_modules/xcomponent/src/component/base.js"), __WEBPACK_IMPORTED_MODULE_5__window__ = __webpack_require__("./node_modules/xcomponent/src/component/window.js"), __WEBPACK_IMPORTED_MODULE_6__lib__ = __webpack_require__("./node_modules/xcomponent/src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_7__constants__ = __webpack_require__("./node_modules/xcomponent/src/constants.js"), __WEBPACK_IMPORTED_MODULE_8__props__ = __webpack_require__("./node_modules/xcomponent/src/component/child/props.js"), _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
@@ -5177,7 +5831,7 @@
             return ParentComponent;
         });
         __webpack_exports__.a = destroyAll;
-        var _class, __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1_post_robot_src__ = __webpack_require__("./node_modules/post-robot/src/index.js"), __WEBPACK_IMPORTED_MODULE_2_post_robot_src_lib_windows__ = __webpack_require__("./node_modules/post-robot/src/lib/windows.js"), __WEBPACK_IMPORTED_MODULE_3_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js"), __WEBPACK_IMPORTED_MODULE_4__base__ = __webpack_require__("./node_modules/xcomponent/src/component/base.js"), __WEBPACK_IMPORTED_MODULE_5__window__ = __webpack_require__("./node_modules/xcomponent/src/component/window.js"), __WEBPACK_IMPORTED_MODULE_6__lib__ = __webpack_require__("./node_modules/xcomponent/src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_7__constants__ = __webpack_require__("./node_modules/xcomponent/src/constants.js"), __WEBPACK_IMPORTED_MODULE_8__drivers__ = __webpack_require__("./node_modules/xcomponent/src/component/parent/drivers.js"), __WEBPACK_IMPORTED_MODULE_9__validate__ = __webpack_require__("./node_modules/xcomponent/src/component/parent/validate.js"), __WEBPACK_IMPORTED_MODULE_10__props__ = __webpack_require__("./node_modules/xcomponent/src/component/parent/props.js"), _extends = Object.assign || function(target) {
+        var _class, __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1_post_robot_src__ = __webpack_require__("./node_modules/post-robot/src/index.js"), __WEBPACK_IMPORTED_MODULE_2_post_robot_src_lib_windows__ = __webpack_require__("./node_modules/post-robot/src/lib/windows.js"), __WEBPACK_IMPORTED_MODULE_3_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js"), __WEBPACK_IMPORTED_MODULE_4__base__ = __webpack_require__("./node_modules/xcomponent/src/component/base.js"), __WEBPACK_IMPORTED_MODULE_5__window__ = __webpack_require__("./node_modules/xcomponent/src/component/window.js"), __WEBPACK_IMPORTED_MODULE_6__lib__ = __webpack_require__("./node_modules/xcomponent/src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_7__constants__ = __webpack_require__("./node_modules/xcomponent/src/constants.js"), __WEBPACK_IMPORTED_MODULE_8__drivers__ = __webpack_require__("./node_modules/xcomponent/src/component/parent/drivers.js"), __WEBPACK_IMPORTED_MODULE_9__validate__ = __webpack_require__("./node_modules/xcomponent/src/component/parent/validate.js"), __WEBPACK_IMPORTED_MODULE_10__props__ = __webpack_require__("./node_modules/xcomponent/src/component/parent/props.js"), _extends = Object.assign || function(target) {
             for (var i = 1; i < arguments.length; i++) {
                 var source = arguments[i];
                 for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
@@ -6510,13 +7164,11 @@
             global: function() {
                 return !0;
             },
-            register: function register(component) {
+            register: function(component) {
                 function render(element) {
                     if (element && element.tagName && "script" === element.tagName.toLowerCase() && element.attributes.type && "application/x-component" === element.attributes.type.value && element.attributes["data-component"] && element.attributes["data-component"].value === component.tag) {
-                        component.log("instantiate_script_component");
-                        var props = eval("(" + element.innerText + ")"), container = document.createElement("div");
-                        element.parentNode.replaceChild(container, element);
-                        component.render(props, container);
+                        component.log("instantiate_script_component_error");
+                        throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                     }
                 }
                 function scan() {
@@ -7455,7 +8107,7 @@
         __webpack_exports__.b = info;
         __webpack_exports__.c = warn;
         __webpack_exports__.d = error;
-        var __WEBPACK_IMPORTED_MODULE_0_post_robot_src__ = __webpack_require__("./node_modules/post-robot/src/index.js"), __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js");
+        var __WEBPACK_IMPORTED_MODULE_0_post_robot_src__ = __webpack_require__("./node_modules/post-robot/src/index.js"), __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__ = __webpack_require__("./node_modules/xcomponent/node_modules/beaver-logger/client/index.js");
     },
     "./node_modules/xcomponent/src/lib/promise.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -7654,7 +8306,7 @@
             }).then(function(res) {
                 if (res && res.id) {
                     var _$logger$track;
-                    __WEBPACK_IMPORTED_MODULE_3_beaver_logger_client__.g((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.STATE.BUTTON, 
+                    __WEBPACK_IMPORTED_MODULE_3_beaver_logger_client__.a((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.STATE.BUTTON, 
                     _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.TRANSITION] = __WEBPACK_IMPORTED_MODULE_4__config__.d.TRANSITION.CREATE_PAYMENT, 
                     _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.PAY_ID] = res.id, _$logger$track));
                     return res.id;
@@ -8030,11 +8682,11 @@
                             __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.p)("render_iframe_button", {
                                 version: !0
                             });
-                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.g((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.STATE.LOAD, 
+                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.a((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.STATE.LOAD, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.TRANSITION] = __WEBPACK_IMPORTED_MODULE_4__config__.d.TRANSITION.BUTTON_RENDER, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.BUTTON_TYPE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.BUTTON_TYPE.IFRAME, 
                             _$logger$track));
-                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.f();
+                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.b();
                             if (original) return original.apply(this, arguments);
                         };
                     }
@@ -8123,11 +8775,11 @@
                     decorate: function(original) {
                         return function() {
                             var _$logger$track2;
-                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.g((_$logger$track2 = {}, _$logger$track2[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.STATE.BUTTON, 
+                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.a((_$logger$track2 = {}, _$logger$track2[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.STATE.BUTTON, 
                             _$logger$track2[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.TRANSITION] = __WEBPACK_IMPORTED_MODULE_4__config__.d.TRANSITION.BUTTON_CLICK, 
                             _$logger$track2[__WEBPACK_IMPORTED_MODULE_4__config__.d.KEY.BUTTON_TYPE] = __WEBPACK_IMPORTED_MODULE_4__config__.d.BUTTON_TYPE.IFRAME, 
                             _$logger$track2));
-                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.f();
+                            __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.b();
                             if (original) return original.apply(this, arguments);
                         };
                     }
@@ -8640,14 +9292,14 @@
                     decorate: function(original) {
                         return function(data) {
                             var _$logger$track;
-                            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.g((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_7__config__.d.STATE.CHECKOUT, 
+                            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.a((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_7__config__.d.STATE.CHECKOUT, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.TRANSITION] = __WEBPACK_IMPORTED_MODULE_7__config__.d.TRANSITION.CHECKOUT_INIT, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.CONTEXT_TYPE] = __WEBPACK_IMPORTED_MODULE_7__config__.d.CONTEXT_TYPE.EC_TOKEN, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.TOKEN] = data.paymentToken, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.SELLER_ID] = data.merchantID, 
                             _$logger$track[__WEBPACK_IMPORTED_MODULE_7__config__.d.KEY.CONTEXT_ID] = data.paymentToken, 
                             _$logger$track));
-                            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.f();
+                            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.b();
                             this.paymentToken = data.paymentToken;
                             this.cancelUrl = data.cancelUrl;
                             if (original) return original.apply(this, arguments);
@@ -8846,7 +9498,7 @@
             function doRender(props, original) {
                 var openBridge = getPopupBridgeOpener();
                 return openBridge ? renderThroughPopupBridge(props, openBridge).catch(function(err) {
-                    __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.e("popup_bridge_error", {
+                    __WEBPACK_IMPORTED_MODULE_2_beaver_logger_client__.k("popup_bridge_error", {
                         err: err.stack || err.toString()
                     });
                     return original();
@@ -10877,6 +11529,24 @@
                 if (window.console.log) return window.console.log(err);
             }
         }
+        function checkForDeprecatedIntegration() {
+            for (var scripts = Array.prototype.slice.call(document.getElementsByTagName("script")), _iterator = scripts, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
+                var _ref;
+                if (_isArray) {
+                    if (_i >= _iterator.length) break;
+                    _ref = _iterator[_i++];
+                } else {
+                    _i = _iterator.next();
+                    if (_i.done) break;
+                    _ref = _i.value;
+                }
+                var script = _ref;
+                if (script.attributes.type && "application/x-component" === script.attributes.type.value) {
+                    warn("deprecated_integration_application_xcomponent");
+                    console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
+                }
+            }
+        }
         function checkForCommonErrors() {
             function foo(bar, baz, zomg) {}
             if ("[]" !== JSON.stringify([])) {
@@ -10896,6 +11566,7 @@
             }).length && __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.d("function_bind_arrity_overwritten");
             window.opener && window.parent !== window && __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.d("window_has_opener_and_parent");
         }
+        __webpack_exports__.b = checkForDeprecatedIntegration;
         __webpack_exports__.a = checkForCommonErrors;
         var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1__device__ = __webpack_require__("./src/lib/device.js");
     },
@@ -11072,6 +11743,9 @@
         __webpack_require__.d(__webpack_exports__, "I", function() {
             return __WEBPACK_IMPORTED_MODULE_4__errors__.a;
         });
+        __webpack_require__.d(__webpack_exports__, "J", function() {
+            return __WEBPACK_IMPORTED_MODULE_4__errors__.b;
+        });
         var __WEBPACK_IMPORTED_MODULE_5__dom__ = __webpack_require__("./src/lib/dom.js");
         __webpack_require__.d(__webpack_exports__, "g", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.a;
@@ -11132,7 +11806,7 @@
             return window.xchild && window.xchild.getParentDomain ? window.xchild.getParentDomain() : window.location.host;
         }
         function initLogger() {
-            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.h(function() {
+            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.e(function() {
                 return {
                     referer: getRefererDomain(),
                     host: window.location.host,
@@ -11144,12 +11818,12 @@
                     ver: "4.0.76"
                 };
             });
-            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.i(function() {
+            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.f(function() {
                 return {
                     state: __WEBPACK_IMPORTED_MODULE_2__config__.a.state
                 };
             });
-            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.j(function() {
+            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.g(function() {
                 var _ref;
                 return _ref = {}, _ref[__WEBPACK_IMPORTED_MODULE_2__config__.d.KEY.FEED] = __WEBPACK_IMPORTED_MODULE_2__config__.d.FEED.CHECKOUTJS, 
                 _ref[__WEBPACK_IMPORTED_MODULE_2__config__.d.KEY.DATA_SOURCE] = __WEBPACK_IMPORTED_MODULE_2__config__.d.DATA_SOURCE.CHECKOUT, 
@@ -11159,7 +11833,7 @@
                 _ref[__WEBPACK_IMPORTED_MODULE_2__config__.d.KEY.REFERER] = getRefererDomain(), 
                 _ref;
             });
-            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.k({
+            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.h({
                 uri: __WEBPACK_IMPORTED_MODULE_2__config__.a.loggerUrl,
                 heartbeat: !1,
                 logPerformance: !1,
@@ -11168,9 +11842,9 @@
             });
         }
         function setLogLevel(logLevel) {
-            if (-1 === __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.a.indexOf(logLevel)) throw new Error("Invalid logLevel: " + logLevel);
+            if (-1 === __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.i.indexOf(logLevel)) throw new Error("Invalid logLevel: " + logLevel);
             __WEBPACK_IMPORTED_MODULE_2__config__.a.logLevel = logLevel;
-            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.b.logLevel = logLevel;
+            __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.j.logLevel = logLevel;
             __WEBPACK_IMPORTED_MODULE_0_post_robot_src__.CONFIG.LOG_LEVEL = logLevel;
             window.LOG_LEVEL = logLevel;
         }
@@ -11514,6 +12188,7 @@
             lightbox && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__components__.c)();
             logLevel ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.k)(logLevel) : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.k)(__WEBPACK_IMPORTED_MODULE_1__config__.a.logLevel);
             __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.c("setup_" + __WEBPACK_IMPORTED_MODULE_1__config__.a.env);
+            window.addEventListener("load", __WEBPACK_IMPORTED_MODULE_2__lib__.J);
             __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.m("current_protocol_" + currentProtocol);
         }
         __webpack_exports__.a = setup;
@@ -11546,7 +12221,7 @@
                 src: document.currentScript.src
             });
         }(), currentProtocol = window.location.protocol.split(":")[0];
-        __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.g((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_1__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_1__config__.d.STATE.LOAD, 
+        __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.a((_$logger$track = {}, _$logger$track[__WEBPACK_IMPORTED_MODULE_1__config__.d.KEY.STATE] = __WEBPACK_IMPORTED_MODULE_1__config__.d.STATE.LOAD, 
         _$logger$track[__WEBPACK_IMPORTED_MODULE_1__config__.d.KEY.TRANSITION] = __WEBPACK_IMPORTED_MODULE_1__config__.d.TRANSITION.SCRIPT_LOAD, 
         _$logger$track));
         if (currentScript) {
