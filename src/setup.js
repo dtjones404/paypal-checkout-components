@@ -3,7 +3,7 @@
 import * as $logger from 'beaver-logger/client';
 
 import { config, ENV, FPTI } from './config';
-import { initLogger, checkForCommonErrors, beacon, setLogLevel } from './lib';
+import { initLogger, checkForCommonErrors, beacon, setLogLevel, checkForDeprecatedIntegration } from './lib';
 import { enableCheckoutIframe } from './components';
 
 import { SyncPromise } from 'sync-browser-mocks/src/promise';
@@ -125,6 +125,7 @@ export function setup({ env, stage, apiStage, paypalUrl, state, ppobjects, light
     }
 
     $logger.info(`setup_${config.env}`);
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     $logger.debug(`current_protocol_${currentProtocol}`);
 }
