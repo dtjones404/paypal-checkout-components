@@ -95,6 +95,7 @@
     "Base64": "^1.0.0",
     "beaver-logger": "^3",
     "post-robot": "^6.0.0",
-    "xcomponent": "^2.0.0"
+    "xcomponent": "2.0.56-patch2",
+    "cross-domain-safe-weakmap": "1.0.9"
   }
 }
