@@ -92,7 +92,8 @@
   "dependencies": {
     "Base64": "^1.0.0",
     "beaver-logger": "^3",
+    "cross-domain-safe-weakmap": "1.0.9",
     "post-robot": "^5.0.0",
-    "xcomponent": "^2.0.0"
+    "xcomponent": "2.0.37-patch1"
   }
 }
