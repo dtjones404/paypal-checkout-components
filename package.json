@@ -104,6 +104,7 @@
     "react-dom": "^15.4.2",
     "react-router": "^3.0.2",
     "request": "^2.79.0",
-    "xcomponent": "^2.0.0"
+    "xcomponent": "2.0.16-patch1",
+    "cross-domain-safe-weakmap": "1.0.9"
   }
 }
