@@ -65,21 +65,13 @@
     },
     "./node_modules/cross-domain-utils/src/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
-        var __WEBPACK_IMPORTED_MODULE_0__utils__ = __webpack_require__("./node_modules/cross-domain-utils/src/utils.js");
-        __webpack_require__.d(__webpack_exports__, "getDomain", function() {
-            return __WEBPACK_IMPORTED_MODULE_0__utils__.a;
-        });
-        var __WEBPACK_IMPORTED_MODULE_1__types__ = __webpack_require__("./node_modules/cross-domain-utils/src/types.js");
-        __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__types__);
-    },
-    "./node_modules/cross-domain-utils/src/types.js": function(module, exports) {},
-    "./node_modules/cross-domain-utils/src/utils.js": function(module, __webpack_exports__, __webpack_require__) {
-        "use strict";
         function noop() {}
         function getParent(win) {
             if (win) try {
                 if (win.parent && win.parent !== win) return win.parent;
-            } catch (err) {}
+            } catch (err) {
+                return;
+            }
         }
         function canReadFromWindow(win) {
             try {
@@ -203,6 +195,7 @@
                     }
                     return str;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     base32Str = base32Str.replace(/=/g, "");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = base32Str.length, i = 0, count = length >> 3 << 3; i < count; ) {
@@ -287,6 +280,7 @@
                     return base32Str;
                 }, encodeUtf8 = function(str) {
                     var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, bytes = 0, length = str.length;
+                    if ("" === str) return base32Str;
                     do {
                         blocks[0] = blocks[5];
                         blocks[1] = blocks[6];
@@ -370,6 +364,7 @@
                     return notString ? encodeBytes(input) : asciiOnly ? encodeAscii(input) : encodeUtf8(input);
                 }, decode = function(base32Str, asciiOnly) {
                     if (!asciiOnly) return toUtf8String(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
                     if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
@@ -598,15 +593,16 @@
             function getGlobal() {
                 var glob = void 0;
                 if ("undefined" != typeof window) glob = window; else {
-                    if (void 0 === global) throw new TypeError("Can not find global");
+                    if (void 0 === global) throw new Error("Can not find global");
                     glob = global;
                 }
-                var zalgoGlobal = glob.__zalgopromise__ = glob.__zalgopromise__ || {};
-                zalgoGlobal.flushPromises = zalgoGlobal.flushPromises || [];
-                zalgoGlobal.activeCount = zalgoGlobal.activeCount || 0;
-                zalgoGlobal.possiblyUnhandledPromiseHandlers = zalgoGlobal.possiblyUnhandledPromiseHandlers || [];
-                zalgoGlobal.dispatchedErrors = zalgoGlobal.dispatchedErrors || [];
-                return zalgoGlobal;
+                glob.__zalgopromise__ || (glob.__zalgopromise__ = {
+                    flushPromises: [],
+                    activeCount: 0,
+                    possiblyUnhandledPromiseHandlers: [],
+                    dispatchedErrors: []
+                });
+                return glob.__zalgopromise__;
             }
             __webpack_exports__.a = getGlobal;
         }).call(__webpack_exports__, __webpack_require__("./node_modules/webpack/buildin/global.js"));
@@ -788,7 +784,7 @@
                 });
             };
             ZalgoPromise.prototype.toPromise = function() {
-                if ("undefined" == typeof Promise) throw new TypeError("Could not find Promise");
+                if ("undefined" == typeof Promise) throw new Error("Could not find Promise");
                 return Promise.resolve(this);
             };
             ZalgoPromise.resolve = function(value) {
