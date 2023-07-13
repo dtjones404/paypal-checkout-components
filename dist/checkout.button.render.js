@@ -117,9 +117,9 @@
             /*
  * [hi-base32]{@link https://github.com/emn178/hi-base32}
  *
- * @version 0.3.0
+ * @version 0.5.0
  * @author Chen, Yi-Cyuan [emn178@gmail.com]
- * @copyright Chen, Yi-Cyuan 2015-2017
+ * @copyright Chen, Yi-Cyuan 2015-2018
  * @license MIT
  */
             !function() {
@@ -159,7 +159,12 @@
                     "5": 29,
                     "6": 30,
                     "7": 31
-                }, blocks = [ 0, 0, 0, 0, 0, 0, 0, 0 ], toUtf8String = function(bytes) {
+                }, blocks = [ 0, 0, 0, 0, 0, 0, 0, 0 ], throwInvalidUtf8 = function(position, partial) {
+                    partial.length > 10 && (partial = "..." + partial.substr(-10));
+                    var err = new Error("Decoded data is not valid UTF-8. Maybe try base32.decode.asBytes()? Partial data after reading " + position + " bytes: " + partial + " <-");
+                    err.position = position;
+                    throw err;
+                }, toUtf8String = function(bytes) {
                     for (var b, c, str = "", length = bytes.length, i = 0, followingChars = 0; i < length; ) {
                         b = bytes[i++];
                         if (b <= 127) str += String.fromCharCode(b); else {
@@ -169,19 +174,18 @@
                             } else if (b <= 239) {
                                 c = 15 & b;
                                 followingChars = 2;
-                            } else {
-                                if (!(b <= 247)) throw "not a UTF-8 string";
+                            } else if (b <= 247) {
                                 c = 7 & b;
                                 followingChars = 3;
-                            }
+                            } else throwInvalidUtf8(i, str);
                             for (var j = 0; j < followingChars; ++j) {
                                 b = bytes[i++];
-                                if (b < 128 || b > 191) throw "not a UTF-8 string";
+                                (b < 128 || b > 191) && throwInvalidUtf8(i, str);
                                 c <<= 6;
                                 c += 63 & b;
                             }
-                            if (c >= 55296 && c <= 57343) throw "not a UTF-8 string";
-                            if (c > 1114111) throw "not a UTF-8 string";
+                            c >= 55296 && c <= 57343 && throwInvalidUtf8(i, str);
+                            c > 1114111 && throwInvalidUtf8(i, str);
                             if (c <= 65535) str += String.fromCharCode(c); else {
                                 c -= 65536;
                                 str += String.fromCharCode(55296 + (c >> 10));
@@ -191,6 +195,8 @@
                     }
                     return str;
                 }, decodeAsBytes = function(base32Str) {
+                    if ("" === base32Str) return [];
+                    if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     base32Str = base32Str.replace(/=/g, "");
                     for (var v1, v2, v3, v4, v5, v6, v7, v8, bytes = [], index = 0, length = base32Str.length, i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -274,6 +280,7 @@
                     return base32Str;
                 }, encodeUtf8 = function(str) {
                     var v1, v2, v3, v4, v5, code, i, end = !1, base32Str = "", index = 0, start = 0, bytes = 0, length = str.length;
+                    if ("" === str) return base32Str;
                     do {
                         blocks[0] = blocks[5];
                         blocks[1] = blocks[6];
@@ -313,7 +320,7 @@
                             v2 = blocks[1];
                             v3 = blocks[2];
                             base32Str += BASE32_ENCODE_CHAR[v1 >>> 3] + BASE32_ENCODE_CHAR[31 & (v1 << 2 | v2 >>> 6)] + BASE32_ENCODE_CHAR[v2 >>> 1 & 31] + BASE32_ENCODE_CHAR[31 & (v2 << 4 | v3 >>> 4)] + BASE32_ENCODE_CHAR[v3 << 1 & 31] + "===";
-                        } else if (4 === i) {
+                        } else {
                             v2 = blocks[1];
                             v3 = blocks[2];
                             v4 = blocks[3];
@@ -357,6 +364,8 @@
                     return notString ? encodeBytes(input) : asciiOnly ? encodeAscii(input) : encodeUtf8(input);
                 }, decode = function(base32Str, asciiOnly) {
                     if (!asciiOnly) return toUtf8String(decodeAsBytes(base32Str));
+                    if ("" === base32Str) return "";
+                    if (!/^[A-Z2-7=]+$/.test(base32Str)) throw new Error("Invalid base32 characters");
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
                     -1 === length && (length = base32Str.length);
                     for (var i = 0, count = length >> 3 << 3; i < count; ) {
@@ -587,12 +596,13 @@
                     if (void 0 === global) throw new Error("Can not find global");
                     glob = global;
                 }
-                var zalgoGlobal = glob.__zalgopromise__ = glob.__zalgopromise__ || {};
-                zalgoGlobal.flushPromises = zalgoGlobal.flushPromises || [];
-                zalgoGlobal.activeCount = zalgoGlobal.activeCount || 0;
-                zalgoGlobal.possiblyUnhandledPromiseHandlers = zalgoGlobal.possiblyUnhandledPromiseHandlers || [];
-                zalgoGlobal.dispatchedErrors = zalgoGlobal.dispatchedErrors || [];
-                return zalgoGlobal;
+                glob.__zalgopromise__ || (glob.__zalgopromise__ = {
+                    flushPromises: [],
+                    activeCount: 0,
+                    possiblyUnhandledPromiseHandlers: [],
+                    dispatchedErrors: []
+                });
+                return glob.__zalgopromise__;
             }
             __webpack_exports__.a = getGlobal;
         }).call(__webpack_exports__, __webpack_require__("./node_modules/webpack/buildin/global.js"));
