@@ -148,7 +148,7 @@
     "cross-domain-utils": "^2.0.1",
     "hi-base32": "^0.5.0",
     "paypal-braintree-web-client": "^2",
-    "post-robot": "^8.0.0",
+    "post-robot": "8.0.24",
     "xcomponent": "6.0.56-patch2",
     "zalgo-promise": "^1.0.10"
   }
