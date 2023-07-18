@@ -784,171 +784,149 @@
                     var n = t.match(e);
                     return n && n.length > 1 && n[1] || "";
                 }
-                function r(e) {
-                    var n = t.match(e);
-                    return n && n.length > 1 && n[2] || "";
-                }
-                var N, i = n(/(ipod|iphone|ipad)/i).toLowerCase(), o = /like android/i.test(t), u = !o && /android/i.test(t), a = /nexus\s*[0-6]\s*/i.test(t), f = !a && /nexus\s*[0-9]+/i.test(t), l = /CrOS/.test(t), c = /silk/i.test(t), h = /sailfish/i.test(t), p = /tizen/i.test(t), d = /(web|hpw)(o|0)s/i.test(t), v = /windows phone/i.test(t), g = (/SamsungBrowser/i.test(t), 
-                !v && /windows/i.test(t)), y = !i && !c && /macintosh/i.test(t), b = !u && !h && !p && !d && /linux/i.test(t), w = r(/edg([ea]|ios)\/(\d+(\.\d+)?)/i), E = n(/version\/(\d+(\.\d+)?)/i), S = /tablet/i.test(t) && !/tablet pc/i.test(t), x = !S && /[^-]mobi/i.test(t), T = /xbox/i.test(t);
-                /opera/i.test(t) ? N = {
+                var T, i = n(/(ipod|iphone|ipad)/i).toLowerCase(), s = /like android/i.test(t), o = !s && /android/i.test(t), u = /nexus\s*[0-6]\s*/i.test(t), a = !u && /nexus\s*[0-9]+/i.test(t), f = /CrOS/.test(t), l = /silk/i.test(t), c = /sailfish/i.test(t), h = /tizen/i.test(t), p = /(web|hpw)os/i.test(t), d = /windows phone/i.test(t), m = (/SamsungBrowser/i.test(t), 
+                !d && /windows/i.test(t)), g = !i && !l && /macintosh/i.test(t), y = !o && !c && !h && !p && /linux/i.test(t), b = n(/edge\/(\d+(\.\d+)?)/i), w = n(/version\/(\d+(\.\d+)?)/i), E = /tablet/i.test(t) && !/tablet pc/i.test(t), S = !E && /[^-]mobi/i.test(t), x = /xbox/i.test(t);
+                /opera/i.test(t) ? T = {
                     name: "Opera",
                     opera: e,
-                    version: E || n(/(?:opera|opr|opios)[\s\/](\d+(\.\d+)?)/i)
-                } : /opr\/|opios/i.test(t) ? N = {
+                    version: w || n(/(?:opera|opr|opios)[\s\/](\d+(\.\d+)?)/i)
+                } : /opr|opios/i.test(t) ? T = {
                     name: "Opera",
                     opera: e,
-                    version: n(/(?:opr|opios)[\s\/](\d+(\.\d+)?)/i) || E
-                } : /SamsungBrowser/i.test(t) ? N = {
+                    version: n(/(?:opr|opios)[\s\/](\d+(\.\d+)?)/i) || w
+                } : /SamsungBrowser/i.test(t) ? T = {
                     name: "Samsung Internet for Android",
                     samsungBrowser: e,
-                    version: E || n(/(?:SamsungBrowser)[\s\/](\d+(\.\d+)?)/i)
-                } : /Whale/i.test(t) ? N = {
-                    name: "NAVER Whale browser",
-                    whale: e,
-                    version: n(/(?:whale)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /MZBrowser/i.test(t) ? N = {
-                    name: "MZ Browser",
-                    mzbrowser: e,
-                    version: n(/(?:MZBrowser)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /coast/i.test(t) ? N = {
+                    version: w || n(/(?:SamsungBrowser)[\s\/](\d+(\.\d+)?)/i)
+                } : /coast/i.test(t) ? T = {
                     name: "Opera Coast",
                     coast: e,
-                    version: E || n(/(?:coast)[\s\/](\d+(\.\d+)?)/i)
-                } : /focus/i.test(t) ? N = {
-                    name: "Focus",
-                    focus: e,
-                    version: n(/(?:focus)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /yabrowser/i.test(t) ? N = {
+                    version: w || n(/(?:coast)[\s\/](\d+(\.\d+)?)/i)
+                } : /yabrowser/i.test(t) ? T = {
                     name: "Yandex Browser",
                     yandexbrowser: e,
-                    version: E || n(/(?:yabrowser)[\s\/](\d+(\.\d+)?)/i)
-                } : /ucbrowser/i.test(t) ? N = {
+                    version: w || n(/(?:yabrowser)[\s\/](\d+(\.\d+)?)/i)
+                } : /ucbrowser/i.test(t) ? T = {
                     name: "UC Browser",
                     ucbrowser: e,
                     version: n(/(?:ucbrowser)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /mxios/i.test(t) ? N = {
+                } : /mxios/i.test(t) ? T = {
                     name: "Maxthon",
                     maxthon: e,
                     version: n(/(?:mxios)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /epiphany/i.test(t) ? N = {
+                } : /epiphany/i.test(t) ? T = {
                     name: "Epiphany",
                     epiphany: e,
                     version: n(/(?:epiphany)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /puffin/i.test(t) ? N = {
+                } : /puffin/i.test(t) ? T = {
                     name: "Puffin",
                     puffin: e,
                     version: n(/(?:puffin)[\s\/](\d+(?:\.\d+)?)/i)
-                } : /sleipnir/i.test(t) ? N = {
+                } : /sleipnir/i.test(t) ? T = {
                     name: "Sleipnir",
                     sleipnir: e,
                     version: n(/(?:sleipnir)[\s\/](\d+(?:\.\d+)+)/i)
-                } : /k-meleon/i.test(t) ? N = {
+                } : /k-meleon/i.test(t) ? T = {
                     name: "K-Meleon",
                     kMeleon: e,
                     version: n(/(?:k-meleon)[\s\/](\d+(?:\.\d+)+)/i)
-                } : v ? (N = {
+                } : d ? (T = {
                     name: "Windows Phone",
-                    osname: "Windows Phone",
                     windowsphone: e
-                }, w ? (N.msedge = e, N.version = w) : (N.msie = e, N.version = n(/iemobile\/(\d+(\.\d+)?)/i))) : /msie|trident/i.test(t) ? N = {
+                }, b ? (T.msedge = e, T.version = b) : (T.msie = e, T.version = n(/iemobile\/(\d+(\.\d+)?)/i))) : /msie|trident/i.test(t) ? T = {
                     name: "Internet Explorer",
                     msie: e,
                     version: n(/(?:msie |rv:)(\d+(\.\d+)?)/i)
-                } : l ? N = {
+                } : f ? T = {
                     name: "Chrome",
-                    osname: "Chrome OS",
                     chromeos: e,
                     chromeBook: e,
                     chrome: e,
                     version: n(/(?:chrome|crios|crmo)\/(\d+(\.\d+)?)/i)
-                } : /edg([ea]|ios)/i.test(t) ? N = {
+                } : /chrome.+? edge/i.test(t) ? T = {
                     name: "Microsoft Edge",
                     msedge: e,
-                    version: w
-                } : /vivaldi/i.test(t) ? N = {
+                    version: b
+                } : /vivaldi/i.test(t) ? T = {
                     name: "Vivaldi",
                     vivaldi: e,
-                    version: n(/vivaldi\/(\d+(\.\d+)?)/i) || E
-                } : h ? N = {
+                    version: n(/vivaldi\/(\d+(\.\d+)?)/i) || w
+                } : c ? T = {
                     name: "Sailfish",
-                    osname: "Sailfish OS",
                     sailfish: e,
                     version: n(/sailfish\s?browser\/(\d+(\.\d+)?)/i)
-                } : /seamonkey\//i.test(t) ? N = {
+                } : /seamonkey\//i.test(t) ? T = {
                     name: "SeaMonkey",
                     seamonkey: e,
                     version: n(/seamonkey\/(\d+(\.\d+)?)/i)
-                } : /firefox|iceweasel|fxios/i.test(t) ? (N = {
+                } : /firefox|iceweasel|fxios/i.test(t) ? (T = {
                     name: "Firefox",
                     firefox: e,
                     version: n(/(?:firefox|iceweasel|fxios)[ \/](\d+(\.\d+)?)/i)
-                }, /\((mobile|tablet);[^\)]*rv:[\d\.]+\)/i.test(t) && (N.firefoxos = e, N.osname = "Firefox OS")) : c ? N = {
+                }, /\((mobile|tablet);[^\)]*rv:[\d\.]+\)/i.test(t) && (T.firefoxos = e)) : l ? T = {
                     name: "Amazon Silk",
                     silk: e,
                     version: n(/silk\/(\d+(\.\d+)?)/i)
-                } : /phantom/i.test(t) ? N = {
+                } : /phantom/i.test(t) ? T = {
                     name: "PhantomJS",
                     phantom: e,
                     version: n(/phantomjs\/(\d+(\.\d+)?)/i)
-                } : /slimerjs/i.test(t) ? N = {
+                } : /slimerjs/i.test(t) ? T = {
                     name: "SlimerJS",
                     slimer: e,
                     version: n(/slimerjs\/(\d+(\.\d+)?)/i)
-                } : /blackberry|\bbb\d+/i.test(t) || /rim\stablet/i.test(t) ? N = {
+                } : /blackberry|\bbb\d+/i.test(t) || /rim\stablet/i.test(t) ? T = {
                     name: "BlackBerry",
-                    osname: "BlackBerry OS",
                     blackberry: e,
-                    version: E || n(/blackberry[\d]+\/(\d+(\.\d+)?)/i)
-                } : d ? (N = {
+                    version: w || n(/blackberry[\d]+\/(\d+(\.\d+)?)/i)
+                } : p ? (T = {
                     name: "WebOS",
-                    osname: "WebOS",
                     webos: e,
-                    version: E || n(/w(?:eb)?osbrowser\/(\d+(\.\d+)?)/i)
-                }, /touchpad\//i.test(t) && (N.touchpad = e)) : /bada/i.test(t) ? N = {
+                    version: w || n(/w(?:eb)?osbrowser\/(\d+(\.\d+)?)/i)
+                }, /touchpad\//i.test(t) && (T.touchpad = e)) : /bada/i.test(t) ? T = {
                     name: "Bada",
-                    osname: "Bada",
                     bada: e,
                     version: n(/dolfin\/(\d+(\.\d+)?)/i)
-                } : p ? N = {
+                } : h ? T = {
                     name: "Tizen",
-                    osname: "Tizen",
                     tizen: e,
-                    version: n(/(?:tizen\s?)?browser\/(\d+(\.\d+)?)/i) || E
-                } : /qupzilla/i.test(t) ? N = {
+                    version: n(/(?:tizen\s?)?browser\/(\d+(\.\d+)?)/i) || w
+                } : /qupzilla/i.test(t) ? T = {
                     name: "QupZilla",
                     qupzilla: e,
-                    version: n(/(?:qupzilla)[\s\/](\d+(?:\.\d+)+)/i) || E
-                } : /chromium/i.test(t) ? N = {
+                    version: n(/(?:qupzilla)[\s\/](\d+(?:\.\d+)+)/i) || w
+                } : /chromium/i.test(t) ? T = {
                     name: "Chromium",
                     chromium: e,
-                    version: n(/(?:chromium)[\s\/](\d+(?:\.\d+)?)/i) || E
-                } : /chrome|crios|crmo/i.test(t) ? N = {
+                    version: n(/(?:chromium)[\s\/](\d+(?:\.\d+)?)/i) || w
+                } : /chrome|crios|crmo/i.test(t) ? T = {
                     name: "Chrome",
                     chrome: e,
                     version: n(/(?:chrome|crios|crmo)\/(\d+(\.\d+)?)/i)
-                } : u ? N = {
+                } : o ? T = {
                     name: "Android",
-                    version: E
-                } : /safari|applewebkit/i.test(t) ? (N = {
+                    version: w
+                } : /safari|applewebkit/i.test(t) ? (T = {
                     name: "Safari",
                     safari: e
-                }, E && (N.version = E)) : i ? (N = {
+                }, w && (T.version = w)) : i ? (T = {
                     name: "iphone" == i ? "iPhone" : "ipad" == i ? "iPad" : "iPod"
-                }, E && (N.version = E)) : N = /googlebot/i.test(t) ? {
+                }, w && (T.version = w)) : T = /googlebot/i.test(t) ? {
                     name: "Googlebot",
                     googlebot: e,
-                    version: n(/googlebot\/(\d+(\.\d+))/i) || E
+                    version: n(/googlebot\/(\d+(\.\d+))/i) || w
                 } : {
                     name: n(/^(.*)\/(.*) /),
-                    version: r(/^(.*)\/(.*) /)
-                }, !N.msedge && /(apple)?webkit/i.test(t) ? (/(apple)?webkit\/537\.36/i.test(t) ? (N.name = N.name || "Blink", 
-                N.blink = e) : (N.name = N.name || "Webkit", N.webkit = e), !N.version && E && (N.version = E)) : !N.opera && /gecko\//i.test(t) && (N.name = N.name || "Gecko", 
-                N.gecko = e, N.version = N.version || n(/gecko\/(\d+(\.\d+)?)/i)), N.windowsphone || !u && !N.silk ? !N.windowsphone && i ? (N[i] = e, 
-                N.ios = e, N.osname = "iOS") : y ? (N.mac = e, N.osname = "macOS") : T ? (N.xbox = e, 
-                N.osname = "Xbox") : g ? (N.windows = e, N.osname = "Windows") : b && (N.linux = e, 
-                N.osname = "Linux") : (N.android = e, N.osname = "Android");
-                var k = "";
-                N.windows ? k = function(e) {
+                    version: function(e) {
+                        var n = t.match(e);
+                        return n && n.length > 1 && n[2] || "";
+                    }(/^(.*)\/(.*) /)
+                }, !T.msedge && /(apple)?webkit/i.test(t) ? (/(apple)?webkit\/537\.36/i.test(t) ? (T.name = T.name || "Blink", 
+                T.blink = e) : (T.name = T.name || "Webkit", T.webkit = e), !T.version && w && (T.version = w)) : !T.opera && /gecko\//i.test(t) && (T.name = T.name || "Gecko", 
+                T.gecko = e, T.version = T.version || n(/gecko\/(\d+(\.\d+)?)/i)), T.windowsphone || T.msedge || !o && !T.silk ? T.windowsphone || T.msedge || !i ? g ? T.mac = e : x ? T.xbox = e : m ? T.windows = e : y && (T.linux = e) : (T[i] = e, 
+                T.ios = e) : T.android = e;
+                var C = "";
+                T.windows ? C = function(e) {
                     switch (e) {
                       case "NT":
                         return "NT";
@@ -983,14 +961,14 @@
                       default:
                         return;
                     }
-                }(n(/Windows ((NT|XP)( \d\d?.\d)?)/i)) : N.windowsphone ? k = n(/windows phone (?:os)?\s?(\d+(\.\d+)*)/i) : N.mac ? (k = n(/Mac OS X (\d+([_\.\s]\d+)*)/i), 
-                k = k.replace(/[_\s]/g, ".")) : i ? (k = n(/os (\d+([_\s]\d+)*) like mac os x/i), 
-                k = k.replace(/[_\s]/g, ".")) : u ? k = n(/android[ \/-](\d+(\.\d+)*)/i) : N.webos ? k = n(/(?:web|hpw)os\/(\d+(\.\d+)*)/i) : N.blackberry ? k = n(/rim\stablet\sos\s(\d+(\.\d+)*)/i) : N.bada ? k = n(/bada\/(\d+(\.\d+)*)/i) : N.tizen && (k = n(/tizen[\/\s](\d+(\.\d+)*)/i)), 
-                k && (N.osversion = k);
-                var L = !N.windows && k.split(".")[0];
-                S || f || "ipad" == i || u && (3 == L || L >= 4 && !x) || N.silk ? N.tablet = e : (x || "iphone" == i || "ipod" == i || u || a || N.blackberry || N.webos || N.bada) && (N.mobile = e);
-                return N.msedge || N.msie && N.version >= 10 || N.yandexbrowser && N.version >= 15 || N.vivaldi && N.version >= 1 || N.chrome && N.version >= 20 || N.samsungBrowser && N.version >= 4 || N.whale && 1 === s([ N.version, "1.0" ]) || N.mzbrowser && 1 === s([ N.version, "6.0" ]) || N.focus && 1 === s([ N.version, "1.0" ]) || N.firefox && N.version >= 20 || N.safari && N.version >= 6 || N.opera && N.version >= 10 || N.ios && N.osversion && N.osversion.split(".")[0] >= 6 || N.blackberry && N.version >= 10.1 || N.chromium && N.version >= 20 ? N.a = e : N.msie && N.version < 10 || N.chrome && N.version < 20 || N.firefox && N.version < 20 || N.safari && N.version < 6 || N.opera && N.version < 10 || N.ios && N.osversion && N.osversion.split(".")[0] < 6 || N.chromium && N.version < 20 ? N.c = e : N.x = e, 
-                N;
+                }(n(/Windows ((NT|XP)( \d\d?.\d)?)/i)) : T.windowsphone ? C = n(/windows phone (?:os)?\s?(\d+(\.\d+)*)/i) : T.mac ? (C = n(/Mac OS X (\d+([_\.\s]\d+)*)/i), 
+                C = C.replace(/[_\s]/g, ".")) : i ? (C = n(/os (\d+([_\s]\d+)*) like mac os x/i), 
+                C = C.replace(/[_\s]/g, ".")) : o ? C = n(/android[ \/-](\d+(\.\d+)*)/i) : T.webos ? C = n(/(?:web|hpw)os\/(\d+(\.\d+)*)/i) : T.blackberry ? C = n(/rim\stablet\sos\s(\d+(\.\d+)*)/i) : T.bada ? C = n(/bada\/(\d+(\.\d+)*)/i) : T.tizen && (C = n(/tizen[\/\s](\d+(\.\d+)*)/i)), 
+                C && (T.osversion = C);
+                var k = !T.windows && C.split(".")[0];
+                E || a || "ipad" == i || o && (3 == k || k >= 4 && !S) || T.silk ? T.tablet = e : (S || "iphone" == i || "ipod" == i || o || u || T.blackberry || T.webos || T.bada) && (T.mobile = e);
+                return T.msedge || T.msie && T.version >= 10 || T.yandexbrowser && T.version >= 15 || T.vivaldi && T.version >= 1 || T.chrome && T.version >= 20 || T.samsungBrowser && T.version >= 4 || T.firefox && T.version >= 20 || T.safari && T.version >= 6 || T.opera && T.version >= 10 || T.ios && T.osversion && T.osversion.split(".")[0] >= 6 || T.blackberry && T.version >= 10.1 || T.chromium && T.version >= 20 ? T.a = e : T.msie && T.version < 10 || T.chrome && T.version < 20 || T.firefox && T.version < 20 || T.safari && T.version < 6 || T.opera && T.version < 10 || T.ios && T.osversion && T.osversion.split(".")[0] < 6 || T.chromium && T.version < 20 ? T.c = e : T.x = e, 
+                T;
             }
             function r(e) {
                 return e.split(".").length;
@@ -1034,7 +1012,7 @@
                 }
                 return !1;
             }, n.isUnsupportedBrowser = o, n.compareVersions = s, n.check = u, n._detect = t, 
-            n.detect = t, n;
+            n;
         });
     },
     "./node_modules/cross-domain-safe-weakmap/node_modules/cross-domain-utils/src/constants.js": function(module, __webpack_exports__, __webpack_require__) {
@@ -11734,7 +11712,7 @@
             return jsxDom("div", {
                 id: id,
                 class: tag + " " + tag + "-context-" + context + " " + tag + "-label-" + label + " " + tag + "-size-" + size
-            }, jsxDom("style", null, "\n                    #" + id + " {\n                        font-size: 0;\n                        width: 100%;\n                    }\n\n                    #" + id + ".paypal-button-size-responsive {\n                        text-align: center;\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " {\n                        display: inline-block;\n                        min-width: " + minWidth + ";\n                        max-width: 500px;\n                    }\n\n                    #" + id + ",\n                    #" + id + " > ." + CLASS.OUTLET + ",\n                    #" + id + " > ." + CLASS.OUTLET + " > iframe {\n                        min-height: " + sizes.small.height + ";\n                        max-height: " + sizes.large.height + ";\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " {\n                        width:  " + defaultSize.width + ";\n                        height: " + defaultSize.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-tiny > ." + CLASS.OUTLET + ",\n                    #" + id + ".paypal-button-size-small > ." + CLASS.OUTLET + " {\n                        width:  " + sizes.small.width + ";\n                        height: " + sizes.small.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-medium > ." + CLASS.OUTLET + " {\n                        width:  " + sizes.medium.width + ";\n                        height: " + sizes.medium.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-large > ." + CLASS.OUTLET + " {\n                        width:  " + sizes.large.width + ";\n                        height: " + sizes.large.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-responsive > ." + CLASS.OUTLET + " {\n                        width: 100%;\n                        height: " + initialHeight + "\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " > iframe {\n                        min-width: 100%;\n                        max-width: 100%;\n                        width: " + defaultSize.width + ";\n                        height: 100%;\n                    }\n                "), outlet);
+            }, jsxDom("style", null, "\n                    #" + id + " {\n                        font-size: 0;\n                        width: 100%;\n                    }\n\n                    #" + id + ".paypal-button-size-responsive {\n                        text-align: center;\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " {\n                        display: inline-block;\n                        min-width: " + minWidth + ";\n                        max-width: 500px;\n                        position: relative;\n                    }\n\n                    #" + id + ",\n                    #" + id + " > ." + CLASS.OUTLET + ",\n                    #" + id + " > ." + CLASS.OUTLET + " > iframe {\n                        min-height: " + sizes.small.height + ";\n                        max-height: " + sizes.large.height + ";\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " {\n                        width:  " + defaultSize.width + ";\n                        height: " + defaultSize.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-tiny > ." + CLASS.OUTLET + ",\n                    #" + id + ".paypal-button-size-small > ." + CLASS.OUTLET + " {\n                        width:  " + sizes.small.width + ";\n                        height: " + sizes.small.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-medium > ." + CLASS.OUTLET + " {\n                        width:  " + sizes.medium.width + ";\n                        height: " + sizes.medium.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-large > ." + CLASS.OUTLET + " {\n                        width:  " + sizes.large.width + ";\n                        height: " + sizes.large.height + ";\n                    }\n\n                    #" + id + ".paypal-button-size-responsive > ." + CLASS.OUTLET + " {\n                        width: 100%;\n                        height: " + initialHeight + ";\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " > iframe {\n                        min-width: 100%;\n                        max-width: 100%;\n                        width: " + defaultSize.width + ";\n                        height: 100%;\n                        position: absolute;\n                        top: 0;\n                        left: 0;\n                        z-index: 200;\n                    }\n\n                    #" + id + " > ." + CLASS.OUTLET + " > iframe." + CLASS.SACRIFICIAL_FRAME + " {\n                        z-index: 100;\n                    }\n                "), outlet);
         }
         __webpack_exports__.a = containerTemplate;
     },
