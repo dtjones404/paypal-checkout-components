@@ -281,6 +281,11 @@ window["ppdemo"] = function(modules) {
         process.removeListener = noop;
         process.removeAllListeners = noop;
         process.emit = noop;
+        process.prependListener = noop;
+        process.prependOnceListener = noop;
+        process.listeners = function(name) {
+            return [];
+        };
         process.binding = function(name) {
             throw new Error("process.binding is not supported");
         };
@@ -828,37 +833,35 @@ window["ppdemo"] = function(modules) {
             var emptyFunction = __webpack_require__("./node_modules/fbjs/lib/emptyFunction.js");
             var warning = emptyFunction;
             if (process.env.NODE_ENV !== "production") {
-                (function() {
-                    var printWarning = function printWarning(format) {
-                        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                            args[_key - 1] = arguments[_key];
+                var printWarning = function printWarning(format) {
+                    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                        args[_key - 1] = arguments[_key];
+                    }
+                    var argIndex = 0;
+                    var message = "Warning: " + format.replace(/%s/g, function() {
+                        return args[argIndex++];
+                    });
+                    if (typeof console !== "undefined") {
+                        console.error(message);
+                    }
+                    try {
+                        throw new Error(message);
+                    } catch (x) {}
+                };
+                warning = function warning(condition, format) {
+                    if (format === undefined) {
+                        throw new Error("`warning(condition, format, ...args)` requires a warning " + "message argument");
+                    }
+                    if (format.indexOf("Failed Composite propType: ") === 0) {
+                        return;
+                    }
+                    if (!condition) {
+                        for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+                            args[_key2 - 2] = arguments[_key2];
                         }
-                        var argIndex = 0;
-                        var message = "Warning: " + format.replace(/%s/g, function() {
-                            return args[argIndex++];
-                        });
-                        if (typeof console !== "undefined") {
-                            console.error(message);
-                        }
-                        try {
-                            throw new Error(message);
-                        } catch (x) {}
-                    };
-                    warning = function warning(condition, format) {
-                        if (format === undefined) {
-                            throw new Error("`warning(condition, format, ...args)` requires a warning " + "message argument");
-                        }
-                        if (format.indexOf("Failed Composite propType: ") === 0) {
-                            return;
-                        }
-                        if (!condition) {
-                            for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-                                args[_key2 - 2] = arguments[_key2];
-                            }
-                            printWarning.apply(undefined, [ format ].concat(args));
-                        }
-                    };
-                })();
+                        printWarning.apply(undefined, [ format ].concat(args));
+                    }
+                };
             }
             module.exports = warning;
         }).call(exports, __webpack_require__("./node_modules/process/browser.js"));
@@ -4802,10 +4805,9 @@ window["ppdemo"] = function(modules) {
         var defaultParseQueryString = _queryString.parse;
         var useQueries = function useQueries(createHistory) {
             return function() {
-                var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                 var history = createHistory(options);
-                var stringifyQuery = options.stringifyQuery;
-                var parseQueryString = options.parseQueryString;
+                var stringifyQuery = options.stringifyQuery, parseQueryString = options.parseQueryString;
                 if (typeof stringifyQuery !== "function") stringifyQuery = defaultStringifyQuery;
                 if (typeof parseQueryString !== "function") parseQueryString = defaultParseQueryString;
                 var decodeQuery = function decodeQuery(location) {
@@ -4917,8 +4919,11 @@ window["ppdemo"] = function(modules) {
                 return function(key, value, accumulator) {
                     result = /(\[\])$/.exec(key);
                     key = key.replace(/\[\]$/, "");
-                    if (!result || accumulator[key] === undefined) {
+                    if (!result) {
                         accumulator[key] = value;
+                        return;
+                    } else if (accumulator[key] === undefined) {
+                        accumulator[key] = [ value ];
                         return;
                     }
                     accumulator[key] = [].concat(accumulator[key], value);
@@ -5060,7 +5065,7 @@ window["ppdemo"] = function(modules) {
             var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function(obj) {
                 return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
             } : function(obj) {
-                return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+                return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
             };
             var _extends = Object.assign || function(target) {
                 for (var i = 1; i < arguments.length; i++) {
@@ -5088,9 +5093,9 @@ window["ppdemo"] = function(modules) {
                 return _extends(Object.create(null), props);
             };
             var createLocation = exports.createLocation = function createLocation() {
-                var input = arguments.length <= 0 || arguments[0] === undefined ? "/" : arguments[0];
-                var action = arguments.length <= 1 || arguments[1] === undefined ? _Actions.POP : arguments[1];
-                var key = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+                var input = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "/";
+                var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _Actions.POP;
+                var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
                 var object = typeof input === "string" ? (0, _PathUtils.parsePath)(input) : input;
                 process.env.NODE_ENV !== "production" ? (0, _warning2["default"])(!object.path, "Location descriptor objects should have a `pathname`, not a `path`.") : void 0;
                 var pathname = object.pathname || "/";
@@ -5150,10 +5155,7 @@ window["ppdemo"] = function(modules) {
                 };
             }
             var addQueryStringValueToPath = exports.addQueryStringValueToPath = function addQueryStringValueToPath(path, key, value) {
-                var _parsePath = parsePath(path);
-                var pathname = _parsePath.pathname;
-                var search = _parsePath.search;
-                var hash = _parsePath.hash;
+                var _parsePath = parsePath(path), pathname = _parsePath.pathname, search = _parsePath.search, hash = _parsePath.hash;
                 return createPath({
                     pathname: pathname,
                     search: search + (search.indexOf("?") === -1 ? "?" : "&") + key + "=" + value,
@@ -5161,10 +5163,7 @@ window["ppdemo"] = function(modules) {
                 });
             };
             var stripQueryStringValueFromPath = exports.stripQueryStringValueFromPath = function stripQueryStringValueFromPath(path, key) {
-                var _parsePath2 = parsePath(path);
-                var pathname = _parsePath2.pathname;
-                var search = _parsePath2.search;
-                var hash = _parsePath2.hash;
+                var _parsePath2 = parsePath(path), pathname = _parsePath2.pathname, search = _parsePath2.search, hash = _parsePath2.hash;
                 return createPath({
                     pathname: pathname,
                     search: search.replace(new RegExp("([?&])" + key + "=[a-zA-Z0-9]+(&?)"), function(match, prefix, suffix) {
@@ -5174,8 +5173,7 @@ window["ppdemo"] = function(modules) {
                 });
             };
             var getQueryStringValueFromPath = exports.getQueryStringValueFromPath = function getQueryStringValueFromPath(path, key) {
-                var _parsePath3 = parsePath(path);
-                var search = _parsePath3.search;
+                var _parsePath3 = parsePath(path), search = _parsePath3.search;
                 var match = search.match(new RegExp("[?&]" + key + "=([a-zA-Z0-9]+)"));
                 return match && match[1];
             };
@@ -5207,10 +5205,7 @@ window["ppdemo"] = function(modules) {
             };
             var createPath = exports.createPath = function createPath(location) {
                 if (location == null || typeof location === "string") return location;
-                var basename = location.basename;
-                var pathname = location.pathname;
-                var search = location.search;
-                var hash = location.hash;
+                var basename = location.basename, pathname = location.pathname, search = location.search, hash = location.hash;
                 var path = (basename || "") + pathname;
                 if (search && search !== "?") path += search;
                 if (hash) path += hash;
@@ -5242,13 +5237,13 @@ window["ppdemo"] = function(modules) {
         }
         var useBasename = function useBasename(createHistory) {
             return function() {
-                var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                 var history = createHistory(options);
                 var basename = options.basename;
                 var addBasename = function addBasename(location) {
                     if (!location) return location;
                     if (basename && location.basename == null) {
-                        if (location.pathname.indexOf(basename) === 0) {
+                        if (location.pathname.toLowerCase().indexOf(basename.toLowerCase()) === 0) {
                             location.pathname = location.pathname.substring(basename.length);
                             location.basename = basename;
                             if (location.pathname === "") location.pathname = "/";
@@ -5352,7 +5347,7 @@ window["ppdemo"] = function(modules) {
                 }, {});
             };
             var createMemoryHistory = function createMemoryHistory() {
-                var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                 if (Array.isArray(options)) {
                     options = {
                         entries: options
@@ -5407,9 +5402,7 @@ window["ppdemo"] = function(modules) {
                     replaceLocation: replaceLocation,
                     go: go
                 }));
-                var _options = options;
-                var entries = _options.entries;
-                var current = _options.current;
+                var _options = options, entries = _options.entries, current = _options.current;
                 if (typeof entries === "string") {
                     entries = [ entries ];
                 } else if (!Array.isArray(entries)) {
@@ -5454,13 +5447,8 @@ window["ppdemo"] = function(modules) {
             };
         }
         var createHistory = function createHistory() {
-            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-            var getCurrentLocation = options.getCurrentLocation;
-            var getUserConfirmation = options.getUserConfirmation;
-            var pushLocation = options.pushLocation;
-            var replaceLocation = options.replaceLocation;
-            var go = options.go;
-            var keyLength = options.keyLength;
+            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+            var getCurrentLocation = options.getCurrentLocation, getUserConfirmation = options.getUserConfirmation, pushLocation = options.pushLocation, replaceLocation = options.replaceLocation, go = options.go, keyLength = options.keyLength;
             var currentLocation = void 0;
             var pendingLocation = void 0;
             var beforeListeners = [];
@@ -5560,7 +5548,7 @@ window["ppdemo"] = function(modules) {
                 return (0, _PathUtils.createPath)(location);
             };
             var createLocation = function createLocation(location, action) {
-                var key = arguments.length <= 2 || arguments[2] === undefined ? createKey() : arguments[2];
+                var key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : createKey();
                 return (0, _LocationUtils.createLocation)(location, action, key);
             };
             return {
@@ -5761,16 +5749,12 @@ window["ppdemo"] = function(modules) {
                 };
             }
             var createBrowserHistory = function createBrowserHistory() {
-                var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                 !_ExecutionEnvironment.canUseDOM ? process.env.NODE_ENV !== "production" ? (0, _invariant2["default"])(false, "Browser history needs a DOM") : (0, 
                 _invariant2["default"])(false) : void 0;
                 var useRefresh = options.forceRefresh || !(0, _DOMUtils.supportsHistory)();
                 var Protocol = useRefresh ? RefreshProtocol : BrowserProtocol;
-                var getUserConfirmation = Protocol.getUserConfirmation;
-                var getCurrentLocation = Protocol.getCurrentLocation;
-                var pushLocation = Protocol.pushLocation;
-                var replaceLocation = Protocol.replaceLocation;
-                var go = Protocol.go;
+                var getUserConfirmation = Protocol.getUserConfirmation, getCurrentLocation = Protocol.getCurrentLocation, pushLocation = Protocol.pushLocation, replaceLocation = Protocol.replaceLocation, go = Protocol.go;
                 var history = (0, _createHistory2["default"])(_extends({
                     getUserConfirmation: getUserConfirmation
                 }, options, {
@@ -5842,7 +5826,8 @@ window["ppdemo"] = function(modules) {
         };
         var startListener = exports.startListener = function startListener(listener) {
             var handlePopState = function handlePopState(event) {
-                if (event.state !== undefined) listener(_createLocation(event.state));
+                if ((0, _DOMUtils.isExtraneousPopstateEvent)(event)) return;
+                listener(_createLocation(event.state));
             };
             (0, _DOMUtils.addEventListener)(window, PopStateEvent, handlePopState);
             var handleUnpoppedHashChange = function handleUnpoppedHashChange() {
@@ -5859,8 +5844,7 @@ window["ppdemo"] = function(modules) {
             };
         };
         var updateLocation = function updateLocation(location, updateState) {
-            var state = location.state;
-            var key = location.key;
+            var state = location.state, key = location.key;
             if (state !== undefined) (0, _DOMStateStorage.saveState)(key, state);
             updateState({
                 key: key
@@ -5899,6 +5883,9 @@ window["ppdemo"] = function(modules) {
         };
         var supportsPopstateOnHashchange = exports.supportsPopstateOnHashchange = function supportsPopstateOnHashchange() {
             return window.navigator.userAgent.indexOf("Trident") === -1;
+        };
+        var isExtraneousPopstateEvent = exports.isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
+            return event.state === undefined && navigator.userAgent.indexOf("CriOS") === -1;
         };
     },
     "./node_modules/history/lib/DOMStateStorage.js": function(module, exports, __webpack_require__) {
@@ -6099,11 +6086,10 @@ window["ppdemo"] = function(modules) {
                 }
             };
             var createHashHistory = function createHashHistory() {
-                var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                 !_ExecutionEnvironment.canUseDOM ? process.env.NODE_ENV !== "production" ? (0, _invariant2["default"])(false, "Hash history needs a DOM") : (0, 
                 _invariant2["default"])(false) : void 0;
-                var queryKey = options.queryKey;
-                var hashType = options.hashType;
+                var queryKey = options.queryKey, hashType = options.hashType;
                 process.env.NODE_ENV !== "production" ? (0, _warning2["default"])(queryKey !== false, "Using { queryKey: false } no longer works. Instead, just don't " + "use location state if you don't want a key in your URL query string") : void 0;
                 if (typeof queryKey !== "string") queryKey = DefaultQueryKey;
                 if (hashType == null) hashType = "slash";
@@ -6240,8 +6226,7 @@ window["ppdemo"] = function(modules) {
                 };
             };
             var updateLocation = function updateLocation(location, pathCoder, queryKey, updateHash) {
-                var state = location.state;
-                var key = location.key;
+                var state = location.state, key = location.key;
                 var path = pathCoder.encodePath((0, _PathUtils.createPath)(location));
                 if (state !== undefined) {
                     path = (0, _PathUtils.addQueryStringValueToPath)(path, queryKey, key);
@@ -14564,10 +14549,10 @@ window["ppdemo"] = function(modules) {
     "./node_modules/fbjs/lib/getUnboundedScrollPosition.js": function(module, exports) {
         "use strict";
         function getUnboundedScrollPosition(scrollable) {
-            if (scrollable === window) {
+            if (scrollable.Window && scrollable instanceof scrollable.Window) {
                 return {
-                    x: window.pageXOffset || document.documentElement.scrollLeft,
-                    y: window.pageYOffset || document.documentElement.scrollTop
+                    x: scrollable.pageXOffset || scrollable.document.documentElement.scrollLeft,
+                    y: scrollable.pageYOffset || scrollable.document.documentElement.scrollTop
                 };
             }
             return {
@@ -14931,20 +14916,23 @@ window["ppdemo"] = function(modules) {
             return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         function isNode(object) {
-            return !!(object && (typeof Node === "function" ? object instanceof Node : (typeof object === "undefined" ? "undefined" : _typeof(object)) === "object" && typeof object.nodeType === "number" && typeof object.nodeName === "string"));
+            var doc = object ? object.ownerDocument || object : document;
+            var defaultView = doc.defaultView || window;
+            return !!(object && (typeof defaultView.Node === "function" ? object instanceof defaultView.Node : (typeof object === "undefined" ? "undefined" : _typeof(object)) === "object" && typeof object.nodeType === "number" && typeof object.nodeName === "string"));
         }
         module.exports = isNode;
     },
     "./node_modules/fbjs/lib/getActiveElement.js": function(module, exports) {
         "use strict";
-        function getActiveElement() {
-            if (typeof document === "undefined") {
+        function getActiveElement(doc) {
+            doc = doc || (typeof document !== "undefined" ? document : undefined);
+            if (typeof doc === "undefined") {
                 return null;
             }
             try {
-                return document.activeElement || document.body;
+                return doc.activeElement || doc.body;
             } catch (e) {
-                return document.body;
+                return doc.body;
             }
         }
         module.exports = getActiveElement;
