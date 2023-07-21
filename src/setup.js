@@ -4,7 +4,7 @@ import $logger from 'beaver-logger/client';
 import postRobot from 'post-robot/src';
 
 import { config, ENV } from './config';
-import { initLogger, checkForCommonErrors, beacon } from './lib';
+import { initLogger, checkForCommonErrors, beacon, checkForDeprecatedIntegration } from './lib';
 import { enableCheckoutIframe } from './components';
 import { setupBridge } from './compat';
 
@@ -137,6 +137,7 @@ export function setup({ env, stage, apiStage, paypalUrl, state, ppobjects, light
     }
 
     $logger.info(`setup_${config.env}`);
+    window.addEventListener('load', checkForDeprecatedIntegration);
 
     $logger.debug(`current_protocol_${currentProtocol}`);
 }
