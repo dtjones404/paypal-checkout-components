@@ -3,7 +3,7 @@
 import $logger from 'beaver-logger/client';
 
 import { config, ENV } from './config';
-import { initLogger, checkForCommonErrors, beacon } from './lib';
+import { initLogger, checkForCommonErrors, beacon, checkForDeprecatedIntegration } from './lib';
 import { enableCheckoutIframe } from './components';
 import { setupBridge } from './compat';
 
@@ -124,6 +124,8 @@ function getCurrentScript() : ? HTMLScriptElement {
 
 let currentScript = getCurrentScript();
 let currentProtocol = window.location.protocol.split(':')[0];
+
+window.addEventListener('load', checkForDeprecatedIntegration);
 
 $logger.debug(`current_protocol_${currentProtocol}`);
 
