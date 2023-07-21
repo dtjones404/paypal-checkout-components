@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
-    "flow": "flow; test $? -eq 0 -o $? -eq 2"
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "karma": "gulp karma",
+    "webpack": "gulp webpack"
   },
   "repository": {
     "type": "git",
