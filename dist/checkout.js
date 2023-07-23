@@ -142,7 +142,7 @@ this["ppxo"] = function(modules) {
         });
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var onPossiblyUnhandledException = exports.onPossiblyUnhandledException = _promise.SyncPromise.onPossiblyUnhandledException;
@@ -206,7 +206,7 @@ this["ppxo"] = function(modules) {
         }
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function create(options) {
@@ -321,7 +321,7 @@ this["ppxo"] = function(modules) {
         }
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function _classCallCheck(instance, Constructor) {
@@ -353,7 +353,7 @@ this["ppxo"] = function(modules) {
         var Component = exports.Component = function(_BaseComponent) {
             _inherits(Component, _BaseComponent);
             function Component() {
-                var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                 _classCallCheck(this, Component);
                 var _this = _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, options));
                 _this.validate(options);
@@ -437,8 +437,7 @@ this["ppxo"] = function(modules) {
                         _src2["default"].on(_constants.POST_MESSAGE.DELEGATE + "_" + this.name, {
                             domain: this.remoteRenderDomain
                         }, function(_ref3) {
-                            var source = _ref3.source;
-                            var data = _ref3.data;
+                            var source = _ref3.source, data = _ref3.data;
                             var delegate = _this2.delegate(source, data.options);
                             return {
                                 overrides: delegate.getOverrides(data.context),
@@ -492,7 +491,7 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "delegate",
                 value: function delegate(source) {
-                    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                     return new _delegate.DelegateComponent(this, source, options);
                 }
             }, {
@@ -563,7 +562,7 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "log",
                 value: function log(event) {
-                    var payload = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                     _lib.logger.info("xc_" + this.name + "_" + event, payload);
                 }
             }, {
@@ -834,16 +833,14 @@ this["ppxo"] = function(modules) {
                         }
                     });
                     if (options.timeout) {
-                        (function() {
-                            var timeout = _lib.util.intervalTimeout(options.timeout, 100, function(remaining) {
-                                if (hasResult || (0, _lib.isWindowClosed)(options.window)) {
-                                    return timeout.cancel();
-                                }
-                                if (!remaining) {
-                                    return reject(new Error("Post message response timed out after " + options.timeout + " ms"));
-                                }
-                            }, options.timeout);
-                        })();
+                        var timeout = _lib.util.intervalTimeout(options.timeout, 100, function(remaining) {
+                            if (hasResult || (0, _lib.isWindowClosed)(options.window)) {
+                                return timeout.cancel();
+                            }
+                            if (!remaining) {
+                                return reject(new Error("Post message response timed out after " + options.timeout + " ms"));
+                            }
+                        }, options.timeout);
                     }
                 })["catch"](reject);
             }), options.callback);
@@ -877,7 +874,7 @@ this["ppxo"] = function(modules) {
             return _send(win, name, data, options, callback);
         }
         function client() {
-            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             if (!options.window) {
                 throw new Error("Expected options.window");
             }
@@ -1077,9 +1074,7 @@ this["ppxo"] = function(modules) {
             } catch (err) {
                 return;
             }
-            var source = event.source;
-            var origin = event.origin;
-            var data = event.data;
+            var source = event.source, origin = event.origin, data = event.data;
             var message = parseMessage(data);
             if (!message) {
                 return;
@@ -1353,7 +1348,7 @@ this["ppxo"] = function(modules) {
                 throw err;
             }, 1);
             for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
-                possiblyUnhandledPromiseHandlers[j](promise.value);
+                possiblyUnhandledPromiseHandlers[j](err);
             }
         }
         var toString = {}.toString;
@@ -1426,6 +1421,9 @@ this["ppxo"] = function(modules) {
             if (isPromise(error)) {
                 throw new Error("Can not reject promise with another promise");
             }
+            if (!error) {
+                error = new Error("Expected reject to be called with Error, got " + error);
+            }
             this.rejected = true;
             this.value = error;
             this.dispatch();
@@ -1433,7 +1431,7 @@ this["ppxo"] = function(modules) {
         };
         SyncPromise.prototype.asyncReject = function(error) {
             this.silentReject = true;
-            return this.reject(error);
+            this.reject(error);
         };
         SyncPromise.prototype.dispatch = function() {
             var _this = this;
@@ -1442,21 +1440,21 @@ this["ppxo"] = function(modules) {
             }
             var _loop2 = function _loop2() {
                 var handler = _this.handlers.shift();
+                var isError = false;
                 var result = void 0, error = void 0;
                 try {
                     if (_this.resolved) {
                         result = handler.onSuccess ? handler.onSuccess(_this.value) : _this.value;
-                    } else {
+                    } else if (_this.rejected) {
                         if (handler.onError) {
                             result = handler.onError(_this.value);
                         } else {
-                            if (handler.promise && _this.silentReject) {
-                                handler.promise.silentReject = true;
-                            }
+                            isError = true;
                             error = _this.value;
                         }
                     }
                 } catch (err) {
+                    isError = true;
                     error = err;
                 }
                 if (result === _this) {
@@ -1465,7 +1463,7 @@ this["ppxo"] = function(modules) {
                 if (!handler.promise) {
                     return "continue";
                 }
-                if (error) {
+                if (isError) {
                     handler.promise.reject(error);
                 } else if (isPromise(result)) {
                     result.then(function(res) {
@@ -1526,9 +1524,6 @@ this["ppxo"] = function(modules) {
                         promise.resolve(results);
                     }
                 }, function(err) {
-                    if (prom.silentReject) {
-                        promise.silentReject = true;
-                    }
                     promise.reject(err);
                 });
             };
@@ -1568,6 +1563,19 @@ this["ppxo"] = function(modules) {
                 return results;
             });
         };
+        SyncPromise.promisifyCall = function() {
+            var args = Array.prototype.slice.call(arguments);
+            var method = args.shift();
+            if (typeof method !== "function") {
+                throw new Error("Expected promisifyCall to be called with a function");
+            }
+            return new SyncPromise(function(resolve, reject) {
+                args.push(function(err, result) {
+                    return err ? reject(err) : resolve(result);
+                });
+                return method.apply(null, args);
+            });
+        };
         function patchPromise() {
             window.Promise = SyncPromise;
         }
@@ -1601,7 +1609,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         var _conf = __webpack_require__("./node_modules/post-robot/src/conf/index.js");
         var util = exports.util = {
@@ -1751,7 +1759,7 @@ this["ppxo"] = function(modules) {
                 }
             },
             replaceObject: function replaceObject(obj, callback) {
-                var depth = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+                var depth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
                 if (depth >= 100) {
                     throw new Error("Self-referential object passed, or object contained too many layers");
                 }
@@ -1836,7 +1844,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         var _util = __webpack_require__("./node_modules/post-robot/src/lib/util.js");
         var _windows = __webpack_require__("./node_modules/post-robot/src/lib/windows.js");
@@ -2208,7 +2216,7 @@ this["ppxo"] = function(modules) {
             }
         }
         function isWindowClosed(win) {
-            var allowMock = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+            var allowMock = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
             if (win === window) {
                 return false;
             }
@@ -2504,7 +2512,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.serializeMethod = serializeMethod;
         exports.serializeMethods = serializeMethods;
@@ -2522,9 +2530,7 @@ this["ppxo"] = function(modules) {
                 window: "*",
                 origin: "*"
             }, function(_ref) {
-                var source = _ref.source;
-                var origin = _ref.origin;
-                var data = _ref.data;
+                var source = _ref.source, origin = _ref.origin, data = _ref.data;
                 var meth = _global.global.methods[data.id];
                 if (!meth) {
                     throw new Error("Could not find method with id: " + data.id);
@@ -2624,8 +2630,7 @@ this["ppxo"] = function(modules) {
                 window: "*",
                 domain: "*"
             }, function(_ref) {
-                var source = _ref.source;
-                var data = _ref.data;
+                var source = _ref.source, data = _ref.data;
                 for (var _iterator = _global.global.readyPromises, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                     var _ref2;
                     if (_isArray) {
@@ -2657,8 +2662,8 @@ this["ppxo"] = function(modules) {
             }
         }
         function onWindowReady(win) {
-            var timeout = arguments.length <= 1 || arguments[1] === undefined ? 5e3 : arguments[1];
-            var name = arguments.length <= 2 || arguments[2] === undefined ? "Window" : arguments[2];
+            var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5e3;
+            var name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Window";
             for (var _iterator2 = _global.global.readyPromises, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ;) {
                 var _ref3;
                 if (_isArray2) {
@@ -2876,7 +2881,7 @@ this["ppxo"] = function(modules) {
             return obj;
         }
         function buildMessage(win, message) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+            var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
             var id = _lib.util.uniqueID();
             var type = (0, _lib.getWindowType)();
             var sourceDomain = _lib.util.getDomain(window);
@@ -3077,8 +3082,7 @@ this["ppxo"] = function(modules) {
             return true;
         }
         function needsBridge(_ref) {
-            var win = _ref.win;
-            var domain = _ref.domain;
+            var win = _ref.win, domain = _ref.domain;
             return needsBridgeForBrowser() && needsBridgeForWin(win) && needsBridgeForDomain(domain);
         }
         function getBridgeName(domain) {
@@ -3118,7 +3122,7 @@ this["ppxo"] = function(modules) {
         }
         _global.global.remoteWindows = _global.global.remoteWindows || [];
         function registerRemoteWindow(win) {
-            var timeout = arguments.length <= 1 || arguments[1] === undefined ? _conf.CONFIG.BRIDGE_TIMEOUT : arguments[1];
+            var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _conf.CONFIG.BRIDGE_TIMEOUT;
             var sendMessagePromise = new _lib.promise.Promise();
             _global.global.remoteWindows.push({
                 win: win,
@@ -3247,8 +3251,7 @@ this["ppxo"] = function(modules) {
                 source: source,
                 domain: domain
             }, function(_ref6) {
-                var origin = _ref6.origin;
-                var data = _ref6.data;
+                var origin = _ref6.origin, data = _ref6.data;
                 if (origin !== domain) {
                     throw new Error("Domain " + domain + " does not match origin " + origin);
                 }
@@ -3284,10 +3287,7 @@ this["ppxo"] = function(modules) {
             });
         }
         _global.global.openTunnelToParent = function openTunnelToParent(_ref7) {
-            var name = _ref7.name;
-            var source = _ref7.source;
-            var canary = _ref7.canary;
-            var _sendMessage = _ref7.sendMessage;
+            var name = _ref7.name, source = _ref7.source, canary = _ref7.canary, _sendMessage = _ref7.sendMessage;
             var remoteWindow = (0, _lib.getParent)(window);
             if (!remoteWindow) {
                 throw new Error("No parent window found to open tunnel to");
@@ -3343,9 +3343,7 @@ this["ppxo"] = function(modules) {
                         });
                     }
                 }).then(function(_ref8) {
-                    var source = _ref8.source;
-                    var origin = _ref8.origin;
-                    var data = _ref8.data;
+                    var source = _ref8.source, origin = _ref8.origin, data = _ref8.data;
                     if (source !== opener) {
                         throw new Error("Source does not match opener");
                     }
@@ -3565,13 +3563,11 @@ this["ppxo"] = function(modules) {
                 throw err;
             };
             if (options.once) {
-                (function() {
-                    var handler = options.handler;
-                    options.handler = _lib.util.once(function() {
-                        (0, _drivers.removeRequestListener)(options);
-                        return handler.apply(this, arguments);
-                    });
-                })();
+                var handler = options.handler;
+                options.handler = _lib.util.once(function() {
+                    (0, _drivers.removeRequestListener)(options);
+                    return handler.apply(this, arguments);
+                });
             }
             var override = options.override || _conf.CONFIG.MOCK_MODE;
             if (options.source) {
@@ -3583,14 +3579,12 @@ this["ppxo"] = function(modules) {
                 options.errorHandler(err);
             };
             if (options.window && options.errorOnClose) {
-                (function() {
-                    var interval = _lib.util.safeInterval(function() {
-                        if ((0, _lib.isWindowClosed)(options.window)) {
-                            interval.cancel();
-                            options.handleError(new Error("Post message target window is closed"));
-                        }
-                    }, 50);
-                })();
+                var interval = _lib.util.safeInterval(function() {
+                    if ((0, _lib.isWindowClosed)(options.window)) {
+                        interval.cancel();
+                        options.handleError(new Error("Post message target window is closed"));
+                    }
+                }, 50);
             }
             return {
                 cancel: function cancel() {
@@ -3633,7 +3627,7 @@ this["ppxo"] = function(modules) {
             return prom;
         }
         function listener() {
-            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return {
                 on: function on(name, handler, errorHandler) {
                     return _on(name, options, handler, errorHandler);
@@ -3703,7 +3697,7 @@ this["ppxo"] = function(modules) {
         var _lib = __webpack_require__("./node_modules/xcomponent/src/lib/index.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function _classCallCheck(instance, Constructor) {
@@ -3838,8 +3832,7 @@ this["ppxo"] = function(modules) {
                                 return _this.error(err);
                             }
                         }, function(_ref3) {
-                            var source = _ref3.source;
-                            var data = _ref3.data;
+                            var source = _ref3.source, data = _ref3.data;
                             _this.component.log("listener_" + name);
                             return listeners[listenerName].call(_this, source, data);
                         });
@@ -3849,8 +3842,7 @@ this["ppxo"] = function(modules) {
                                 return _this.error(err);
                             }
                         }, function(_ref4) {
-                            var origin = _ref4.origin;
-                            var data = _ref4.data;
+                            var origin = _ref4.origin, data = _ref4.data;
                             _this.component.logError("unexpected_listener_" + name, {
                                 origin: origin,
                                 domain: domain
@@ -3991,7 +3983,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.getElement = getElement;
         exports.elementReady = elementReady;
@@ -4032,7 +4024,7 @@ this["ppxo"] = function(modules) {
         var _util = __webpack_require__("./node_modules/xcomponent/src/lib/util.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function isElement(element) {
@@ -4159,9 +4151,9 @@ this["ppxo"] = function(modules) {
             return str;
         }
         function createElement() {
-            var tag = arguments.length <= 0 || arguments[0] === undefined ? "div" : arguments[0];
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-            var container = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+            var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "div";
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+            var container = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
             var element = document.createElement(tag);
             if (options.style) {
                 (0, _util.extend)(element.style, options.style);
@@ -4223,18 +4215,17 @@ this["ppxo"] = function(modules) {
             return {
                 cancel: function cancel() {
                     for (var _iterator4 = handlers, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator](); ;) {
-                        var _ref4;
+                        var _ref5;
                         if (_isArray4) {
                             if (_i4 >= _iterator4.length) break;
-                            _ref4 = _iterator4[_i4++];
+                            _ref5 = _iterator4[_i4++];
                         } else {
                             _i4 = _iterator4.next();
                             if (_i4.done) break;
-                            _ref4 = _i4.value;
+                            _ref5 = _i4.value;
                         }
-                        var _ref5 = _ref4;
-                        var el = _ref5.el;
-                        var eventHandler = _ref5.eventHandler;
+                        var _ref6 = _ref5;
+                        var el = _ref6.el, eventHandler = _ref6.eventHandler;
                         el.removeEventListener(eventName, eventHandler);
                     }
                 }
@@ -4254,16 +4245,16 @@ this["ppxo"] = function(modules) {
                 throw new Error("Can not parse query string params: " + queryString);
             }
             for (var _iterator5 = queryString.split("&"), _isArray5 = Array.isArray(_iterator5), _i5 = 0, _iterator5 = _isArray5 ? _iterator5 : _iterator5[Symbol.iterator](); ;) {
-                var _ref6;
+                var _ref7;
                 if (_isArray5) {
                     if (_i5 >= _iterator5.length) break;
-                    _ref6 = _iterator5[_i5++];
+                    _ref7 = _iterator5[_i5++];
                 } else {
                     _i5 = _iterator5.next();
                     if (_i5.done) break;
-                    _ref6 = _i5.value;
+                    _ref7 = _i5.value;
                 }
-                var pair = _ref6;
+                var pair = _ref7;
                 pair = pair.split("=");
                 if (pair[0] && pair[1]) {
                     params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
@@ -4292,20 +4283,20 @@ this["ppxo"] = function(modules) {
             return domain;
         }
         function formatQuery() {
-            var obj = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             return Object.keys(obj).map(function(key) {
                 return (0, _util.urlEncode)(key) + "=" + (0, _util.urlEncode)(obj[key]);
             }).join("&");
         }
         function extendQuery(originalQuery) {
-            var props = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+            var props = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
             if (!props || !Object.keys(props).length) {
                 return originalQuery;
             }
             return formatQuery(_extends({}, parseQuery(originalQuery), props));
         }
         function extendUrl(url) {
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
             var query = options.query || {};
             var hash = options.hash || {};
             var originalUrl = void 0;
@@ -4330,7 +4321,7 @@ this["ppxo"] = function(modules) {
             return originalUrl;
         }
         function elementStoppedMoving(element) {
-            var timeout = arguments.length <= 1 || arguments[1] === undefined ? 5e3 : arguments[1];
+            var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5e3;
             return new _promise.SyncPromise(function(resolve, reject) {
                 element = getElement(element);
                 var start = element.getBoundingClientRect();
@@ -4382,27 +4373,24 @@ this["ppxo"] = function(modules) {
         function changeStyle(el, styles) {
             return new _promise.SyncPromise(function(resolve) {
                 for (var _iterator6 = Object.keys(styles), _isArray6 = Array.isArray(_iterator6), _i6 = 0, _iterator6 = _isArray6 ? _iterator6 : _iterator6[Symbol.iterator](); ;) {
-                    var _ref7;
+                    var _ref8;
                     if (_isArray6) {
                         if (_i6 >= _iterator6.length) break;
-                        _ref7 = _iterator6[_i6++];
+                        _ref8 = _iterator6[_i6++];
                     } else {
                         _i6 = _iterator6.next();
                         if (_i6.done) break;
-                        _ref7 = _i6.value;
+                        _ref8 = _i6.value;
                     }
-                    var key = _ref7;
+                    var key = _ref8;
                     el.style[key] = styles[key];
                 }
                 setTimeout(resolve, 1);
             });
         }
         function setOverflow(el) {
-            var value = arguments.length <= 1 || arguments[1] === undefined ? "auto" : arguments[1];
-            var _el$style = el.style;
-            var overflow = _el$style.overflow;
-            var overflowX = _el$style.overflowX;
-            var overflowY = _el$style.overflowY;
+            var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "auto";
+            var _el$style = el.style, overflow = _el$style.overflow, overflowX = _el$style.overflowX, overflowY = _el$style.overflowY;
             el.style.overflow = el.style.overflowX = el.overflowY = value;
             return {
                 reset: function reset() {
@@ -4416,7 +4404,7 @@ this["ppxo"] = function(modules) {
             return Math.abs(one.height - two.height) > threshold || Math.abs(one.width - two.width) > threshold;
         }
         function trackDimensions(el) {
-            var threshold = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+            var threshold = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
             var currentDimensions = getCurrentDimensions(el);
             return {
                 check: function check() {
@@ -4432,8 +4420,8 @@ this["ppxo"] = function(modules) {
             };
         }
         function onDimensionsChange(el) {
-            var delay = arguments.length <= 1 || arguments[1] === undefined ? 50 : arguments[1];
-            var threshold = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+            var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 50;
+            var threshold = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
             return new _promise.SyncPromise(function(resolve) {
                 var tracker = trackDimensions(el, threshold);
                 var interval = void 0;
@@ -4442,9 +4430,7 @@ this["ppxo"] = function(modules) {
                     return resolve(dimensions);
                 }, delay * 4);
                 interval = setInterval(function() {
-                    var _tracker$check = tracker.check();
-                    var changed = _tracker$check.changed;
-                    var dimensions = _tracker$check.dimensions;
+                    var _tracker$check = tracker.check(), changed = _tracker$check.changed, dimensions = _tracker$check.dimensions;
                     if (changed) {
                         tracker.reset();
                         return resolver(dimensions);
@@ -4455,31 +4441,31 @@ this["ppxo"] = function(modules) {
         function bindEvents(element, eventNames, handler) {
             handler = (0, _fn.once)(handler);
             for (var _iterator7 = eventNames, _isArray7 = Array.isArray(_iterator7), _i7 = 0, _iterator7 = _isArray7 ? _iterator7 : _iterator7[Symbol.iterator](); ;) {
-                var _ref8;
+                var _ref9;
                 if (_isArray7) {
                     if (_i7 >= _iterator7.length) break;
-                    _ref8 = _iterator7[_i7++];
+                    _ref9 = _iterator7[_i7++];
                 } else {
                     _i7 = _iterator7.next();
                     if (_i7.done) break;
-                    _ref8 = _i7.value;
+                    _ref9 = _i7.value;
                 }
-                var eventName = _ref8;
+                var eventName = _ref9;
                 element.addEventListener(eventName, handler);
             }
             return {
                 cancel: (0, _fn.once)(function() {
                     for (var _iterator8 = eventNames, _isArray8 = Array.isArray(_iterator8), _i8 = 0, _iterator8 = _isArray8 ? _iterator8 : _iterator8[Symbol.iterator](); ;) {
-                        var _ref9;
+                        var _ref10;
                         if (_isArray8) {
                             if (_i8 >= _iterator8.length) break;
-                            _ref9 = _iterator8[_i8++];
+                            _ref10 = _iterator8[_i8++];
                         } else {
                             _i8 = _iterator8.next();
                             if (_i8.done) break;
-                            _ref9 = _i8.value;
+                            _ref10 = _i8.value;
                         }
-                        var eventName = _ref9;
+                        var eventName = _ref10;
                         element.removeEventListener(eventName, handler);
                     }
                 })
@@ -4490,16 +4476,16 @@ this["ppxo"] = function(modules) {
             element.style[name] = value;
             var capitalizedName = (0, _util.capitalizeFirstLetter)(name);
             for (var _iterator9 = VENDOR_PREFIXES, _isArray9 = Array.isArray(_iterator9), _i9 = 0, _iterator9 = _isArray9 ? _iterator9 : _iterator9[Symbol.iterator](); ;) {
-                var _ref10;
+                var _ref11;
                 if (_isArray9) {
                     if (_i9 >= _iterator9.length) break;
-                    _ref10 = _iterator9[_i9++];
+                    _ref11 = _iterator9[_i9++];
                 } else {
                     _i9 = _iterator9.next();
                     if (_i9.done) break;
-                    _ref10 = _i9.value;
+                    _ref11 = _i9.value;
                 }
-                var prefix = _ref10;
+                var prefix = _ref11;
                 element.style["" + prefix + capitalizedName] = value;
             }
         }
@@ -4531,7 +4517,7 @@ this["ppxo"] = function(modules) {
         var ANIMATION_START_EVENTS = [ "animationstart", "webkitAnimationStart", "oAnimationStart", "MSAnimationStart" ];
         var ANIMATION_END_EVENTS = [ "animationend", "webkitAnimationEnd", "oAnimationEnd", "MSAnimationEnd" ];
         function animate(element, name) {
-            var timeout = arguments.length <= 2 || arguments[2] === undefined ? 1e3 : arguments[2];
+            var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1e3;
             return new _promise.SyncPromise(function(resolve, reject) {
                 element = getElement(element);
                 if (!element || !isValidAnimation(element, name)) {
@@ -4645,7 +4631,7 @@ this["ppxo"] = function(modules) {
             };
         }
         function debounce(method) {
-            var time = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+            var time = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 100;
             var timeout = void 0;
             return function() {
                 var _this = this, _arguments = arguments;
@@ -4664,7 +4650,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.urlEncode = urlEncode;
         exports.camelToDasherize = camelToDasherize;
@@ -4793,7 +4779,7 @@ this["ppxo"] = function(modules) {
             }
         }
         function replaceObject(obj, callback) {
-            var parentKey = arguments.length <= 2 || arguments[2] === undefined ? "" : arguments[2];
+            var parentKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
             var newobj = obj instanceof Array ? [] : {};
             each(obj, function(item, key) {
                 var fullKey = parentKey ? parentKey + "." + key : key;
@@ -4981,7 +4967,7 @@ this["ppxo"] = function(modules) {
         var _props = __webpack_require__("./node_modules/xcomponent/src/component/child/props.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function _classCallCheck(instance, Constructor) {
@@ -5017,16 +5003,16 @@ this["ppxo"] = function(modules) {
                 _this.component = component;
                 _this.component.log("construct_child");
                 _this.onPropHandlers = [];
-                _this.setProps(_this.getInitialProps());
+                _this.setProps(_this.getInitialProps(), (0, _window.getParentDomain)());
                 _this.component.log("init_child");
                 _this.setWindows();
                 _this.onInit = _this.sendToParent(_constants.POST_MESSAGE.INIT, {
                     exports: _this.exports()
                 }).then(function(_ref) {
-                    var data = _ref.data;
+                    var origin = _ref.origin, data = _ref.data;
                     _this.context = data.context;
                     window.xprops = _this.props = {};
-                    _this.setProps(data.props);
+                    _this.setProps(data.props, origin);
                     if (_this.component.autoResize) {
                         _this.watchForResize();
                     }
@@ -5077,9 +5063,10 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "setProps",
                 value: function setProps() {
-                    var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+                    var origin = arguments[1];
                     window.xprops = this.props = this.props || {};
-                    (0, _lib.extend)(this.props, (0, _props.normalizeChildProps)(this.component, props));
+                    (0, _lib.extend)(this.props, (0, _props.normalizeChildProps)(this.component, props, origin));
                     for (var _iterator = this.onPropHandlers, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                         var _ref2;
                         if (_isArray) {
@@ -5148,7 +5135,7 @@ this["ppxo"] = function(modules) {
                         el = document.body;
                     }
                     var resize = function resize(width, height) {
-                        var history = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
+                        var history = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
                         return _promise.SyncPromise["try"](function() {
                             for (var _iterator2 = history, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ;) {
                                 var _ref3;
@@ -5171,9 +5158,7 @@ this["ppxo"] = function(modules) {
                             });
                             var tracker = (0, _lib.trackDimensions)(el);
                             return _this4.resize(width, height).then(function() {
-                                var _tracker$check = tracker.check();
-                                var changed = _tracker$check.changed;
-                                var dimensions = _tracker$check.dimensions;
+                                var _tracker$check = tracker.check(), changed = _tracker$check.changed, dimensions = _tracker$check.dimensions;
                                 if (changed) {
                                     return resize(dimensions.width, dimensions.height, history);
                                 }
@@ -5192,29 +5177,29 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "exports",
                 value: function exports() {
-                    var _this5 = this;
+                    var self = this;
                     return {
                         updateProps: function updateProps(props) {
-                            return _this5.setProps(props);
+                            return self.setProps(props, this.origin);
                         },
                         close: function close() {
-                            return _this5.destroy();
+                            return self.destroy();
                         }
                     };
                 }
             }, {
                 key: "resize",
                 value: function resize(width, height) {
-                    var _this6 = this;
+                    var _this5 = this;
                     return _promise.SyncPromise.resolve().then(function() {
-                        _this6.component.log("resize", {
+                        _this5.component.log("resize", {
                             width: width,
                             height: height
                         });
-                        if (_this6.context === _constants.CONTEXT_TYPES.POPUP) {
+                        if (_this5.context === _constants.CONTEXT_TYPES.POPUP) {
                             return;
                         }
-                        return _this6.sendToParent(_constants.POST_MESSAGE.RESIZE, {
+                        return _this5.sendToParent(_constants.POST_MESSAGE.RESIZE, {
                             width: width,
                             height: height
                         });
@@ -5233,7 +5218,7 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "close",
                 value: function close() {
-                    var reason = arguments.length <= 0 || arguments[0] === undefined ? _constants.CLOSE_REASONS.CHILD_CALL : arguments[0];
+                    var reason = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _constants.CLOSE_REASONS.CHILD_CALL;
                     this.component.log("close_child");
                     this.sendToParent(_constants.POST_MESSAGE.CLOSE, {
                         reason: reason
@@ -5318,14 +5303,14 @@ this["ppxo"] = function(modules) {
         var _constants = __webpack_require__("./node_modules/xcomponent/src/constants.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function normalize(str) {
             return str && str.replace(/^[^a-z0-9A-Z]+|[^a-z0-9A-Z]+$/g, "").replace(/[^a-z0-9A-Z]+/g, "_");
         }
         function buildChildWindowName(name, version) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+            var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
             options.id = (0, _lib.uniqueID)();
             options.domain = (0, _lib.getDomain)(window);
             var encodedName = normalize(name);
@@ -5343,12 +5328,7 @@ this["ppxo"] = function(modules) {
             if (!window.name) {
                 return;
             }
-            var _window$name$split = window.name.split("__");
-            var _window$name$split2 = _slicedToArray(_window$name$split, 4);
-            var xcomp = _window$name$split2[0];
-            var name = _window$name$split2[1];
-            var version = _window$name$split2[2];
-            var encodedOptions = _window$name$split2[3];
+            var _window$name$split = window.name.split("__"), _window$name$split2 = _slicedToArray(_window$name$split, 4), xcomp = _window$name$split2[0], name = _window$name$split2[1], version = _window$name$split2[2], encodedOptions = _window$name$split2[3];
             if (xcomp !== _constants.XCOMPONENT) {
                 return;
             }
@@ -5842,7 +5822,7 @@ this["ppxo"] = function(modules) {
         var _promise = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
         var _lib = __webpack_require__("./node_modules/xcomponent/src/lib/index.js");
         var _constants = __webpack_require__("./node_modules/xcomponent/src/constants.js");
-        function normalizeChildProps(component, props) {
+        function normalizeChildProps(component, props, origin) {
             var result = {};
             var _loop = function _loop() {
                 if (_isArray) {
@@ -5861,28 +5841,27 @@ this["ppxo"] = function(modules) {
                 }
                 var queryParam = typeof prop.queryParam === "string" ? prop.queryParam : key;
                 if (value === _constants.PROP_DEFER_TO_URL) {
-                    (function() {
-                        var actualValue = (0, _lib.getQueryParam)(queryParam);
-                        if (prop.getter) {
-                            value = function value() {
-                                return _promise.SyncPromise.resolve(actualValue);
-                            };
-                        } else {
-                            value = actualValue;
-                        }
-                    })();
-                } else if (prop.getter && value) {
-                    (function() {
-                        var val = value;
+                    var actualValue = (0, _lib.getQueryParam)(queryParam);
+                    if (prop.getter) {
                         value = function value() {
-                            return val().then(function(res) {
-                                if (res === _constants.PROP_DEFER_TO_URL) {
-                                    return (0, _lib.getQueryParam)(queryParam);
-                                }
-                                return res;
-                            });
+                            return _promise.SyncPromise.resolve(actualValue);
                         };
-                    })();
+                    } else {
+                        value = actualValue;
+                    }
+                } else if (prop.getter && value) {
+                    var val = value;
+                    value = function value() {
+                        return val().then(function(res) {
+                            if (res === _constants.PROP_DEFER_TO_URL) {
+                                return (0, _lib.getQueryParam)(queryParam);
+                            }
+                            return res;
+                        });
+                    };
+                }
+                if (value && prop.sameDomain && origin !== window.location.protocol + "//" + window.location.host) {
+                    value = null;
                 }
                 result[key] = value;
                 if (prop.alias && !result[prop.alias]) {
@@ -5909,11 +5888,6 @@ this["ppxo"] = function(modules) {
             value: true
         });
         exports.ParentComponent = undefined;
-        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
-            return typeof obj;
-        } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-        };
         var _slicedToArray = function() {
             function sliceIterator(arr, i) {
                 var _arr = [];
@@ -5977,7 +5951,7 @@ this["ppxo"] = function(modules) {
         var _props = __webpack_require__("./node_modules/xcomponent/src/component/parent/props.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function _defineProperty(obj, key, value) {
@@ -6064,7 +6038,7 @@ this["ppxo"] = function(modules) {
         var ParentComponent = exports.ParentComponent = (_class = function(_BaseComponent) {
             _inherits(ParentComponent, _BaseComponent);
             function ParentComponent(component, context) {
-                var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+                var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
                 _classCallCheck(this, ParentComponent);
                 var _this2 = _possibleConstructorReturn(this, (ParentComponent.__proto__ || Object.getPrototypeOf(ParentComponent)).call(this, component, options));
                 (0, _validate.validate)(component, options);
@@ -6100,7 +6074,7 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "buildChildWindowName",
                 value: function buildChildWindowName(parent) {
-                    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                     parent = parent || (this.context === _constants.CONTEXT_TYPES.LIGHTBOX ? _constants.WINDOW_REFERENCES.PARENT_PARENT : _constants.WINDOW_REFERENCES.DIRECT_PARENT);
                     var tag = this.component.tag;
                     var props = (0, _lib.replaceObject)(this.getPropsForChild(), function(value, key, fullKey) {
@@ -6146,8 +6120,8 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "setProps",
                 value: function setProps() {
-                    var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-                    var required = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+                    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+                    var required = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
                     this.props = this.props || {};
                     props.version = this.component.version;
                     (0, _validate.validateProps)(this.component, props, required);
@@ -6164,8 +6138,7 @@ this["ppxo"] = function(modules) {
                         url: this.props.url,
                         query: (0, _props.propsToQuery)(this.component.props, this.props)
                     }).then(function(_ref) {
-                        var url = _ref.url;
-                        var query = _ref.query;
+                        var url = _ref.url, query = _ref.query;
                         if (url && !_this4.getValidDomain(url)) {
                             return url;
                         }
@@ -6277,7 +6250,7 @@ this["ppxo"] = function(modules) {
                 key: "updateProps",
                 value: function updateProps() {
                     var _this6 = this;
-                    var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+                    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
                     var changed = false;
                     for (var _iterator3 = Object.keys(props), _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator](); ;) {
                         var _ref4;
@@ -6338,7 +6311,7 @@ this["ppxo"] = function(modules) {
                 key: "render",
                 value: function render(element) {
                     var _this7 = this;
-                    var loadUrl = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+                    var loadUrl = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
                     return this.tryInit(function() {
                         _this7.component.log("render_" + _this7.context, {
                             context: _this7.context,
@@ -6376,13 +6349,11 @@ this["ppxo"] = function(modules) {
                             return _this7.showComponent();
                         });
                         tasks.linkUrl = _promise.SyncPromise.all([ tasks.getDomain, tasks.open ]).then(function(_ref5) {
-                            var _ref6 = _slicedToArray(_ref5, 1);
-                            var domain = _ref6[0];
+                            var _ref6 = _slicedToArray(_ref5, 1), domain = _ref6[0];
                             return _src2["default"].linkUrl(_this7.window, domain);
                         });
                         tasks.listen = _promise.SyncPromise.all([ tasks.getDomain, tasks.open ]).then(function(_ref7) {
-                            var _ref8 = _slicedToArray(_ref7, 1);
-                            var domain = _ref8[0];
+                            var _ref8 = _slicedToArray(_ref7, 1), domain = _ref8[0];
                             _this7.listen(_this7.window, domain);
                         });
                         tasks.watchForClose = tasks.open.then(function() {
@@ -6391,8 +6362,7 @@ this["ppxo"] = function(modules) {
                         if (loadUrl) {
                             tasks.buildUrl = _this7.buildUrl();
                             tasks.loadUrl = _promise.SyncPromise.all([ tasks.buildUrl, tasks.listen, tasks.openBridge, tasks.createComponentTemplate ]).then(function(_ref9) {
-                                var _ref10 = _slicedToArray(_ref9, 1);
-                                var url = _ref10[0];
+                                var _ref10 = _slicedToArray(_ref9, 1), url = _ref10[0];
                                 return _this7.loadUrl(url);
                             });
                             tasks.runTimeout = tasks.loadUrl.then(function() {
@@ -6500,7 +6470,7 @@ this["ppxo"] = function(modules) {
                 key: "renderTo",
                 value: function renderTo(win, element, context) {
                     var _this10 = this;
-                    var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+                    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
                     return this.tryInit(function() {
                         _this10.context = _this10.context || _this10.component.getRenderContext(element, context);
                         _this10.validateRenderToParent(element, _this10.context);
@@ -6598,27 +6568,21 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "resize",
                 value: function resize(width, height) {
-                    var _this14 = this;
                     this.component.log("resize", {
                         height: height,
                         width: width
                     });
                     this.driver.resize.call(this, width, height);
                     if (this.elementTemplate || this.iframe) {
-                        var _ret2 = function() {
-                            var overflow = void 0;
-                            if (_this14.elementTemplate) {
-                                overflow = (0, _lib.setOverflow)(_this14.elementTemplate, "hidden");
+                        var overflow = void 0;
+                        if (this.elementTemplate) {
+                            overflow = (0, _lib.setOverflow)(this.elementTemplate, "hidden");
+                        }
+                        return (0, _lib.elementStoppedMoving)(this.elementTemplate || this.iframe).then(function() {
+                            if (overflow) {
+                                overflow.reset();
                             }
-                            return {
-                                v: (0, _lib.elementStoppedMoving)(_this14.elementTemplate || _this14.iframe).then(function() {
-                                    if (overflow) {
-                                        overflow.reset();
-                                    }
-                                })
-                            };
-                        }();
-                        if ((typeof _ret2 === "undefined" ? "undefined" : _typeof(_ret2)) === "object") return _ret2.v;
+                        });
                     }
                 }
             }, {
@@ -6642,30 +6606,30 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "close",
                 value: function close() {
-                    var _this15 = this;
-                    var reason = arguments.length <= 0 || arguments[0] === undefined ? _constants.CLOSE_REASONS.PARENT_CALL : arguments[0];
+                    var _this14 = this;
+                    var reason = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _constants.CLOSE_REASONS.PARENT_CALL;
                     return _promise.SyncPromise["try"](function() {
-                        _this15.component.log("close", {
+                        _this14.component.log("close", {
                             reason: reason
                         });
-                        return _this15.props.onClose(reason);
+                        return _this14.props.onClose(reason);
                     }).then(function() {
-                        return _promise.SyncPromise.all([ _this15.closeComponent(), _this15.closeContainer() ]);
+                        return _promise.SyncPromise.all([ _this14.closeComponent(), _this14.closeContainer() ]);
                     }).then(function() {
-                        return _this15.destroy();
+                        return _this14.destroy();
                     });
                 }
             }, {
                 key: "closeContainer",
                 value: function closeContainer() {
-                    var _this16 = this;
-                    var reason = arguments.length <= 0 || arguments[0] === undefined ? _constants.CLOSE_REASONS.PARENT_CALL : arguments[0];
+                    var _this15 = this;
+                    var reason = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _constants.CLOSE_REASONS.PARENT_CALL;
                     return _promise.SyncPromise["try"](function() {
-                        return _this16.props.onClose(reason);
+                        return _this15.props.onClose(reason);
                     }).then(function() {
-                        return _promise.SyncPromise.all([ _this16.closeComponent(reason), _this16.hideContainer() ]);
+                        return _promise.SyncPromise.all([ _this15.closeComponent(reason), _this15.hideContainer() ]);
                     }).then(function() {
-                        return _this16.destroyContainer();
+                        return _this15.destroyContainer();
                     });
                 }
             }, {
@@ -6677,22 +6641,22 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "closeComponent",
                 value: function closeComponent() {
-                    var _this17 = this;
-                    var reason = arguments.length <= 0 || arguments[0] === undefined ? _constants.CLOSE_REASONS.PARENT_CALL : arguments[0];
+                    var _this16 = this;
+                    var reason = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _constants.CLOSE_REASONS.PARENT_CALL;
                     this.clean.run("destroyCloseWindowListener");
                     this.clean.run("destroyUnloadWindowListener");
                     var win = this.window;
                     return _promise.SyncPromise["try"](function() {
-                        return _this17.cancelContainerEvents();
+                        return _this16.cancelContainerEvents();
                     }).then(function() {
-                        return _this17.props.onClose(reason);
+                        return _this16.props.onClose(reason);
                     }).then(function() {
-                        return _this17.hideComponent();
+                        return _this16.hideComponent();
                     }).then(function() {
-                        return _this17.destroyComponent();
+                        return _this16.destroyComponent();
                     }).then(function() {
-                        if (_this17.childExports && _this17.context === _constants.CONTEXT_TYPES.POPUP && !_src2["default"].winutil.isWindowClosed(win)) {
-                            _this17.childExports.close()["catch"](_lib.noop);
+                        if (_this16.childExports && _this16.context === _constants.CONTEXT_TYPES.POPUP && !_src2["default"].winutil.isWindowClosed(win)) {
+                            _this16.childExports.close()["catch"](_lib.noop);
                         }
                     });
                 }
@@ -6779,61 +6743,61 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "openContainer",
                 value: function openContainer() {
-                    var _this18 = this;
+                    var _this17 = this;
                     return _promise.SyncPromise["try"](function() {
-                        if (!_this18.driver.parentTemplate) {
+                        if (!_this17.driver.parentTemplate) {
                             return;
                         }
-                        return _this18.getParentTemplate();
+                        return _this17.getParentTemplate();
                     }).then(function(parentTemplate) {
                         if (!parentTemplate) {
                             return;
                         }
                         if (window.top !== window) {}
-                        _this18.parentTemplateFrame = (0, _lib.iframe)(null, {
+                        _this17.parentTemplateFrame = (0, _lib.iframe)(null, {
                             name: "__lightbox_container__" + (0, _lib.uniqueID)() + "__",
                             scrolling: "no"
                         }, document.body);
-                        _this18.parentTemplateFrame.style.display = "block";
-                        _this18.parentTemplateFrame.style.position = "fixed";
-                        _this18.parentTemplateFrame.style.top = "0";
-                        _this18.parentTemplateFrame.style.left = "0";
-                        _this18.parentTemplateFrame.style.width = "100%";
-                        _this18.parentTemplateFrame.style.height = "100%";
-                        _this18.parentTemplateFrame.style.zIndex = "2147483647";
-                        _this18.parentTemplateFrame.contentWindow.document.open();
-                        _this18.parentTemplateFrame.contentWindow.document.write("<body></body>");
-                        _this18.parentTemplateFrame.contentWindow.document.close();
-                        _this18.parentTemplate = (0, _lib.createElement)("div", {
+                        _this17.parentTemplateFrame.style.display = "block";
+                        _this17.parentTemplateFrame.style.position = "fixed";
+                        _this17.parentTemplateFrame.style.top = "0";
+                        _this17.parentTemplateFrame.style.left = "0";
+                        _this17.parentTemplateFrame.style.width = "100%";
+                        _this17.parentTemplateFrame.style.height = "100%";
+                        _this17.parentTemplateFrame.style.zIndex = "2147483647";
+                        _this17.parentTemplateFrame.contentWindow.document.open();
+                        _this17.parentTemplateFrame.contentWindow.document.write("<body></body>");
+                        _this17.parentTemplateFrame.contentWindow.document.close();
+                        _this17.parentTemplate = (0, _lib.createElement)("div", {
                             html: (0, _lib.template)(parentTemplate, {
-                                id: _constants.CLASS_NAMES.XCOMPONENT + "-" + _this18.props.uid,
+                                id: _constants.CLASS_NAMES.XCOMPONENT + "-" + _this17.props.uid,
                                 CLASS: _constants.CLASS_NAMES,
                                 ANIMATION: _constants.ANIMATION_NAMES
                             }),
                             attributes: {
-                                id: _constants.CLASS_NAMES.XCOMPONENT + "-" + _this18.props.uid
+                                id: _constants.CLASS_NAMES.XCOMPONENT + "-" + _this17.props.uid
                             },
-                            "class": [ _constants.CLASS_NAMES.XCOMPONENT, _constants.CLASS_NAMES.XCOMPONENT + "-" + _this18.context ]
+                            class: [ _constants.CLASS_NAMES.XCOMPONENT, _constants.CLASS_NAMES.XCOMPONENT + "-" + _this17.context ]
                         });
-                        (0, _lib.hideElement)(_this18.parentTemplate);
-                        _this18.parentTemplateFrame.contentWindow.document.body.appendChild(_this18.parentTemplate);
-                        if (_this18.driver.renderedIntoParentTemplate) {
-                            _this18.elementTemplate = _this18.parentTemplate.getElementsByClassName(_constants.CLASS_NAMES.ELEMENT)[0];
-                            if (!_this18.elementTemplate) {
+                        (0, _lib.hideElement)(_this17.parentTemplate);
+                        _this17.parentTemplateFrame.contentWindow.document.body.appendChild(_this17.parentTemplate);
+                        if (_this17.driver.renderedIntoParentTemplate) {
+                            _this17.elementTemplate = _this17.parentTemplate.getElementsByClassName(_constants.CLASS_NAMES.ELEMENT)[0];
+                            if (!_this17.elementTemplate) {
                                 throw new Error("Could not find element to render component into");
                             }
-                            (0, _lib.hideElement)(_this18.elementTemplate);
+                            (0, _lib.hideElement)(_this17.elementTemplate);
                         }
                         var eventHandlers = [];
-                        if (_this18.driver.focusable) {
-                            eventHandlers.push((0, _lib.addEventToClass)(_this18.parentTemplate, _constants.CLASS_NAMES.FOCUS, _constants.EVENT_NAMES.CLICK, function(event) {
-                                return _this18.focus();
+                        if (_this17.driver.focusable) {
+                            eventHandlers.push((0, _lib.addEventToClass)(_this17.parentTemplate, _constants.CLASS_NAMES.FOCUS, _constants.EVENT_NAMES.CLICK, function(event) {
+                                return _this17.focus();
                             }));
                         }
-                        eventHandlers.push((0, _lib.addEventToClass)(_this18.parentTemplate, _constants.CLASS_NAMES.CLOSE, _constants.EVENT_NAMES.CLICK, function(event) {
-                            return _this18.userClose();
+                        eventHandlers.push((0, _lib.addEventToClass)(_this17.parentTemplate, _constants.CLASS_NAMES.CLOSE, _constants.EVENT_NAMES.CLICK, function(event) {
+                            return _this17.userClose();
                         }));
-                        _this18.clean.register("destroyContainerEvents", function() {
+                        _this17.clean.register("destroyContainerEvents", function() {
                             for (var _iterator5 = eventHandlers, _isArray5 = Array.isArray(_iterator5), _i5 = 0, _iterator5 = _isArray5 ? _iterator5 : _iterator5[Symbol.iterator](); ;) {
                                 var _ref14;
                                 if (_isArray5) {
@@ -6848,10 +6812,10 @@ this["ppxo"] = function(modules) {
                                 eventHandler.cancel();
                             }
                         });
-                        _this18.clean.register("destroyParentTemplate", function() {
-                            document.body.removeChild(_this18.parentTemplateFrame);
-                            delete _this18.parentTemplateFrame;
-                            delete _this18.parentTemplate;
+                        _this17.clean.register("destroyParentTemplate", function() {
+                            document.body.removeChild(_this17.parentTemplateFrame);
+                            delete _this17.parentTemplateFrame;
+                            delete _this17.parentTemplate;
                         });
                     });
                 }
@@ -6863,45 +6827,43 @@ this["ppxo"] = function(modules) {
             }, {
                 key: "destroy",
                 value: function destroy() {
-                    var _this19 = this;
+                    var _this18 = this;
                     return _promise.SyncPromise["try"](function() {
-                        if (_this19.clean.hasTasks()) {
-                            _this19.component.log("destroy");
+                        if (_this18.clean.hasTasks()) {
+                            _this18.component.log("destroy");
                             _lib.logger.flush();
-                            return _this19.clean.all();
+                            return _this18.clean.all();
                         }
                     });
                 }
             }, {
                 key: "tryInit",
                 value: function tryInit(method) {
-                    var _this20 = this;
+                    var _this19 = this;
                     return _promise.SyncPromise["try"](method)["catch"](function(err) {
-                        _this20.onInit.reject(err);
+                        _this19.onInit.reject(err);
                         throw err;
                     }).then(function() {
-                        return _this20.onInit;
+                        return _this19.onInit;
                     });
                 }
             }, {
                 key: "error",
                 value: function error(err) {
-                    var _this21 = this;
+                    var _this20 = this;
                     this.handledErrors = this.handledErrors || [];
                     if (this.handledErrors.indexOf(err) !== -1) {
                         return;
                     }
                     this.handledErrors.push(err);
                     return _promise.SyncPromise["try"](function() {
-                        _this21.component.logError("error", {
+                        _this20.component.logError("error", {
                             error: err.stack || err.toString()
                         });
-                        _this21.onInit.reject(err);
-                        return _this21.props.onError(err);
+                        _this20.onInit.reject(err);
+                        return _this20.props.onError(err);
                     }).then(function() {
-                        return _this21.props.onError(err);
-                    }).then(function() {
-                        return _this21.destroy();
+                        return _this20.destroy();
                     })["catch"](function(err2) {
                         throw new Error("An error was encountered while handling error:\n\n " + err.stack + "\n\n" + err2.stack);
                     }).then(function() {
@@ -6961,7 +6923,7 @@ this["ppxo"] = function(modules) {
         var _window = __webpack_require__("./node_modules/xcomponent/src/component/window.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function _defineProperty(obj, key, value) {
@@ -7062,11 +7024,7 @@ this["ppxo"] = function(modules) {
             openOnClick: true,
             open: function open() {
                 var _this3 = this;
-                var _ref = this.props.dimensions || this.component.dimensions || {};
-                var width = _ref.width;
-                var height = _ref.height;
-                var x = _ref.x;
-                var y = _ref.y;
+                var _ref = this.props.dimensions || this.component.dimensions || {}, width = _ref.width, height = _ref.height, x = _ref.x, y = _ref.y;
                 width = (0, _lib.isPerc)(width) ? parseInt(window.innerWidth * (0, _lib.toNum)(width) / 100, 10) : (0, 
                 _lib.toNum)(width);
                 height = (0, _lib.isPerc)(height) ? parseInt(window.innerHeight * (0, _lib.toNum)(height) / 100, 10) : (0, 
@@ -7207,7 +7165,7 @@ this["ppxo"] = function(modules) {
         exports.validate = validate;
         var _constants = __webpack_require__("./node_modules/xcomponent/src/constants.js");
         function validateProp(prop, key, value) {
-            var required = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+            var required = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
             var hasProp = value !== null && value !== undefined && value !== "";
             if (!hasProp) {
                 if (required && prop.required !== false && !prop.hasOwnProperty("def")) {
@@ -7244,7 +7202,7 @@ this["ppxo"] = function(modules) {
             }
         }
         function validateProps(component, props) {
-            var required = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+            var required = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
             props = props || {};
             for (var _iterator = Object.keys(component.props), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                 var _ref;
@@ -7312,7 +7270,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.propsToQuery = propsToQuery;
         exports.normalizeParentProps = normalizeParentProps;
@@ -7321,8 +7279,8 @@ this["ppxo"] = function(modules) {
         var _props = __webpack_require__("./node_modules/xcomponent/src/component/props.js");
         var _constants = __webpack_require__("./node_modules/xcomponent/src/constants.js");
         function dotify(obj) {
-            var prefix = arguments.length <= 1 || arguments[1] === undefined ? "" : arguments[1];
-            var newobj = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+            var prefix = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+            var newobj = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
             prefix = prefix ? prefix + "." : prefix;
             for (var key in obj) {
                 if (obj[key] && _typeof(obj[key]) === "object") {
@@ -7390,7 +7348,7 @@ this["ppxo"] = function(modules) {
             });
         }
         function normalizeParentProps(component, instance, props) {
-            var required = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+            var required = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
             props = (0, _props.normalizeProps)(component, instance, props, required);
             var _loop = function _loop() {
                 if (_isArray) {
@@ -7476,26 +7434,24 @@ this["ppxo"] = function(modules) {
                         }
                     }
                 } else {
-                    (function() {
-                        value = value.bind(instance);
-                        if (prop.denodeify) {
-                            value = (0, _lib.denodeify)(value);
-                        }
-                        if (prop.promisify) {
-                            value = (0, _lib.promisify)(value);
-                        }
-                        var original = value;
-                        value = function value() {
-                            component.log("call_prop_" + key);
-                            return original.apply(this, arguments);
-                        };
-                        if (prop.once) {
-                            value = (0, _lib.once)(value);
-                        }
-                        if (prop.memoize) {
-                            value = (0, _lib.memoize)(value);
-                        }
-                    })();
+                    value = value.bind(instance);
+                    if (prop.denodeify) {
+                        value = (0, _lib.denodeify)(value);
+                    }
+                    if (prop.promisify) {
+                        value = (0, _lib.promisify)(value);
+                    }
+                    var original = value;
+                    value = function value() {
+                        component.log("call_prop_" + key);
+                        return original.apply(this, arguments);
+                    };
+                    if (prop.once) {
+                        value = (0, _lib.once)(value);
+                    }
+                    if (prop.memoize) {
+                        value = (0, _lib.memoize)(value);
+                    }
                 }
             } else if (prop.type === "string") {} else if (prop.type === "object") {} else if (prop.type === "number") {
                 if (value !== undefined) {
@@ -7505,7 +7461,7 @@ this["ppxo"] = function(modules) {
             return value;
         }
         function normalizeProps(component, instance, props) {
-            var required = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+            var required = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
             props = props || {};
             var result = {};
             for (var _iterator = Object.keys(component.props), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
@@ -7580,7 +7536,7 @@ this["ppxo"] = function(modules) {
         var DelegateComponent = exports.DelegateComponent = function(_BaseComponent) {
             _inherits(DelegateComponent, _BaseComponent);
             function DelegateComponent(component, source) {
-                var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+                var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
                 _classCallCheck(this, DelegateComponent);
                 var _this = _possibleConstructorReturn(this, (DelegateComponent.__proto__ || Object.getPrototypeOf(DelegateComponent)).call(this, component, options));
                 _this.component = component;
@@ -7754,7 +7710,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.validate = validate;
         var _constants = __webpack_require__("./node_modules/xcomponent/src/constants.js");
@@ -7946,12 +7902,8 @@ this["ppxo"] = function(modules) {
                     if (!element.attributes["data-component"] || element.attributes["data-component"].value !== component.tag) {
                         return;
                     }
-                    component.log("instantiate_script_component");
-                    var props = void 0;
-                    eval("props = " + element.innerText);
-                    var container = document.createElement("div");
-                    element.parentNode.replaceChild(container, element);
-                    component.render(props, container);
+                    component.log("instantiate_script_component_error");
+                    throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                 }
                 function scan() {
                     var scriptTags = Array.prototype.slice.call(document.getElementsByTagName("script"));
@@ -8134,12 +8086,12 @@ this["ppxo"] = function(modules) {
         var _components = __webpack_require__("./src/components/index.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var proxyRest = {};
         function memoize(method) {
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
             var cache = {};
             return function() {
                 var key = JSON.stringify(arguments);
@@ -8186,7 +8138,7 @@ this["ppxo"] = function(modules) {
             time: 10 * 60 * 1e3
         });
         var createExperienceProfile = memoize(function createExperienceProfile(env, client) {
-            var experienceDetails = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+            var experienceDetails = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
             env = env || _config.config.env;
             var clientID = client[env];
             if (!clientID) {
@@ -9055,107 +9007,45 @@ this["ppxo"] = function(modules) {
             };
         }
     },
-    "./src/interface/paypal.js": function(module, exports, __webpack_require__) {
+    "./src/lib/logger.js": function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: true
         });
-        exports.version = exports.onPossiblyUnhandledException = exports.isEligible = exports.request = exports.config = exports.setup = exports.apps = exports.checkout = exports.PayPalCheckout = exports.Checkout = exports.Button = exports.rest = exports.Promise = exports.postRobot = exports.xcomponent = undefined;
+        exports.initLogger = initLogger;
+        var _client = __webpack_require__("./node_modules/beaver-logger/client/index.js");
+        var _client2 = _interopRequireDefault(_client);
         var _src = __webpack_require__("./node_modules/xcomponent/src/index.js");
-        Object.defineProperty(exports, "xcomponent", {
-            enumerable: true,
-            get: function get() {
-                return _interopRequireDefault(_src)["default"];
-            }
-        });
-        var _src2 = __webpack_require__("./node_modules/post-robot/src/index.js");
-        Object.defineProperty(exports, "postRobot", {
-            enumerable: true,
-            get: function get() {
-                return _interopRequireDefault(_src2)["default"];
-            }
-        });
-        var _promise = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
-        Object.defineProperty(exports, "Promise", {
-            enumerable: true,
-            get: function get() {
-                return _promise.SyncPromise;
-            }
-        });
-        var _api = __webpack_require__("./src/api/index.js");
-        Object.defineProperty(exports, "rest", {
-            enumerable: true,
-            get: function get() {
-                return _api.rest;
-            }
-        });
-        var _components = __webpack_require__("./src/components/index.js");
-        Object.defineProperty(exports, "Button", {
-            enumerable: true,
-            get: function get() {
-                return _components.Button;
-            }
-        });
-        Object.defineProperty(exports, "Checkout", {
-            enumerable: true,
-            get: function get() {
-                return _components.Checkout;
-            }
-        });
-        Object.defineProperty(exports, "PayPalCheckout", {
-            enumerable: true,
-            get: function get() {
-                return _components.Checkout;
-            }
-        });
-        var _legacy = __webpack_require__("./src/legacy/index.js");
-        Object.defineProperty(exports, "checkout", {
-            enumerable: true,
-            get: function get() {
-                return _legacy.checkout;
-            }
-        });
-        Object.defineProperty(exports, "apps", {
-            enumerable: true,
-            get: function get() {
-                return _legacy.apps;
-            }
-        });
-        var _setup = __webpack_require__("./src/setup.js");
-        Object.defineProperty(exports, "setup", {
-            enumerable: true,
-            get: function get() {
-                return _setup.setup;
-            }
-        });
+        var _src2 = _interopRequireDefault(_src);
         var _config = __webpack_require__("./src/config/index.js");
-        Object.defineProperty(exports, "config", {
-            enumerable: true,
-            get: function get() {
-                return _config.config;
-            }
-        });
-        var _lib = __webpack_require__("./src/lib/index.js");
-        Object.defineProperty(exports, "request", {
-            enumerable: true,
-            get: function get() {
-                return _lib.request;
-            }
-        });
-        Object.defineProperty(exports, "isEligible", {
-            enumerable: true,
-            get: function get() {
-                return _lib.isEligible;
-            }
-        });
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
-        var onPossiblyUnhandledException = exports.onPossiblyUnhandledException = _promise.SyncPromise.onPossiblyUnhandledException;
-        var version = exports.version = "4.0.24";
-        module.exports["default"] = module.exports;
+        function initLogger() {
+            _src2["default"].registerLogger(_client2["default"]);
+            _client2["default"].addPayloadBuilder(function() {
+                return {
+                    host: window.location.host,
+                    path: window.location.pathname,
+                    env: _config.config.env,
+                    country: _config.config.locale.country,
+                    lang: _config.config.locale.lang
+                };
+            });
+            _client2["default"].addMetaBuilder(function() {
+                return {
+                    state: _config.config.state
+                };
+            });
+            _client2["default"].init({
+                uri: _config.config.loggerUrl,
+                heartbeat: false,
+                logPerformance: false,
+                prefix: "ppxo"
+            });
+        }
     },
     "./node_modules/beaver-logger/client/index.js": function(module, exports, __webpack_require__) {
         "use strict";
@@ -9213,7 +9103,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.print = print;
         exports.immediateFlush = immediateFlush;
@@ -9253,7 +9143,7 @@ this["ppxo"] = function(modules) {
             }
         }
         function immediateFlush() {
-            var async = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+            var async = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
             if (!_config.config.uri) {
                 return;
             }
@@ -9431,7 +9321,7 @@ this["ppxo"] = function(modules) {
         exports.uniqueID = uniqueID;
         var _es6PromiseMin = __webpack_require__("./node_modules/es6-promise-min/dist/es6-promise.min.js");
         function extend(dest, src) {
-            var over = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+            var over = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
             dest = dest || {};
             src = src || {};
             for (var i in src) {
@@ -9454,9 +9344,9 @@ this["ppxo"] = function(modules) {
             return match[0] === window.location.protocol + "//" + window.location.host;
         }
         function ajax(method, url) {
-            var headers = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-            var data = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-            var async = arguments.length <= 4 || arguments[4] === undefined ? true : arguments[4];
+            var headers = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+            var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+            var async = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
             return new _es6PromiseMin.Promise(function(resolve) {
                 var XRequest = window.XMLHttpRequest || window.ActiveXObject;
                 if (window.XDomainRequest && !isSameDomain(url)) {
@@ -9543,7 +9433,7 @@ this["ppxo"] = function(modules) {
             var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
                 return typeof obj;
             } : function(obj) {
-                return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+                return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
             };
             /*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -9748,7 +9638,7 @@ this["ppxo"] = function(modules) {
                 };
                 var O = 0;
                 h.all = function(a, b) {
-                    return new k(this, a, (!0), b).c;
+                    return new k(this, a, !0, b).c;
                 };
                 h.race = function(a, b) {
                     function c(a) {
@@ -9789,7 +9679,7 @@ this["ppxo"] = function(modules) {
                         } else u(this, d, a, b);
                         return d;
                     },
-                    "catch": function _catch(a) {
+                    catch: function _catch(a) {
                         return this.then(null, a);
                     }
                 };
@@ -9955,6 +9845,11 @@ this["ppxo"] = function(modules) {
         process.removeListener = noop;
         process.removeAllListeners = noop;
         process.emit = noop;
+        process.prependListener = noop;
+        process.prependOnceListener = noop;
+        process.listeners = function(name) {
+            return [];
+        };
         process.binding = function(name) {
             throw new Error("process.binding is not supported");
         };
@@ -10042,17 +9937,15 @@ this["ppxo"] = function(modules) {
                 (0, _performance.initHeartBeat)();
             }
             if (_config.config.logUnload) {
-                (function() {
-                    var async = !_config.config.logUnloadSync;
-                    window.addEventListener("beforeunload", function() {
-                        (0, _logger.info)("window_beforeunload");
-                        (0, _logger.immediateFlush)(async);
-                    });
-                    window.addEventListener("unload", function() {
-                        (0, _logger.info)("window_unload");
-                        (0, _logger.immediateFlush)(async);
-                    });
-                })();
+                var async = !_config.config.logUnloadSync;
+                window.addEventListener("beforeunload", function() {
+                    (0, _logger.info)("window_beforeunload");
+                    (0, _logger.immediateFlush)(async);
+                });
+                window.addEventListener("unload", function() {
+                    (0, _logger.info)("window_unload");
+                    (0, _logger.immediateFlush)(async);
+                });
             }
             if (_config.config.flushInterval) {
                 setInterval(_logger.flush, _config.config.flushInterval);
@@ -10241,7 +10134,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.isEligible = isEligible;
         var _device = __webpack_require__("./src/lib/device.js");
@@ -10261,12 +10154,13 @@ this["ppxo"] = function(modules) {
         Object.defineProperty(exports, "__esModule", {
             value: true
         });
+        exports.checkForDeprecatedIntegration = checkForDeprecatedIntegration;
         exports.checkForCommonErrors = checkForCommonErrors;
         var _client = __webpack_require__("./node_modules/beaver-logger/client/index.js");
         var _client2 = _interopRequireDefault(_client);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function warn(err) {
@@ -10276,6 +10170,25 @@ this["ppxo"] = function(modules) {
                 }
                 if (window.console.log) {
                     return window.console.log(err);
+                }
+            }
+        }
+        function checkForDeprecatedIntegration() {
+            var scripts = Array.prototype.slice.call(document.getElementsByTagName("script"));
+            for (var _iterator = scripts, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
+                var _ref;
+                if (_isArray) {
+                    if (_i >= _iterator.length) break;
+                    _ref = _iterator[_i++];
+                } else {
+                    _i = _iterator.next();
+                    if (_i.done) break;
+                    _ref = _i.value;
+                }
+                var script = _ref;
+                if (script.attributes.type && script.attributes.type.value === "application/x-component") {
+                    warn("deprecated_integration_application_xcomponent");
+                    console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
                 }
             }
         }
@@ -10411,7 +10324,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.request = request;
         var _promise = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
@@ -10466,7 +10379,7 @@ this["ppxo"] = function(modules) {
             });
         }
         request.get = function(url) {
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
             var method = "get";
             return request(_extends({
                 method: method,
@@ -10474,7 +10387,7 @@ this["ppxo"] = function(modules) {
             }, options));
         };
         request.post = function(url, body) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+            var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
             var method = "post";
             return request(_extends({
                 method: method,
@@ -10483,31 +10396,107 @@ this["ppxo"] = function(modules) {
             }, options));
         };
     },
-    "./src/components/index.js": function(module, exports, __webpack_require__) {
+    "./src/interface/paypal.js": function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: true
         });
-        var _button = __webpack_require__("./src/components/button/index.js");
-        Object.keys(_button).forEach(function(key) {
-            if (key === "default" || key === "__esModule") return;
-            Object.defineProperty(exports, key, {
-                enumerable: true,
-                get: function get() {
-                    return _button[key];
-                }
-            });
+        exports.version = exports.onPossiblyUnhandledException = exports.isEligible = exports.request = exports.config = exports.setup = exports.apps = exports.checkout = exports.PayPalCheckout = exports.Checkout = exports.Button = exports.rest = exports.Promise = exports.postRobot = exports.xcomponent = undefined;
+        var _src = __webpack_require__("./node_modules/xcomponent/src/index.js");
+        Object.defineProperty(exports, "xcomponent", {
+            enumerable: true,
+            get: function get() {
+                return _interopRequireDefault(_src)["default"];
+            }
         });
-        var _checkout = __webpack_require__("./src/components/checkout/index.js");
-        Object.keys(_checkout).forEach(function(key) {
-            if (key === "default" || key === "__esModule") return;
-            Object.defineProperty(exports, key, {
-                enumerable: true,
-                get: function get() {
-                    return _checkout[key];
-                }
-            });
+        var _src2 = __webpack_require__("./node_modules/post-robot/src/index.js");
+        Object.defineProperty(exports, "postRobot", {
+            enumerable: true,
+            get: function get() {
+                return _interopRequireDefault(_src2)["default"];
+            }
         });
+        var _promise = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
+        Object.defineProperty(exports, "Promise", {
+            enumerable: true,
+            get: function get() {
+                return _promise.SyncPromise;
+            }
+        });
+        var _api = __webpack_require__("./src/api/index.js");
+        Object.defineProperty(exports, "rest", {
+            enumerable: true,
+            get: function get() {
+                return _api.rest;
+            }
+        });
+        var _components = __webpack_require__("./src/components/index.js");
+        Object.defineProperty(exports, "Button", {
+            enumerable: true,
+            get: function get() {
+                return _components.Button;
+            }
+        });
+        Object.defineProperty(exports, "Checkout", {
+            enumerable: true,
+            get: function get() {
+                return _components.Checkout;
+            }
+        });
+        Object.defineProperty(exports, "PayPalCheckout", {
+            enumerable: true,
+            get: function get() {
+                return _components.Checkout;
+            }
+        });
+        var _legacy = __webpack_require__("./src/legacy/index.js");
+        Object.defineProperty(exports, "checkout", {
+            enumerable: true,
+            get: function get() {
+                return _legacy.checkout;
+            }
+        });
+        Object.defineProperty(exports, "apps", {
+            enumerable: true,
+            get: function get() {
+                return _legacy.apps;
+            }
+        });
+        var _setup = __webpack_require__("./src/setup.js");
+        Object.defineProperty(exports, "setup", {
+            enumerable: true,
+            get: function get() {
+                return _setup.setup;
+            }
+        });
+        var _config = __webpack_require__("./src/config/index.js");
+        Object.defineProperty(exports, "config", {
+            enumerable: true,
+            get: function get() {
+                return _config.config;
+            }
+        });
+        var _lib = __webpack_require__("./src/lib/index.js");
+        Object.defineProperty(exports, "request", {
+            enumerable: true,
+            get: function get() {
+                return _lib.request;
+            }
+        });
+        Object.defineProperty(exports, "isEligible", {
+            enumerable: true,
+            get: function get() {
+                return _lib.isEligible;
+            }
+        });
+        function _interopRequireDefault(obj) {
+            return obj && obj.__esModule ? obj : {
+                default: obj
+            };
+        }
+        var onPossiblyUnhandledException = exports.onPossiblyUnhandledException = _promise.SyncPromise.onPossiblyUnhandledException;
+        var version = exports.version = "4.0.24";
+        module.exports["default"] = module.exports;
     },
     "./src/components/button/index.js": function(module, exports, __webpack_require__) {
         "use strict";
@@ -10553,7 +10542,7 @@ this["ppxo"] = function(modules) {
         var _componentTemplate2 = _interopRequireDefault(_componentTemplate);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var Button = exports.Button = _src2["default"].create({
@@ -10577,7 +10566,7 @@ this["ppxo"] = function(modules) {
                 return _config.config.paypalUrls;
             },
             validateProps: function validateProps(component, props) {
-                var required = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+                var required = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
                 if (required) {
                     return (0, _common.validateProps)(props);
                 }
@@ -10791,7 +10780,7 @@ this["ppxo"] = function(modules) {
         var _content2 = _interopRequireDefault(_content);
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var content = JSON.parse(_content2["default"]);
@@ -10860,7 +10849,7 @@ this["ppxo"] = function(modules) {
                 return _config.config.paypalUrls;
             },
             validateProps: function validateProps(component, props) {
-                var required = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+                var required = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
                 if (required) {
                     return (0, _common.validateProps)(props);
                 }
@@ -10934,7 +10923,7 @@ this["ppxo"] = function(modules) {
                         if (original) {
                             return function(data) {
                                 var _this = this;
-                                var actions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                                var actions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                                 enableCheckoutIframe();
                                 try {
                                     logReturnUrl(data.returnUrl);
@@ -10984,7 +10973,7 @@ this["ppxo"] = function(modules) {
                         if (original) {
                             return function(data) {
                                 var _this2 = this;
-                                var actions = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                                var actions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
                                 var close = function close() {
                                     return _promise.SyncPromise["try"](function() {
                                         if (actions.close) {
@@ -11222,7 +11211,7 @@ this["ppxo"] = function(modules) {
         var _common = __webpack_require__("./src/legacy/common.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var $logger = _client2["default"].prefix(_constants.LOG_PREFIX);
@@ -11250,9 +11239,7 @@ this["ppxo"] = function(modules) {
         }
         function renderButton(id, container, options, label) {
             if (options.locale) {
-                var _normalizeLocale = (0, _common.normalizeLocale)(options.locale);
-                var country = _normalizeLocale.country;
-                var lang = _normalizeLocale.lang;
+                var _normalizeLocale = (0, _common.normalizeLocale)(options.locale), country = _normalizeLocale.country, lang = _normalizeLocale.lang;
                 options.locale = lang + "_" + country;
             }
             var lc = options.locale || _config.config.locale.lang + "_" + _config.config.locale.country;
@@ -11368,35 +11355,33 @@ this["ppxo"] = function(modules) {
                         }
                     }
                 } else if (options.container && options.container.length !== 0) {
-                    (function() {
-                        var labels = void 0;
-                        if (typeof options.type === "string") {
-                            labels = [ options.type ];
-                        } else if (options.type instanceof Array) {
-                            labels = options.type;
-                        } else {
-                            labels = [];
-                        }
-                        var containerElements = (0, _lib.getElements)(options.container);
-                        if (containerElements.length) {
-                            containerElements.forEach(function(container, i) {
-                                if (container.tagName && container.tagName.toLowerCase() === "a") {
-                                    $logger.warn("container_a_tag");
-                                }
-                                var buttonEl = renderButton(id, container, options, labels[i]);
-                                buttons.push({
-                                    container: container,
-                                    button: buttonEl,
-                                    click: options.click,
-                                    condition: options.condition
-                                });
+                    var labels = void 0;
+                    if (typeof options.type === "string") {
+                        labels = [ options.type ];
+                    } else if (options.type instanceof Array) {
+                        labels = options.type;
+                    } else {
+                        labels = [];
+                    }
+                    var containerElements = (0, _lib.getElements)(options.container);
+                    if (containerElements.length) {
+                        containerElements.forEach(function(container, i) {
+                            if (container.tagName && container.tagName.toLowerCase() === "a") {
+                                $logger.warn("container_a_tag");
+                            }
+                            var buttonEl = renderButton(id, container, options, labels[i]);
+                            buttons.push({
+                                container: container,
+                                button: buttonEl,
+                                click: options.click,
+                                condition: options.condition
                             });
-                        } else {
-                            $logger.warn("button_container_not_found", {
-                                container: JSON.stringify(options.container)
-                            });
-                        }
-                    })();
+                        });
+                    } else {
+                        $logger.warn("button_container_not_found", {
+                            container: JSON.stringify(options.container)
+                        });
+                    }
                 }
                 return buttons;
             });
@@ -11455,17 +11440,14 @@ this["ppxo"] = function(modules) {
         var _constants = __webpack_require__("./src/legacy/constants.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var $logger = _client2["default"].prefix(_constants.LOG_PREFIX);
         var DEFAULT_COUNTRY = "US";
         var DEFAULT_LANG = "en";
         function normalizeLocale(locale) {
-            var _locale$split = locale.split("_");
-            var _locale$split2 = _slicedToArray(_locale$split, 2);
-            var lang = _locale$split2[0];
-            var country = _locale$split2[1];
+            var _locale$split = locale.split("_"), _locale$split2 = _slicedToArray(_locale$split, 2), lang = _locale$split2[0], country = _locale$split2[1];
             if (!country) {
                 if (_config.config.locales[lang]) {
                     country = lang;
@@ -11565,7 +11547,7 @@ this["ppxo"] = function(modules) {
         var _common = __webpack_require__("./src/legacy/common.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var $logger = _client2["default"].prefix(_constants.LOG_PREFIX);
@@ -11763,9 +11745,7 @@ this["ppxo"] = function(modules) {
                     } catch (err) {
                         return reject(err);
                     }
-                    var _urlAndPaymentToken = urlAndPaymentToken;
-                    var url = _urlAndPaymentToken.url;
-                    var paymentToken = _urlAndPaymentToken.paymentToken;
+                    var _urlAndPaymentToken = urlAndPaymentToken, url = _urlAndPaymentToken.url, paymentToken = _urlAndPaymentToken.paymentToken;
                     return resolve({
                         url: url,
                         paymentToken: paymentToken
@@ -11785,7 +11765,7 @@ this["ppxo"] = function(modules) {
         }
         var paypalCheckoutInited = false;
         function initPayPalCheckout() {
-            var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             $logger.info("init_checkout");
             if (paypalCheckoutInited) {
                 $logger.warn("multiple_init_paypal_checkout");
@@ -11836,7 +11816,7 @@ this["ppxo"] = function(modules) {
             return paypalCheckout;
         }
         function renderPayPalCheckout() {
-            var props = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             var hijackTarget = arguments[1];
             ifNotClick(function() {
                 $logger.warn("render_without_click");
@@ -11860,9 +11840,7 @@ this["ppxo"] = function(modules) {
                     error: err.stack || err.toString()
                 });
                 _promise.SyncPromise.all([ props.url, props.payment ]).then(function(_ref2) {
-                    var _ref3 = _slicedToArray(_ref2, 2);
-                    var url = _ref3[0];
-                    var paymentToken = _ref3[1];
+                    var _ref3 = _slicedToArray(_ref2, 2), url = _ref3[0], paymentToken = _ref3[1];
                     if (url) {
                         return redirect(url);
                     }
@@ -11935,9 +11913,7 @@ this["ppxo"] = function(modules) {
                 return;
             }
             $logger.info("init_paypal_checkout_hijack");
-            var _getPaymentTokenAndUr = getPaymentTokenAndUrl();
-            var url = _getPaymentTokenAndUr.url;
-            var paymentToken = _getPaymentTokenAndUr.paymentToken;
+            var _getPaymentTokenAndUr = getPaymentTokenAndUrl(), url = _getPaymentTokenAndUr.url, paymentToken = _getPaymentTokenAndUr.paymentToken;
             var token = _src2["default"].CONSTANTS.PROP_DEFER_TO_URL;
             paymentToken.then(function(result) {
                 token = result;
@@ -11996,7 +11972,7 @@ this["ppxo"] = function(modules) {
         }
         var setupCalled = false;
         function setup(id) {
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+            var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
             if (window.ppCheckpoint) {
                 window.ppCheckpoint("flow_setup");
             }
@@ -12086,9 +12062,7 @@ this["ppxo"] = function(modules) {
                 return $logger.debug("ineligible_initxo");
             }
             reset();
-            var _getPaymentTokenAndUr2 = getPaymentTokenAndUrl();
-            var url = _getPaymentTokenAndUr2.url;
-            var paymentToken = _getPaymentTokenAndUr2.paymentToken;
+            var _getPaymentTokenAndUr2 = getPaymentTokenAndUrl(), url = _getPaymentTokenAndUr2.url, paymentToken = _getPaymentTokenAndUr2.paymentToken;
             $logger.info("init_paypal_checkout_initxo");
             renderPayPalCheckout({
                 url: url,
@@ -12107,9 +12081,7 @@ this["ppxo"] = function(modules) {
                     opts: JSON.stringify(opts)
                 });
             }
-            var _matchUrlAndPaymentTo = matchUrlAndPaymentToken(item);
-            var paymentToken = _matchUrlAndPaymentTo.paymentToken;
-            var url = _matchUrlAndPaymentTo.url;
+            var _matchUrlAndPaymentTo = matchUrlAndPaymentToken(item), paymentToken = _matchUrlAndPaymentTo.paymentToken, url = _matchUrlAndPaymentTo.url;
             if (!(0, _eligibility.isLegacyEligible)()) {
                 $logger.debug("ineligible_startflow_global", {
                     url: url
@@ -12196,7 +12168,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         exports.isUnsupportedIE = isUnsupportedIE;
         exports.isLegacyEligible = isLegacyEligible;
@@ -12267,13 +12239,12 @@ this["ppxo"] = function(modules) {
         var _config = __webpack_require__("./src/config/index.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var bridge = exports.bridge = new _promise.SyncPromise();
         _src2["default"].on("meta", function(_ref) {
-            var source = _ref.source;
-            var data = _ref.data;
+            var source = _ref.source, data = _ref.data;
             if (data.iframeEligible) {
                 (0, _components.enableCheckoutIframe)();
             }
@@ -12317,18 +12288,13 @@ this["ppxo"] = function(modules) {
     },
     "./src/compat/fallback.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
-            return typeof obj;
-        } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-        };
         var _src = __webpack_require__("./node_modules/post-robot/src/index.js");
         var _src2 = _interopRequireDefault(_src);
         var _bridge = __webpack_require__("./src/compat/bridge.js");
         var _lib = __webpack_require__("./src/lib/index.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function match(str, pattern) {
@@ -12357,78 +12323,73 @@ this["ppxo"] = function(modules) {
             });
             var interval = setInterval(function() {
                 try {
-                    var _ret = function() {
-                        var isLegacy = win.document.body.innerHTML.indexOf("merchantpaymentweb") !== -1 || win.document.body.innerHTML.indexOf("wapapp") !== -1;
-                        if (!isLegacy) {
-                            return {
-                                v: void 0
-                            };
+                    var isLegacy = win.document.body.innerHTML.indexOf("merchantpaymentweb") !== -1 || win.document.body.innerHTML.indexOf("wapapp") !== -1;
+                    if (!isLegacy) {
+                        return;
+                    }
+                    clearInterval(interval);
+                    var send = win.XMLHttpRequest.prototype.send;
+                    win.XMLHttpRequest.prototype.send = function() {
+                        if (this._patched) {
+                            return send.apply(this, arguments);
                         }
-                        clearInterval(interval);
-                        var send = win.XMLHttpRequest.prototype.send;
-                        win.XMLHttpRequest.prototype.send = function() {
-                            if (this._patched) {
-                                return send.apply(this, arguments);
-                            }
-                            this._patched = true;
-                            var self = this;
-                            var onload = this.onload;
-                            function listener() {
-                                if (self.readyState === self.DONE && self.status === 200 && self.responseText) {
-                                    try {
-                                        var response = JSON.parse(self.responseText.replace("while (1);", ""));
-                                        if (response.type === "redirect" && response.url && onLegacyPaymentAuthorize) {
-                                            var url = response.url;
-                                            onLegacyPaymentAuthorize({
-                                                returnUrl: url,
-                                                paymentToken: match(url, /token=((EC-)?[A-Z0-9]+)/),
-                                                billingToken: match(url, /ba_token=((BA-)?[A-Z0-9]+)/),
-                                                payerID: match(url, /PayerID=([A-Z0-9]+)/),
-                                                paymentID: match(url, /paymentId=((PAY-)?[A-Z0-9]+)/)
-                                            });
-                                            if (win.PAYPAL && win.PAYPAL.Checkout && win.PAYPAL.Checkout.XhrResponse && win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES) {
-                                                Object.defineProperty(win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES, "Redirect", {
-                                                    get: function get() {
-                                                        return Math.random();
-                                                    }
-                                                });
-                                            }
-                                            if (win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady) {
-                                                win.mob.Xhr.prototype._xhrOnReady = function() {};
-                                            }
-                                            setTimeout(function() {
-                                                if (!win.closed) {
-                                                    win.close();
+                        this._patched = true;
+                        var self = this;
+                        var onload = this.onload;
+                        function listener() {
+                            if (self.readyState === self.DONE && self.status === 200 && self.responseText) {
+                                try {
+                                    var response = JSON.parse(self.responseText.replace("while (1);", ""));
+                                    if (response.type === "redirect" && response.url && onLegacyPaymentAuthorize) {
+                                        var url = response.url;
+                                        onLegacyPaymentAuthorize({
+                                            returnUrl: url,
+                                            paymentToken: match(url, /token=((EC-)?[A-Z0-9]+)/),
+                                            billingToken: match(url, /ba_token=((BA-)?[A-Z0-9]+)/),
+                                            payerID: match(url, /PayerID=([A-Z0-9]+)/),
+                                            paymentID: match(url, /paymentId=((PAY-)?[A-Z0-9]+)/)
+                                        });
+                                        if (win.PAYPAL && win.PAYPAL.Checkout && win.PAYPAL.Checkout.XhrResponse && win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES) {
+                                            Object.defineProperty(win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES, "Redirect", {
+                                                get: function get() {
+                                                    return Math.random();
                                                 }
-                                            }, 500);
-                                            return;
+                                            });
                                         }
-                                    } catch (err) {
+                                        if (win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady) {
+                                            win.mob.Xhr.prototype._xhrOnReady = function() {};
+                                        }
+                                        setTimeout(function() {
+                                            if (!win.closed) {
+                                                win.close();
+                                            }
+                                        }, 500);
                                         return;
                                     }
-                                }
-                                if (onload) {
-                                    return onload.apply(this, arguments);
+                                } catch (err) {
+                                    return;
                                 }
                             }
-                            if (this.onload !== listener) {
-                                try {
-                                    delete this.onload;
-                                    this.onload = listener;
-                                    Object.defineProperty(this, "onload", {
-                                        get: function get() {
-                                            return listener;
-                                        },
-                                        set: function set(handler) {
-                                            onload = handler;
-                                        }
-                                    });
-                                } catch (err) {}
+                            if (onload) {
+                                return onload.apply(this, arguments);
                             }
-                            return send.apply(this, arguments);
-                        };
-                    }();
-                    if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+                        }
+                        if (this.onload !== listener) {
+                            try {
+                                delete this.onload;
+                                this.onload = listener;
+                                Object.defineProperty(this, "onload", {
+                                    get: function get() {
+                                        return listener;
+                                    },
+                                    set: function set(handler) {
+                                        onload = handler;
+                                    }
+                                });
+                            } catch (err) {}
+                        }
+                        return send.apply(this, arguments);
+                    };
                 } catch (err) {}
             }, 1e3);
         }
@@ -12445,7 +12406,7 @@ this["ppxo"] = function(modules) {
         var _promise = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         if (!window.Symbol) {
@@ -12466,7 +12427,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         var d = __webpack_require__("./node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es6-symbol/validate-symbol.js"), create = Object.create, defineProperties = Object.defineProperties, defineProperty = Object.defineProperty, objPrototype = Object.prototype, NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null), isNativeSafe;
         if (typeof Symbol === "function") {
@@ -12511,7 +12472,7 @@ this["ppxo"] = function(modules) {
             });
         };
         defineProperties(SymbolPolyfill, {
-            "for": d(function(key) {
+            for: d(function(key) {
                 if (globalSymbols[key]) return globalSymbols[key];
                 return globalSymbols[key] = SymbolPolyfill(String(key));
             }),
@@ -12646,7 +12607,7 @@ this["ppxo"] = function(modules) {
         "use strict";
         var keys = __webpack_require__("./node_modules/es5-ext/object/keys/index.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), max = Math.max;
         module.exports = function(dest, src) {
-            var error, i, l = max(arguments.length, 2), assign;
+            var error, i, length = max(arguments.length, 2), assign;
             dest = Object(value(dest));
             assign = function assign(key) {
                 try {
@@ -12655,7 +12616,7 @@ this["ppxo"] = function(modules) {
                     if (!error) error = e;
                 }
             };
-            for (i = 1; i < l; ++i) {
+            for (i = 1; i < length; ++i) {
                 src = arguments[i];
                 keys(src).forEach(assign);
             }
@@ -12678,22 +12639,36 @@ this["ppxo"] = function(modules) {
             }
         };
     },
-    "./node_modules/es5-ext/object/keys/shim.js": function(module, exports) {
+    "./node_modules/es5-ext/object/keys/shim.js": function(module, exports, __webpack_require__) {
         "use strict";
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js");
         var keys = Object.keys;
         module.exports = function(object) {
-            return keys(object == null ? object : Object(object));
+            return keys(isValue(object) ? Object(object) : object);
         };
     },
-    "./node_modules/es5-ext/object/valid-value.js": function(module, exports) {
+    "./node_modules/es5-ext/object/is-value.js": function(module, exports, __webpack_require__) {
         "use strict";
+        var _undefined = __webpack_require__("./node_modules/es5-ext/function/noop.js")();
+        module.exports = function(val) {
+            return val !== _undefined && val !== null;
+        };
+    },
+    "./node_modules/es5-ext/function/noop.js": function(module, exports) {
+        "use strict";
+        module.exports = function() {};
+    },
+    "./node_modules/es5-ext/object/valid-value.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js");
         module.exports = function(value) {
-            if (value == null) throw new TypeError("Cannot use null or undefined");
+            if (!isValue(value)) throw new TypeError("Cannot use null or undefined");
             return value;
         };
     },
-    "./node_modules/es5-ext/object/normalize-options.js": function(module, exports) {
+    "./node_modules/es5-ext/object/normalize-options.js": function(module, exports, __webpack_require__) {
         "use strict";
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js");
         var forEach = Array.prototype.forEach, create = Object.create;
         var process = function process(src, obj) {
             var key;
@@ -12701,10 +12676,10 @@ this["ppxo"] = function(modules) {
                 obj[key] = src[key];
             }
         };
-        module.exports = function(options) {
+        module.exports = function(opts1) {
             var result = create(null);
             forEach.call(arguments, function(options) {
-                if (options == null) return;
+                if (!isValue(options)) return;
                 process(Object(options), result);
             });
             return result;
@@ -12748,7 +12723,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         module.exports = function(x) {
             if (!x) return false;
@@ -12786,16 +12761,16 @@ this["ppxo"] = function(modules) {
     },
     "./node_modules/es5-ext/object/set-prototype-of/is-implemented.js": function(module, exports) {
         "use strict";
-        var create = Object.create, getPrototypeOf = Object.getPrototypeOf, x = {};
+        var create = Object.create, getPrototypeOf = Object.getPrototypeOf, plainObject = {};
         module.exports = function() {
             var setPrototypeOf = Object.setPrototypeOf, customCreate = arguments[0] || create;
             if (typeof setPrototypeOf !== "function") return false;
-            return getPrototypeOf(setPrototypeOf(customCreate(null), x)) === x;
+            return getPrototypeOf(setPrototypeOf(customCreate(null), plainObject)) === plainObject;
         };
     },
     "./node_modules/es5-ext/object/set-prototype-of/shim.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var isObject = __webpack_require__("./node_modules/es5-ext/object/is-object.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), isPrototypeOf = Object.prototype.isPrototypeOf, defineProperty = Object.defineProperty, nullDesc = {
+        var isObject = __webpack_require__("./node_modules/es5-ext/object/is-object.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), objIsPrototypeOf = Object.prototype.isPrototypeOf, defineProperty = Object.defineProperty, nullDesc = {
             configurable: true,
             enumerable: false,
             writable: true,
@@ -12826,7 +12801,7 @@ this["ppxo"] = function(modules) {
                 fn = function self(obj, prototype) {
                     var isNullBase;
                     validate(obj, prototype);
-                    isNullBase = isPrototypeOf.call(self.nullPolyfill, obj);
+                    isNullBase = objIsPrototypeOf.call(self.nullPolyfill, obj);
                     if (isNullBase) delete self.nullPolyfill.__proto__;
                     if (prototype === null) prototype = self.nullPolyfill;
                     obj.__proto__ = prototype;
@@ -12841,43 +12816,44 @@ this["ppxo"] = function(modules) {
                 value: status.level
             });
         }(function() {
-            var x = Object.create(null), y = {}, set, desc = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__");
+            var tmpObj1 = Object.create(null), tmpObj2 = {}, set, desc = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__");
             if (desc) {
                 try {
                     set = desc.set;
-                    set.call(x, y);
+                    set.call(tmpObj1, tmpObj2);
                 } catch (ignore) {}
-                if (Object.getPrototypeOf(x) === y) return {
+                if (Object.getPrototypeOf(tmpObj1) === tmpObj2) return {
                     set: set,
                     level: 2
                 };
             }
-            x.__proto__ = y;
-            if (Object.getPrototypeOf(x) === y) return {
+            tmpObj1.__proto__ = tmpObj2;
+            if (Object.getPrototypeOf(tmpObj1) === tmpObj2) return {
                 level: 2
             };
-            x = {};
-            x.__proto__ = y;
-            if (Object.getPrototypeOf(x) === y) return {
+            tmpObj1 = {};
+            tmpObj1.__proto__ = tmpObj2;
+            if (Object.getPrototypeOf(tmpObj1) === tmpObj2) return {
                 level: 1
             };
             return false;
         }());
         __webpack_require__("./node_modules/es5-ext/object/create.js");
     },
-    "./node_modules/es5-ext/object/is-object.js": function(module, exports) {
+    "./node_modules/es5-ext/object/is-object.js": function(module, exports, __webpack_require__) {
         "use strict";
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js");
         var map = {
-            "function": true,
+            function: true,
             object: true
         };
-        module.exports = function(x) {
-            return x != null && map[typeof x === "undefined" ? "undefined" : _typeof(x)] || false;
+        module.exports = function(value) {
+            return isValue(value) && map[typeof value === "undefined" ? "undefined" : _typeof(value)] || false;
         };
     },
     "./node_modules/es5-ext/object/create.js": function(module, exports, __webpack_require__) {
@@ -12887,11 +12863,11 @@ this["ppxo"] = function(modules) {
             shim = __webpack_require__("./node_modules/es5-ext/object/set-prototype-of/shim.js");
         }
         module.exports = function() {
-            var nullObject, props, desc;
+            var nullObject, polyProps, desc;
             if (!shim) return create;
             if (shim.level !== 1) return create;
             nullObject = {};
-            props = {};
+            polyProps = {};
             desc = {
                 configurable: false,
                 enumerable: false,
@@ -12900,7 +12876,7 @@ this["ppxo"] = function(modules) {
             };
             Object.getOwnPropertyNames(Object.prototype).forEach(function(name) {
                 if (name === "__proto__") {
-                    props[name] = {
+                    polyProps[name] = {
                         configurable: true,
                         enumerable: false,
                         writable: true,
@@ -12908,9 +12884,9 @@ this["ppxo"] = function(modules) {
                     };
                     return;
                 }
-                props[name] = desc;
+                polyProps[name] = desc;
             });
-            Object.defineProperties(nullObject, props);
+            Object.defineProperties(nullObject, polyProps);
             Object.defineProperty(shim, "nullPolyfill", {
                 configurable: false,
                 enumerable: false,
@@ -13052,23 +13028,554 @@ this["ppxo"] = function(modules) {
     },
     "./node_modules/es5-ext/object/copy.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js");
+        var aFrom = __webpack_require__("./node_modules/es5-ext/array/from/index.js"), assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js");
         module.exports = function(obj) {
-            var copy = Object(value(obj));
-            if (copy !== obj) return copy;
-            return assign({}, obj);
+            var copy = Object(value(obj)), propertyNames = arguments[1], options = Object(arguments[2]);
+            if (copy !== obj && !propertyNames) return copy;
+            var result = {};
+            if (propertyNames) {
+                aFrom(propertyNames, function(propertyName) {
+                    if (options.ensure || propertyName in obj) result[propertyName] = obj[propertyName];
+                });
+            } else {
+                assign(result, obj);
+            }
+            return result;
+        };
+    },
+    "./node_modules/es5-ext/array/from/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/es5-ext/array/from/is-implemented.js")() ? Array.from : __webpack_require__("./node_modules/es5-ext/array/from/shim.js");
+    },
+    "./node_modules/es5-ext/array/from/is-implemented.js": function(module, exports) {
+        "use strict";
+        module.exports = function() {
+            var from = Array.from, arr, result;
+            if (typeof from !== "function") return false;
+            arr = [ "raz", "dwa" ];
+            result = from(arr);
+            return Boolean(result && result !== arr && result[1] === "dwa");
+        };
+    },
+    "./node_modules/es5-ext/array/from/shim.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var iteratorSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/index.js").iterator, isArguments = __webpack_require__("./node_modules/es5-ext/function/is-arguments.js"), isFunction = __webpack_require__("./node_modules/es5-ext/function/is-function.js"), toPosInt = __webpack_require__("./node_modules/es5-ext/number/to-pos-integer.js"), callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), validValue = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js"), isString = __webpack_require__("./node_modules/es5-ext/string/is-string.js"), isArray = Array.isArray, call = Function.prototype.call, desc = {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: null
+        }, defineProperty = Object.defineProperty;
+        module.exports = function(arrayLike) {
+            var mapFn = arguments[1], thisArg = arguments[2], Context, i, j, arr, length, code, iterator, result, getIterator, value;
+            arrayLike = Object(validValue(arrayLike));
+            if (isValue(mapFn)) callable(mapFn);
+            if (!this || this === Array || !isFunction(this)) {
+                if (!mapFn) {
+                    if (isArguments(arrayLike)) {
+                        length = arrayLike.length;
+                        if (length !== 1) return Array.apply(null, arrayLike);
+                        arr = new Array(1);
+                        arr[0] = arrayLike[0];
+                        return arr;
+                    }
+                    if (isArray(arrayLike)) {
+                        arr = new Array(length = arrayLike.length);
+                        for (i = 0; i < length; ++i) {
+                            arr[i] = arrayLike[i];
+                        }
+                        return arr;
+                    }
+                }
+                arr = [];
+            } else {
+                Context = this;
+            }
+            if (!isArray(arrayLike)) {
+                if ((getIterator = arrayLike[iteratorSymbol]) !== undefined) {
+                    iterator = callable(getIterator).call(arrayLike);
+                    if (Context) arr = new Context();
+                    result = iterator.next();
+                    i = 0;
+                    while (!result.done) {
+                        value = mapFn ? call.call(mapFn, thisArg, result.value, i) : result.value;
+                        if (Context) {
+                            desc.value = value;
+                            defineProperty(arr, i, desc);
+                        } else {
+                            arr[i] = value;
+                        }
+                        result = iterator.next();
+                        ++i;
+                    }
+                    length = i;
+                } else if (isString(arrayLike)) {
+                    length = arrayLike.length;
+                    if (Context) arr = new Context();
+                    for (i = 0, j = 0; i < length; ++i) {
+                        value = arrayLike[i];
+                        if (i + 1 < length) {
+                            code = value.charCodeAt(0);
+                            if (code >= 55296 && code <= 56319) value += arrayLike[++i];
+                        }
+                        value = mapFn ? call.call(mapFn, thisArg, value, j) : value;
+                        if (Context) {
+                            desc.value = value;
+                            defineProperty(arr, j, desc);
+                        } else {
+                            arr[j] = value;
+                        }
+                        ++j;
+                    }
+                    length = j;
+                }
+            }
+            if (length === undefined) {
+                length = toPosInt(arrayLike.length);
+                if (Context) arr = new Context(length);
+                for (i = 0; i < length; ++i) {
+                    value = mapFn ? call.call(mapFn, thisArg, arrayLike[i], i) : arrayLike[i];
+                    if (Context) {
+                        desc.value = value;
+                        defineProperty(arr, i, desc);
+                    } else {
+                        arr[i] = value;
+                    }
+                }
+            }
+            if (Context) {
+                desc.value = null;
+                arr.length = length;
+            }
+            return arr;
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/is-implemented.js")() ? __webpack_require__("./node_modules/ext/global-this/index.js").Symbol : __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/polyfill.js");
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/is-implemented.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        var global = __webpack_require__("./node_modules/ext/global-this/index.js"), validTypes = {
+            object: true,
+            symbol: true
+        };
+        module.exports = function() {
+            var _Symbol = global.Symbol;
+            var symbol;
+            if (typeof _Symbol !== "function") return false;
+            symbol = _Symbol("test symbol");
+            try {
+                String(symbol);
+            } catch (e) {
+                return false;
+            }
+            if (!validTypes[_typeof(_Symbol.iterator)]) return false;
+            if (!validTypes[_typeof(_Symbol.toPrimitive)]) return false;
+            if (!validTypes[_typeof(_Symbol.toStringTag)]) return false;
+            return true;
+        };
+    },
+    "./node_modules/ext/global-this/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/ext/global-this/is-implemented.js")() ? globalThis : __webpack_require__("./node_modules/ext/global-this/implementation.js");
+    },
+    "./node_modules/ext/global-this/is-implemented.js": function(module, exports) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        module.exports = function() {
+            if ((typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) !== "object") return false;
+            if (!globalThis) return false;
+            return globalThis.Array === Array;
+        };
+    },
+    "./node_modules/ext/global-this/implementation.js": function(module, exports) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        var naiveFallback = function naiveFallback() {
+            if ((typeof self === "undefined" ? "undefined" : _typeof(self)) === "object" && self) return self;
+            if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object" && window) return window;
+            throw new Error("Unable to resolve global `this`");
+        };
+        module.exports = function() {
+            if (this) return this;
+            try {
+                Object.defineProperty(Object.prototype, "__global__", {
+                    get: function get() {
+                        return this;
+                    },
+                    configurable: true
+                });
+            } catch (error) {
+                return naiveFallback();
+            }
+            try {
+                if (!__global__) return naiveFallback();
+                return __global__;
+            } finally {
+                delete Object.prototype.__global__;
+            }
+        }();
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/polyfill.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/validate-symbol.js"), NativeSymbol = __webpack_require__("./node_modules/ext/global-this/index.js").Symbol, generateName = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/lib/private/generate-name.js"), setupStandardSymbols = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/standard-symbols.js"), setupSymbolRegistry = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/symbol-registry.js");
+        var create = Object.create, defineProperties = Object.defineProperties, defineProperty = Object.defineProperty;
+        var SymbolPolyfill, HiddenSymbol, isNativeSafe;
+        if (typeof NativeSymbol === "function") {
+            try {
+                String(NativeSymbol());
+                isNativeSafe = true;
+            } catch (ignore) {}
+        } else {
+            NativeSymbol = null;
+        }
+        HiddenSymbol = function _Symbol(description) {
+            if (this instanceof HiddenSymbol) throw new TypeError("Symbol is not a constructor");
+            return SymbolPolyfill(description);
+        };
+        module.exports = SymbolPolyfill = function _Symbol2(description) {
+            var symbol;
+            if (this instanceof _Symbol2) throw new TypeError("Symbol is not a constructor");
+            if (isNativeSafe) return NativeSymbol(description);
+            symbol = create(HiddenSymbol.prototype);
+            description = description === undefined ? "" : String(description);
+            return defineProperties(symbol, {
+                __description__: d("", description),
+                __name__: d("", generateName(description))
+            });
+        };
+        setupStandardSymbols(SymbolPolyfill);
+        setupSymbolRegistry(SymbolPolyfill);
+        defineProperties(HiddenSymbol.prototype, {
+            constructor: d(SymbolPolyfill),
+            toString: d("", function() {
+                return this.__name__;
+            })
+        });
+        defineProperties(SymbolPolyfill.prototype, {
+            toString: d(function() {
+                return "Symbol (" + validateSymbol(this).__description__ + ")";
+            }),
+            valueOf: d(function() {
+                return validateSymbol(this);
+            })
+        });
+        defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d("", function() {
+            var symbol = validateSymbol(this);
+            if ((typeof symbol === "undefined" ? "undefined" : _typeof(symbol)) === "symbol") return symbol;
+            return symbol.toString();
+        }));
+        defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d("c", "Symbol"));
+        defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag, d("c", SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
+        defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive, d("c", SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
+    },
+    "./node_modules/es5-ext/node_modules/d/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isValue = __webpack_require__("./node_modules/type/value/is.js"), isPlainFunction = __webpack_require__("./node_modules/type/plain-function/is.js"), assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), normalizeOpts = __webpack_require__("./node_modules/es5-ext/object/normalize-options.js"), contains = __webpack_require__("./node_modules/es5-ext/string/#/contains/index.js");
+        var d = module.exports = function(dscr, value) {
+            var c, e, w, options, desc;
+            if (arguments.length < 2 || typeof dscr !== "string") {
+                options = value;
+                value = dscr;
+                dscr = null;
+            } else {
+                options = arguments[2];
+            }
+            if (isValue(dscr)) {
+                c = contains.call(dscr, "c");
+                e = contains.call(dscr, "e");
+                w = contains.call(dscr, "w");
+            } else {
+                c = w = true;
+                e = false;
+            }
+            desc = {
+                value: value,
+                configurable: c,
+                enumerable: e,
+                writable: w
+            };
+            return !options ? desc : assign(normalizeOpts(options), desc);
+        };
+        d.gs = function(dscr, get, set) {
+            var c, e, options, desc;
+            if (typeof dscr !== "string") {
+                options = set;
+                set = get;
+                get = dscr;
+                dscr = null;
+            } else {
+                options = arguments[3];
+            }
+            if (!isValue(get)) {
+                get = undefined;
+            } else if (!isPlainFunction(get)) {
+                options = get;
+                get = set = undefined;
+            } else if (!isValue(set)) {
+                set = undefined;
+            } else if (!isPlainFunction(set)) {
+                options = set;
+                set = undefined;
+            }
+            if (isValue(dscr)) {
+                c = contains.call(dscr, "c");
+                e = contains.call(dscr, "e");
+            } else {
+                c = true;
+                e = false;
+            }
+            desc = {
+                get: get,
+                set: set,
+                configurable: c,
+                enumerable: e
+            };
+            return !options ? desc : assign(normalizeOpts(options), desc);
+        };
+    },
+    "./node_modules/type/value/is.js": function(module, exports) {
+        "use strict";
+        var _undefined = void 0;
+        module.exports = function(value) {
+            return value !== _undefined && value !== null;
+        };
+    },
+    "./node_modules/type/plain-function/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isFunction = __webpack_require__("./node_modules/type/function/is.js");
+        var classRe = /^\s*class[\s{\/}]/, functionToString = Function.prototype.toString;
+        module.exports = function(value) {
+            if (!isFunction(value)) return false;
+            if (classRe.test(functionToString.call(value))) return false;
+            return true;
+        };
+    },
+    "./node_modules/type/function/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isPrototype = __webpack_require__("./node_modules/type/prototype/is.js");
+        module.exports = function(value) {
+            if (typeof value !== "function") return false;
+            if (!hasOwnProperty.call(value, "length")) return false;
+            try {
+                if (typeof value.length !== "number") return false;
+                if (typeof value.call !== "function") return false;
+                if (typeof value.apply !== "function") return false;
+            } catch (error) {
+                return false;
+            }
+            return !isPrototype(value);
+        };
+    },
+    "./node_modules/type/prototype/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isObject = __webpack_require__("./node_modules/type/object/is.js");
+        module.exports = function(value) {
+            if (!isObject(value)) return false;
+            try {
+                if (!value.constructor) return false;
+                return value.constructor.prototype === value;
+            } catch (error) {
+                return false;
+            }
+        };
+    },
+    "./node_modules/type/object/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        var isValue = __webpack_require__("./node_modules/type/value/is.js");
+        var possibleTypes = {
+            object: true,
+            function: true,
+            undefined: true
+        };
+        module.exports = function(value) {
+            if (!isValue(value)) return false;
+            return hasOwnProperty.call(possibleTypes, typeof value === "undefined" ? "undefined" : _typeof(value));
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/validate-symbol.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/is-symbol.js");
+        module.exports = function(value) {
+            if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
+            return value;
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/is-symbol.js": function(module, exports) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        module.exports = function(value) {
+            if (!value) return false;
+            if ((typeof value === "undefined" ? "undefined" : _typeof(value)) === "symbol") return true;
+            if (!value.constructor) return false;
+            if (value.constructor.name !== "Symbol") return false;
+            return value[value.constructor.toStringTag] === "Symbol";
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/lib/private/generate-name.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js");
+        var create = Object.create, defineProperty = Object.defineProperty, objPrototype = Object.prototype;
+        var created = create(null);
+        module.exports = function(desc) {
+            var postfix = 0, name, ie11BugWorkaround;
+            while (created[desc + (postfix || "")]) {
+                ++postfix;
+            }
+            desc += postfix || "";
+            created[desc] = true;
+            name = "@@" + desc;
+            defineProperty(objPrototype, name, d.gs(null, function(value) {
+                if (ie11BugWorkaround) return;
+                ie11BugWorkaround = true;
+                defineProperty(this, name, d(value));
+                ie11BugWorkaround = false;
+            }));
+            return name;
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/standard-symbols.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), NativeSymbol = __webpack_require__("./node_modules/ext/global-this/index.js").Symbol;
+        module.exports = function(SymbolPolyfill) {
+            return Object.defineProperties(SymbolPolyfill, {
+                hasInstance: d("", NativeSymbol && NativeSymbol.hasInstance || SymbolPolyfill("hasInstance")),
+                isConcatSpreadable: d("", NativeSymbol && NativeSymbol.isConcatSpreadable || SymbolPolyfill("isConcatSpreadable")),
+                iterator: d("", NativeSymbol && NativeSymbol.iterator || SymbolPolyfill("iterator")),
+                match: d("", NativeSymbol && NativeSymbol.match || SymbolPolyfill("match")),
+                replace: d("", NativeSymbol && NativeSymbol.replace || SymbolPolyfill("replace")),
+                search: d("", NativeSymbol && NativeSymbol.search || SymbolPolyfill("search")),
+                species: d("", NativeSymbol && NativeSymbol.species || SymbolPolyfill("species")),
+                split: d("", NativeSymbol && NativeSymbol.split || SymbolPolyfill("split")),
+                toPrimitive: d("", NativeSymbol && NativeSymbol.toPrimitive || SymbolPolyfill("toPrimitive")),
+                toStringTag: d("", NativeSymbol && NativeSymbol.toStringTag || SymbolPolyfill("toStringTag")),
+                unscopables: d("", NativeSymbol && NativeSymbol.unscopables || SymbolPolyfill("unscopables"))
+            });
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/symbol-registry.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/validate-symbol.js");
+        var registry = Object.create(null);
+        module.exports = function(SymbolPolyfill) {
+            return Object.defineProperties(SymbolPolyfill, {
+                for: d(function(key) {
+                    if (registry[key]) return registry[key];
+                    return registry[key] = SymbolPolyfill(String(key));
+                }),
+                keyFor: d(function(symbol) {
+                    var key;
+                    validateSymbol(symbol);
+                    for (key in registry) {
+                        if (registry[key] === symbol) return key;
+                    }
+                    return undefined;
+                })
+            });
+        };
+    },
+    "./node_modules/es5-ext/function/is-arguments.js": function(module, exports) {
+        "use strict";
+        var objToString = Object.prototype.toString, id = objToString.call(function() {
+            return arguments;
+        }());
+        module.exports = function(value) {
+            return objToString.call(value) === id;
+        };
+    },
+    "./node_modules/es5-ext/function/is-function.js": function(module, exports) {
+        "use strict";
+        var objToString = Object.prototype.toString, isFunctionStringTag = RegExp.prototype.test.bind(/^[object [A-Za-z0-9]*Function]$/);
+        module.exports = function(value) {
+            return typeof value === "function" && isFunctionStringTag(objToString.call(value));
+        };
+    },
+    "./node_modules/es5-ext/number/to-pos-integer.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var toInteger = __webpack_require__("./node_modules/es5-ext/number/to-integer.js"), max = Math.max;
+        module.exports = function(value) {
+            return max(0, toInteger(value));
+        };
+    },
+    "./node_modules/es5-ext/number/to-integer.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var sign = __webpack_require__("./node_modules/es5-ext/math/sign/index.js"), abs = Math.abs, floor = Math.floor;
+        module.exports = function(value) {
+            if (isNaN(value)) return 0;
+            value = Number(value);
+            if (value === 0 || !isFinite(value)) return value;
+            return sign(value) * floor(abs(value));
+        };
+    },
+    "./node_modules/es5-ext/math/sign/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/es5-ext/math/sign/is-implemented.js")() ? Math.sign : __webpack_require__("./node_modules/es5-ext/math/sign/shim.js");
+    },
+    "./node_modules/es5-ext/math/sign/is-implemented.js": function(module, exports) {
+        "use strict";
+        module.exports = function() {
+            var sign = Math.sign;
+            if (typeof sign !== "function") return false;
+            return sign(10) === 1 && sign(-20) === -1;
+        };
+    },
+    "./node_modules/es5-ext/math/sign/shim.js": function(module, exports) {
+        "use strict";
+        module.exports = function(value) {
+            value = Number(value);
+            if (isNaN(value) || value === 0) return value;
+            return value > 0 ? 1 : -1;
+        };
+    },
+    "./node_modules/es5-ext/string/is-string.js": function(module, exports) {
+        "use strict";
+        var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        var objToString = Object.prototype.toString, id = objToString.call("");
+        module.exports = function(value) {
+            return typeof value === "string" || value && (typeof value === "undefined" ? "undefined" : _typeof(value)) === "object" && (value instanceof String || objToString.call(value) === id) || false;
         };
     },
     "./node_modules/es5-ext/object/map.js": function(module, exports, __webpack_require__) {
         "use strict";
         var callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), forEach = __webpack_require__("./node_modules/es5-ext/object/for-each.js"), call = Function.prototype.call;
         module.exports = function(obj, cb) {
-            var o = {}, thisArg = arguments[2];
+            var result = {}, thisArg = arguments[2];
             callable(cb);
-            forEach(obj, function(value, key, obj, index) {
-                o[key] = call.call(cb, thisArg, value, key, obj, index);
+            forEach(obj, function(value, key, targetObj, index) {
+                result[key] = call.call(cb, thisArg, value, key, targetObj, index);
             });
-            return o;
+            return result;
         };
     },
     "./node_modules/es5-ext/object/for-each.js": function(module, exports, __webpack_require__) {
@@ -13077,7 +13584,7 @@ this["ppxo"] = function(modules) {
     },
     "./node_modules/es5-ext/object/_iterate.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), bind = Function.prototype.bind, call = Function.prototype.call, keys = Object.keys, propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+        var callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), bind = Function.prototype.bind, call = Function.prototype.call, keys = Object.keys, objPropertyIsEnumerable = Object.prototype.propertyIsEnumerable;
         module.exports = function(method, defVal) {
             return function(obj, cb) {
                 var list, thisArg = arguments[2], compareFn = arguments[3];
@@ -13089,7 +13596,7 @@ this["ppxo"] = function(modules) {
                 }
                 if (typeof method !== "function") method = list[method];
                 return call.call(method, list, function(key, index) {
-                    if (!propertyIsEnumerable.call(obj, key)) return defVal;
+                    if (!objPropertyIsEnumerable.call(obj, key)) return defVal;
                     return call.call(cb, thisArg, obj[key], key, obj, index);
                 });
             };
@@ -13104,7 +13611,7 @@ this["ppxo"] = function(modules) {
         var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
             return typeof obj;
         } : function(obj) {
-            return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+            return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
         var validTypes = {
             object: true,
@@ -13133,7 +13640,7 @@ this["ppxo"] = function(modules) {
         var _constants = __webpack_require__("./src/legacy/constants.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         var $logger = _client2["default"].prefix(_constants.LOG_PREFIX);
@@ -13191,7 +13698,7 @@ this["ppxo"] = function(modules) {
         var _compat = __webpack_require__("./src/compat/index.js");
         function _interopRequireDefault(obj) {
             return obj && obj.__esModule ? obj : {
-                "default": obj
+                default: obj
             };
         }
         function domainToEnv(domain) {
@@ -13220,7 +13727,7 @@ this["ppxo"] = function(modules) {
         setDomainEnv(window.location.protocol + "//" + window.location.host);
         (0, _lib.initLogger)();
         var setup = exports.setup = (0, _lib.once)(function setup() {
-            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
             (0, _lib.checkForCommonErrors)();
             if (options.env) {
                 if (!_config.config.paypalUrls[options.env]) {
@@ -13285,6 +13792,7 @@ this["ppxo"] = function(modules) {
                 _client2["default"].debug("current_script_not_recognized");
             }
         }
+        window.addEventListener("load", _lib.checkForDeprecatedIntegration);
         var currentScript = getCurrentScript();
         if (currentScript) {
             setup({
@@ -13301,44 +13809,30 @@ this["ppxo"] = function(modules) {
             _client2["default"].debug("no_current_script");
         }
     },
-    "./src/lib/logger.js": function(module, exports, __webpack_require__) {
+    "./src/components/index.js": function(module, exports, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports, "__esModule", {
             value: true
         });
-        exports.initLogger = initLogger;
-        var _client = __webpack_require__("./node_modules/beaver-logger/client/index.js");
-        var _client2 = _interopRequireDefault(_client);
-        var _src = __webpack_require__("./node_modules/xcomponent/src/index.js");
-        var _src2 = _interopRequireDefault(_src);
-        var _config = __webpack_require__("./src/config/index.js");
-        function _interopRequireDefault(obj) {
-            return obj && obj.__esModule ? obj : {
-                "default": obj
-            };
-        }
-        function initLogger() {
-            _src2["default"].registerLogger(_client2["default"]);
-            _client2["default"].addPayloadBuilder(function() {
-                return {
-                    host: window.location.host,
-                    path: window.location.pathname,
-                    env: _config.config.env,
-                    country: _config.config.locale.country,
-                    lang: _config.config.locale.lang
-                };
+        var _button = __webpack_require__("./src/components/button/index.js");
+        Object.keys(_button).forEach(function(key) {
+            if (key === "default" || key === "__esModule") return;
+            Object.defineProperty(exports, key, {
+                enumerable: true,
+                get: function get() {
+                    return _button[key];
+                }
             });
-            _client2["default"].addMetaBuilder(function() {
-                return {
-                    state: _config.config.state
-                };
+        });
+        var _checkout = __webpack_require__("./src/components/checkout/index.js");
+        Object.keys(_checkout).forEach(function(key) {
+            if (key === "default" || key === "__esModule") return;
+            Object.defineProperty(exports, key, {
+                enumerable: true,
+                get: function get() {
+                    return _checkout[key];
+                }
             });
-            _client2["default"].init({
-                uri: _config.config.loggerUrl,
-                heartbeat: false,
-                logPerformance: false,
-                prefix: "ppxo"
-            });
-        }
+        });
     }
 });
