@@ -2,7 +2,7 @@
 import $logger from 'beaver-logger/client';
 
 import { config } from './config';
-import { initLogger, checkForCommonErrors, once } from './lib';
+import { initLogger, checkForCommonErrors, once, checkForDeprecatedIntegration } from './lib';
 import { enableCheckoutIframe } from './components';
 import { setupBridge } from './compat';
 
@@ -97,6 +97,8 @@ function getCurrentScript() {
         $logger.debug(`current_script_not_recognized`);
     }
 }
+
+window.addEventListener('load', checkForDeprecatedIntegration);
 
 let currentScript = getCurrentScript();
 
