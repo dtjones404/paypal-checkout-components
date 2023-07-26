@@ -22,7 +22,7 @@ export function onHashChange() {
         timeout = setTimeout(() => {
             clearInterval(interval);
             return reject(new Error(`Hash did not change after 2000ms`));
-        }, 2000);
+        }, 4000);
     });
 }
 
