@@ -4,7 +4,9 @@
   "description": "Checkout components, for integratng checkout products.",
   "main": "index.js",
   "scripts": {
-    "test": "eslint src"
+    "test": "eslint src",
+    "karma": "gulp karma",
+    "webpack": "gulp webpack"
   },
   "repository": {
     "type": "git",
