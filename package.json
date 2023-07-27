@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
-    "postinstall": "node postinstall.js"
+    "postinstall": "node postinstall.js",
+    "karma": "gulp karma",
+    "webpack": "gulp webpack"
   },
   "files": [
     "dist/checkout.lib.js",
