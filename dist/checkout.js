@@ -803,6 +803,7 @@
             }, {
                 key: "set",
                 value: function(key, value) {
+                    if (!key) throw new Error("WeakMap expected key");
                     var weakmap = this.weakmap;
                     if (weakmap) try {
                         weakmap.set(key, value);
@@ -812,7 +813,7 @@
                     if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.b)(key)) {
                         this._cleanupClosedWindows();
                         var keys = this.keys, values = this.values, index = keys.indexOf(key);
-                        if (index === -1) {
+                        if (-1 === index) {
                             keys.push(key);
                             values.push(value);
                         } else values[index] = value;
@@ -827,6 +828,7 @@
             }, {
                 key: "get",
                 value: function(key) {
+                    if (!key) throw new Error("WeakMap expected key");
                     var weakmap = this.weakmap;
                     if (weakmap) try {
                         if (weakmap.has(key)) return weakmap.get(key);
@@ -835,7 +837,7 @@
                     }
                     if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.b)(key)) {
                         var keys = this.keys, index = keys.indexOf(key);
-                        if (index === -1) return;
+                        if (-1 === index) return;
                         return this.values[index];
                     }
                     var entry = key[this.name];
@@ -844,6 +846,7 @@
             }, {
                 key: "delete",
                 value: function(key) {
+                    if (!key) throw new Error("WeakMap expected key");
                     var weakmap = this.weakmap;
                     if (weakmap) try {
                         weakmap.delete(key);
@@ -853,7 +856,7 @@
                     if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.b)(key)) {
                         this._cleanupClosedWindows();
                         var keys = this.keys, index = keys.indexOf(key);
-                        if (index !== -1) {
+                        if (-1 !== index) {
                             keys.splice(index, 1);
                             this.values.splice(index, 1);
                         }
@@ -865,6 +868,7 @@
             }, {
                 key: "has",
                 value: function(key) {
+                    if (!key) throw new Error("WeakMap expected key");
                     var weakmap = this.weakmap;
                     if (weakmap) try {
                         return weakmap.has(key);
@@ -873,7 +877,7 @@
                     }
                     if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.b)(key)) {
                         this._cleanupClosedWindows();
-                        return this.keys.indexOf(key) !== -1;
+                        return -1 !== this.keys.indexOf(key);
                     }
                     var entry = key[this.name];
                     return !(!entry || entry[0] !== key);
@@ -884,9 +888,9 @@
     },
     "./node_modules/d/auto-bind.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var define, copy = __webpack_require__("./node_modules/es5-ext/object/copy.js"), normalizeOptions = __webpack_require__("./node_modules/es5-ext/object/normalize-options.js"), ensureCallable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), map = __webpack_require__("./node_modules/es5-ext/object/map.js"), callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), validValue = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), bind = Function.prototype.bind, defineProperty = Object.defineProperty, hasOwnProperty = Object.prototype.hasOwnProperty;
+        var define, isValue = __webpack_require__("./node_modules/type/value/is.js"), ensureValue = __webpack_require__("./node_modules/type/value/ensure.js"), ensurePlainFunction = __webpack_require__("./node_modules/type/plain-function/ensure.js"), copy = __webpack_require__("./node_modules/es5-ext/object/copy.js"), normalizeOptions = __webpack_require__("./node_modules/es5-ext/object/normalize-options.js"), map = __webpack_require__("./node_modules/es5-ext/object/map.js"), bind = Function.prototype.bind, defineProperty = Object.defineProperty, hasOwnProperty = Object.prototype.hasOwnProperty;
         define = function(name, desc, options) {
-            var dgs, value = validValue(desc) && callable(desc.value);
+            var dgs, value = ensureValue(desc) && ensurePlainFunction(desc.value);
             dgs = copy(desc);
             delete dgs.writable;
             delete dgs.value;
@@ -900,7 +904,7 @@
         };
         module.exports = function(props) {
             var options = normalizeOptions(arguments[1]);
-            null != options.resolveContext && ensureCallable(options.resolveContext);
+            isValue(options.resolveContext) && ensurePlainFunction(options.resolveContext);
             return map(props, function(desc, name) {
                 return define(name, desc, options);
             });
@@ -908,21 +912,21 @@
     },
     "./node_modules/d/index.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var d, assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), normalizeOpts = __webpack_require__("./node_modules/es5-ext/object/normalize-options.js"), isCallable = __webpack_require__("./node_modules/es5-ext/object/is-callable.js"), contains = __webpack_require__("./node_modules/es5-ext/string/#/contains/index.js");
-        d = module.exports = function(dscr, value) {
+        var isValue = __webpack_require__("./node_modules/type/value/is.js"), isPlainFunction = __webpack_require__("./node_modules/type/plain-function/is.js"), assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), normalizeOpts = __webpack_require__("./node_modules/es5-ext/object/normalize-options.js"), contains = __webpack_require__("./node_modules/es5-ext/string/#/contains/index.js");
+        (module.exports = function(dscr, value) {
             var c, e, w, options, desc;
             if (arguments.length < 2 || "string" != typeof dscr) {
                 options = value;
                 value = dscr;
                 dscr = null;
             } else options = arguments[2];
-            if (null == dscr) {
-                c = w = !0;
-                e = !1;
-            } else {
+            if (isValue(dscr)) {
                 c = contains.call(dscr, "c");
                 e = contains.call(dscr, "e");
                 w = contains.call(dscr, "w");
+            } else {
+                c = w = !0;
+                e = !1;
             }
             desc = {
                 value: value,
@@ -931,8 +935,7 @@
                 writable: w
             };
             return options ? assign(normalizeOpts(options), desc) : desc;
-        };
-        d.gs = function(dscr, get, set) {
+        }).gs = function(dscr, get, set) {
             var c, e, options, desc;
             if ("string" != typeof dscr) {
                 options = set;
@@ -940,21 +943,21 @@
                 get = dscr;
                 dscr = null;
             } else options = arguments[3];
-            if (null == get) get = void 0; else if (isCallable(get)) {
-                if (null == set) set = void 0; else if (!isCallable(set)) {
+            if (isValue(get)) if (isPlainFunction(get)) if (isValue(set)) {
+                if (!isPlainFunction(set)) {
                     options = set;
                     set = void 0;
                 }
-            } else {
+            } else set = void 0; else {
                 options = get;
                 get = set = void 0;
-            }
-            if (null == dscr) {
-                c = !0;
-                e = !1;
-            } else {
+            } else get = void 0;
+            if (isValue(dscr)) {
                 c = contains.call(dscr, "c");
                 e = contains.call(dscr, "e");
+            } else {
+                c = !0;
+                e = !1;
             }
             desc = {
                 get: get,
@@ -973,9 +976,363 @@
             return this;
         };
     },
+    "./node_modules/es5-ext/array/from/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/es5-ext/array/from/is-implemented.js")() ? Array.from : __webpack_require__("./node_modules/es5-ext/array/from/shim.js");
+    },
+    "./node_modules/es5-ext/array/from/is-implemented.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = function() {
+            var arr, result, from = Array.from;
+            if ("function" != typeof from) return !1;
+            arr = [ "raz", "dwa" ];
+            result = from(arr);
+            return Boolean(result && result !== arr && "dwa" === result[1]);
+        };
+    },
+    "./node_modules/es5-ext/array/from/shim.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var iteratorSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/index.js").iterator, isArguments = __webpack_require__("./node_modules/es5-ext/function/is-arguments.js"), isFunction = __webpack_require__("./node_modules/es5-ext/function/is-function.js"), toPosInt = __webpack_require__("./node_modules/es5-ext/number/to-pos-integer.js"), callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), validValue = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js"), isString = __webpack_require__("./node_modules/es5-ext/string/is-string.js"), isArray = Array.isArray, call = Function.prototype.call, desc = {
+            configurable: !0,
+            enumerable: !0,
+            writable: !0,
+            value: null
+        }, defineProperty = Object.defineProperty;
+        module.exports = function(arrayLike) {
+            var Context, i, j, arr, length, code, iterator, result, getIterator, value, mapFn = arguments[1], thisArg = arguments[2];
+            arrayLike = Object(validValue(arrayLike));
+            isValue(mapFn) && callable(mapFn);
+            if (this && this !== Array && isFunction(this)) Context = this; else {
+                if (!mapFn) {
+                    if (isArguments(arrayLike)) {
+                        length = arrayLike.length;
+                        if (1 !== length) return Array.apply(null, arrayLike);
+                        arr = new Array(1);
+                        arr[0] = arrayLike[0];
+                        return arr;
+                    }
+                    if (isArray(arrayLike)) {
+                        arr = new Array(length = arrayLike.length);
+                        for (i = 0; i < length; ++i) arr[i] = arrayLike[i];
+                        return arr;
+                    }
+                }
+                arr = [];
+            }
+            if (!isArray(arrayLike)) if (void 0 !== (getIterator = arrayLike[iteratorSymbol])) {
+                iterator = callable(getIterator).call(arrayLike);
+                Context && (arr = new Context());
+                result = iterator.next();
+                i = 0;
+                for (;!result.done; ) {
+                    value = mapFn ? call.call(mapFn, thisArg, result.value, i) : result.value;
+                    if (Context) {
+                        desc.value = value;
+                        defineProperty(arr, i, desc);
+                    } else arr[i] = value;
+                    result = iterator.next();
+                    ++i;
+                }
+                length = i;
+            } else if (isString(arrayLike)) {
+                length = arrayLike.length;
+                Context && (arr = new Context());
+                for (i = 0, j = 0; i < length; ++i) {
+                    value = arrayLike[i];
+                    if (i + 1 < length) {
+                        code = value.charCodeAt(0);
+                        code >= 55296 && code <= 56319 && (value += arrayLike[++i]);
+                    }
+                    value = mapFn ? call.call(mapFn, thisArg, value, j) : value;
+                    if (Context) {
+                        desc.value = value;
+                        defineProperty(arr, j, desc);
+                    } else arr[j] = value;
+                    ++j;
+                }
+                length = j;
+            }
+            if (void 0 === length) {
+                length = toPosInt(arrayLike.length);
+                Context && (arr = new Context(length));
+                for (i = 0; i < length; ++i) {
+                    value = mapFn ? call.call(mapFn, thisArg, arrayLike[i], i) : arrayLike[i];
+                    if (Context) {
+                        desc.value = value;
+                        defineProperty(arr, i, desc);
+                    } else arr[i] = value;
+                }
+            }
+            if (Context) {
+                desc.value = null;
+                arr.length = length;
+            }
+            return arr;
+        };
+    },
+    "./node_modules/es5-ext/function/is-arguments.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var objToString = Object.prototype.toString, id = objToString.call(function() {
+            return arguments;
+        }());
+        module.exports = function(value) {
+            return objToString.call(value) === id;
+        };
+    },
+    "./node_modules/es5-ext/function/is-function.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var objToString = Object.prototype.toString, isFunctionStringTag = RegExp.prototype.test.bind(/^[object [A-Za-z0-9]*Function]$/);
+        module.exports = function(value) {
+            return "function" == typeof value && isFunctionStringTag(objToString.call(value));
+        };
+    },
+    "./node_modules/es5-ext/function/noop.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = function() {};
+    },
+    "./node_modules/es5-ext/math/sign/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/es5-ext/math/sign/is-implemented.js")() ? Math.sign : __webpack_require__("./node_modules/es5-ext/math/sign/shim.js");
+    },
+    "./node_modules/es5-ext/math/sign/is-implemented.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = function() {
+            var sign = Math.sign;
+            return "function" == typeof sign && (1 === sign(10) && -1 === sign(-20));
+        };
+    },
+    "./node_modules/es5-ext/math/sign/shim.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = function(value) {
+            value = Number(value);
+            return isNaN(value) || 0 === value ? value : value > 0 ? 1 : -1;
+        };
+    },
+    "./node_modules/es5-ext/node_modules/d/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isValue = __webpack_require__("./node_modules/type/value/is.js"), isPlainFunction = __webpack_require__("./node_modules/type/plain-function/is.js"), assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), normalizeOpts = __webpack_require__("./node_modules/es5-ext/object/normalize-options.js"), contains = __webpack_require__("./node_modules/es5-ext/string/#/contains/index.js");
+        (module.exports = function(dscr, value) {
+            var c, e, w, options, desc;
+            if (arguments.length < 2 || "string" != typeof dscr) {
+                options = value;
+                value = dscr;
+                dscr = null;
+            } else options = arguments[2];
+            if (isValue(dscr)) {
+                c = contains.call(dscr, "c");
+                e = contains.call(dscr, "e");
+                w = contains.call(dscr, "w");
+            } else {
+                c = w = !0;
+                e = !1;
+            }
+            desc = {
+                value: value,
+                configurable: c,
+                enumerable: e,
+                writable: w
+            };
+            return options ? assign(normalizeOpts(options), desc) : desc;
+        }).gs = function(dscr, get, set) {
+            var c, e, options, desc;
+            if ("string" != typeof dscr) {
+                options = set;
+                set = get;
+                get = dscr;
+                dscr = null;
+            } else options = arguments[3];
+            if (isValue(get)) if (isPlainFunction(get)) if (isValue(set)) {
+                if (!isPlainFunction(set)) {
+                    options = set;
+                    set = void 0;
+                }
+            } else set = void 0; else {
+                options = get;
+                get = set = void 0;
+            } else get = void 0;
+            if (isValue(dscr)) {
+                c = contains.call(dscr, "c");
+                e = contains.call(dscr, "e");
+            } else {
+                c = !0;
+                e = !1;
+            }
+            desc = {
+                get: get,
+                set: set,
+                configurable: c,
+                enumerable: e
+            };
+            return options ? assign(normalizeOpts(options), desc) : desc;
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/is-implemented.js")() ? __webpack_require__("./node_modules/ext/global-this/index.js").Symbol : __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/polyfill.js");
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/is-implemented.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, global = __webpack_require__("./node_modules/ext/global-this/index.js"), validTypes = {
+            object: !0,
+            symbol: !0
+        };
+        module.exports = function() {
+            var symbol, _Symbol = global.Symbol;
+            if ("function" != typeof _Symbol) return !1;
+            symbol = _Symbol("test symbol");
+            try {
+                String(symbol);
+            } catch (e) {
+                return !1;
+            }
+            return !!validTypes[_typeof(_Symbol.iterator)] && (!!validTypes[_typeof(_Symbol.toPrimitive)] && !!validTypes[_typeof(_Symbol.toStringTag)]);
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/is-symbol.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        module.exports = function(value) {
+            return !!value && ("symbol" === (void 0 === value ? "undefined" : _typeof(value)) || !!value.constructor && ("Symbol" === value.constructor.name && "Symbol" === value[value.constructor.toStringTag]));
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/lib/private/generate-name.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), create = Object.create, defineProperty = Object.defineProperty, objPrototype = Object.prototype, created = create(null);
+        module.exports = function(desc) {
+            for (var name, ie11BugWorkaround, postfix = 0; created[desc + (postfix || "")]; ) ++postfix;
+            desc += postfix || "";
+            created[desc] = !0;
+            name = "@@" + desc;
+            defineProperty(objPrototype, name, d.gs(null, function(value) {
+                if (!ie11BugWorkaround) {
+                    ie11BugWorkaround = !0;
+                    defineProperty(this, name, d(value));
+                    ie11BugWorkaround = !1;
+                }
+            }));
+            return name;
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/standard-symbols.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), NativeSymbol = __webpack_require__("./node_modules/ext/global-this/index.js").Symbol;
+        module.exports = function(SymbolPolyfill) {
+            return Object.defineProperties(SymbolPolyfill, {
+                hasInstance: d("", NativeSymbol && NativeSymbol.hasInstance || SymbolPolyfill("hasInstance")),
+                isConcatSpreadable: d("", NativeSymbol && NativeSymbol.isConcatSpreadable || SymbolPolyfill("isConcatSpreadable")),
+                iterator: d("", NativeSymbol && NativeSymbol.iterator || SymbolPolyfill("iterator")),
+                match: d("", NativeSymbol && NativeSymbol.match || SymbolPolyfill("match")),
+                replace: d("", NativeSymbol && NativeSymbol.replace || SymbolPolyfill("replace")),
+                search: d("", NativeSymbol && NativeSymbol.search || SymbolPolyfill("search")),
+                species: d("", NativeSymbol && NativeSymbol.species || SymbolPolyfill("species")),
+                split: d("", NativeSymbol && NativeSymbol.split || SymbolPolyfill("split")),
+                toPrimitive: d("", NativeSymbol && NativeSymbol.toPrimitive || SymbolPolyfill("toPrimitive")),
+                toStringTag: d("", NativeSymbol && NativeSymbol.toStringTag || SymbolPolyfill("toStringTag")),
+                unscopables: d("", NativeSymbol && NativeSymbol.unscopables || SymbolPolyfill("unscopables"))
+            });
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/symbol-registry.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/validate-symbol.js"), registry = Object.create(null);
+        module.exports = function(SymbolPolyfill) {
+            return Object.defineProperties(SymbolPolyfill, {
+                for: d(function(key) {
+                    return registry[key] ? registry[key] : registry[key] = SymbolPolyfill(String(key));
+                }),
+                keyFor: d(function(symbol) {
+                    var key;
+                    validateSymbol(symbol);
+                    for (key in registry) if (registry[key] === symbol) return key;
+                })
+            });
+        };
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/polyfill.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var SymbolPolyfill, HiddenSymbol, isNativeSafe, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, d = __webpack_require__("./node_modules/es5-ext/node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/validate-symbol.js"), NativeSymbol = __webpack_require__("./node_modules/ext/global-this/index.js").Symbol, generateName = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/lib/private/generate-name.js"), setupStandardSymbols = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/standard-symbols.js"), setupSymbolRegistry = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/lib/private/setup/symbol-registry.js"), create = Object.create, defineProperties = Object.defineProperties, defineProperty = Object.defineProperty;
+        if ("function" == typeof NativeSymbol) try {
+            String(NativeSymbol());
+            isNativeSafe = !0;
+        } catch (ignore) {} else NativeSymbol = null;
+        HiddenSymbol = function(description) {
+            if (this instanceof HiddenSymbol) throw new TypeError("Symbol is not a constructor");
+            return SymbolPolyfill(description);
+        };
+        module.exports = SymbolPolyfill = function _Symbol2(description) {
+            var symbol;
+            if (this instanceof _Symbol2) throw new TypeError("Symbol is not a constructor");
+            if (isNativeSafe) return NativeSymbol(description);
+            symbol = create(HiddenSymbol.prototype);
+            description = void 0 === description ? "" : String(description);
+            return defineProperties(symbol, {
+                __description__: d("", description),
+                __name__: d("", generateName(description))
+            });
+        };
+        setupStandardSymbols(SymbolPolyfill);
+        setupSymbolRegistry(SymbolPolyfill);
+        defineProperties(HiddenSymbol.prototype, {
+            constructor: d(SymbolPolyfill),
+            toString: d("", function() {
+                return this.__name__;
+            })
+        });
+        defineProperties(SymbolPolyfill.prototype, {
+            toString: d(function() {
+                return "Symbol (" + validateSymbol(this).__description__ + ")";
+            }),
+            valueOf: d(function() {
+                return validateSymbol(this);
+            })
+        });
+        defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d("", function() {
+            var symbol = validateSymbol(this);
+            return "symbol" === (void 0 === symbol ? "undefined" : _typeof(symbol)) ? symbol : symbol.toString();
+        }));
+        defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d("c", "Symbol"));
+        defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag, d("c", SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
+        defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive, d("c", SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
+    },
+    "./node_modules/es5-ext/node_modules/es6-symbol/validate-symbol.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isSymbol = __webpack_require__("./node_modules/es5-ext/node_modules/es6-symbol/is-symbol.js");
+        module.exports = function(value) {
+            if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
+            return value;
+        };
+    },
+    "./node_modules/es5-ext/number/to-integer.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var sign = __webpack_require__("./node_modules/es5-ext/math/sign/index.js"), abs = Math.abs, floor = Math.floor;
+        module.exports = function(value) {
+            if (isNaN(value)) return 0;
+            value = Number(value);
+            return 0 !== value && isFinite(value) ? sign(value) * floor(abs(value)) : value;
+        };
+    },
+    "./node_modules/es5-ext/number/to-pos-integer.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var toInteger = __webpack_require__("./node_modules/es5-ext/number/to-integer.js"), max = Math.max;
+        module.exports = function(value) {
+            return max(0, toInteger(value));
+        };
+    },
     "./node_modules/es5-ext/object/_iterate.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), bind = Function.prototype.bind, call = Function.prototype.call, keys = Object.keys, propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+        var callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), bind = Function.prototype.bind, call = Function.prototype.call, keys = Object.keys, objPropertyIsEnumerable = Object.prototype.propertyIsEnumerable;
         module.exports = function(method, defVal) {
             return function(obj, cb) {
                 var list, thisArg = arguments[2], compareFn = arguments[3];
@@ -985,7 +1342,7 @@
                 compareFn && list.sort("function" == typeof compareFn ? bind.call(compareFn, obj) : void 0);
                 "function" != typeof method && (method = list[method]);
                 return call.call(method, list, function(key, index) {
-                    return propertyIsEnumerable.call(obj, key) ? call.call(cb, thisArg, obj[key], key, obj, index) : defVal;
+                    return objPropertyIsEnumerable.call(obj, key) ? call.call(cb, thisArg, obj[key], key, obj, index) : defVal;
                 });
             };
         };
@@ -1014,7 +1371,7 @@
         "use strict";
         var keys = __webpack_require__("./node_modules/es5-ext/object/keys/index.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), max = Math.max;
         module.exports = function(dest, src) {
-            var error, i, assign, l = max(arguments.length, 2);
+            var error, i, assign, length = max(arguments.length, 2);
             dest = Object(value(dest));
             assign = function(key) {
                 try {
@@ -1023,7 +1380,7 @@
                     error || (error = e);
                 }
             };
-            for (i = 1; i < l; ++i) {
+            for (i = 1; i < length; ++i) {
                 src = arguments[i];
                 keys(src).forEach(assign);
             }
@@ -1033,10 +1390,15 @@
     },
     "./node_modules/es5-ext/object/copy.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js");
+        var aFrom = __webpack_require__("./node_modules/es5-ext/array/from/index.js"), assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js");
         module.exports = function(obj) {
-            var copy = Object(value(obj));
-            return copy !== obj ? copy : assign({}, obj);
+            var copy = Object(value(obj)), propertyNames = arguments[1], options = Object(arguments[2]);
+            if (copy !== obj && !propertyNames) return copy;
+            var result = {};
+            propertyNames ? aFrom(propertyNames, function(propertyName) {
+                (options.ensure || propertyName in obj) && (result[propertyName] = obj[propertyName]);
+            }) : assign(result, obj);
+            return result;
         };
     },
     "./node_modules/es5-ext/object/create.js": function(module, exports, __webpack_require__) {
@@ -1044,11 +1406,11 @@
         var shim, create = Object.create;
         __webpack_require__("./node_modules/es5-ext/object/set-prototype-of/is-implemented.js")() || (shim = __webpack_require__("./node_modules/es5-ext/object/set-prototype-of/shim.js"));
         module.exports = function() {
-            var nullObject, props, desc;
+            var nullObject, polyProps, desc;
             if (!shim) return create;
             if (1 !== shim.level) return create;
             nullObject = {};
-            props = {};
+            polyProps = {};
             desc = {
                 configurable: !1,
                 enumerable: !1,
@@ -1056,14 +1418,14 @@
                 value: void 0
             };
             Object.getOwnPropertyNames(Object.prototype).forEach(function(name) {
-                props[name] = "__proto__" !== name ? desc : {
+                polyProps[name] = "__proto__" !== name ? desc : {
                     configurable: !0,
                     enumerable: !1,
                     writable: !0,
                     value: void 0
                 };
             });
-            Object.defineProperties(nullObject, props);
+            Object.defineProperties(nullObject, polyProps);
             Object.defineProperty(shim, "nullPolyfill", {
                 configurable: !1,
                 enumerable: !1,
@@ -1079,24 +1441,25 @@
         "use strict";
         module.exports = __webpack_require__("./node_modules/es5-ext/object/_iterate.js")("forEach");
     },
-    "./node_modules/es5-ext/object/is-callable.js": function(module, exports, __webpack_require__) {
-        "use strict";
-        module.exports = function(obj) {
-            return "function" == typeof obj;
-        };
-    },
     "./node_modules/es5-ext/object/is-object.js": function(module, exports, __webpack_require__) {
         "use strict";
         var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-        }, map = {
+        }, isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js"), map = {
             function: !0,
             object: !0
         };
-        module.exports = function(x) {
-            return null != x && map[void 0 === x ? "undefined" : _typeof(x)] || !1;
+        module.exports = function(value) {
+            return isValue(value) && map[void 0 === value ? "undefined" : _typeof(value)] || !1;
+        };
+    },
+    "./node_modules/es5-ext/object/is-value.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _undefined = __webpack_require__("./node_modules/es5-ext/function/noop.js")();
+        module.exports = function(val) {
+            return val !== _undefined && null !== val;
         };
     },
     "./node_modules/es5-ext/object/keys/index.js": function(module, exports, __webpack_require__) {
@@ -1116,33 +1479,33 @@
     },
     "./node_modules/es5-ext/object/keys/shim.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var keys = Object.keys;
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js"), keys = Object.keys;
         module.exports = function(object) {
-            return keys(null == object ? object : Object(object));
+            return keys(isValue(object) ? Object(object) : object);
         };
     },
     "./node_modules/es5-ext/object/map.js": function(module, exports, __webpack_require__) {
         "use strict";
         var callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), forEach = __webpack_require__("./node_modules/es5-ext/object/for-each.js"), call = Function.prototype.call;
         module.exports = function(obj, cb) {
-            var o = {}, thisArg = arguments[2];
+            var result = {}, thisArg = arguments[2];
             callable(cb);
-            forEach(obj, function(value, key, obj, index) {
-                o[key] = call.call(cb, thisArg, value, key, obj, index);
+            forEach(obj, function(value, key, targetObj, index) {
+                result[key] = call.call(cb, thisArg, value, key, targetObj, index);
             });
-            return o;
+            return result;
         };
     },
     "./node_modules/es5-ext/object/normalize-options.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var forEach = Array.prototype.forEach, create = Object.create, process = function(src, obj) {
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js"), forEach = Array.prototype.forEach, create = Object.create, process = function(src, obj) {
             var key;
             for (key in src) obj[key] = src[key];
         };
-        module.exports = function(options) {
+        module.exports = function(opts1) {
             var result = create(null);
             forEach.call(arguments, function(options) {
-                null != options && process(Object(options), result);
+                isValue(options) && process(Object(options), result);
             });
             return result;
         };
@@ -1153,15 +1516,15 @@
     },
     "./node_modules/es5-ext/object/set-prototype-of/is-implemented.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var create = Object.create, getPrototypeOf = Object.getPrototypeOf, x = {};
+        var create = Object.create, getPrototypeOf = Object.getPrototypeOf, plainObject = {};
         module.exports = function() {
             var setPrototypeOf = Object.setPrototypeOf, customCreate = arguments[0] || create;
-            return "function" == typeof setPrototypeOf && getPrototypeOf(setPrototypeOf(customCreate(null), x)) === x;
+            return "function" == typeof setPrototypeOf && getPrototypeOf(setPrototypeOf(customCreate(null), plainObject)) === plainObject;
         };
     },
     "./node_modules/es5-ext/object/set-prototype-of/shim.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var validate, isObject = __webpack_require__("./node_modules/es5-ext/object/is-object.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), isPrototypeOf = Object.prototype.isPrototypeOf, defineProperty = Object.defineProperty, nullDesc = {
+        var validate, isObject = __webpack_require__("./node_modules/es5-ext/object/is-object.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), objIsPrototypeOf = Object.prototype.isPrototypeOf, defineProperty = Object.defineProperty, nullDesc = {
             configurable: !0,
             enumerable: !1,
             writable: !0,
@@ -1187,7 +1550,7 @@
             }; else fn = function self(obj, prototype) {
                 var isNullBase;
                 validate(obj, prototype);
-                isNullBase = isPrototypeOf.call(self.nullPolyfill, obj);
+                isNullBase = objIsPrototypeOf.call(self.nullPolyfill, obj);
                 isNullBase && delete self.nullPolyfill.__proto__;
                 null === prototype && (prototype = self.nullPolyfill);
                 obj.__proto__ = prototype;
@@ -1201,24 +1564,24 @@
                 value: status.level
             });
         }(function() {
-            var set, x = Object.create(null), y = {}, desc = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__");
+            var set, tmpObj1 = Object.create(null), tmpObj2 = {}, desc = Object.getOwnPropertyDescriptor(Object.prototype, "__proto__");
             if (desc) {
                 try {
                     set = desc.set;
-                    set.call(x, y);
+                    set.call(tmpObj1, tmpObj2);
                 } catch (ignore) {}
-                if (Object.getPrototypeOf(x) === y) return {
+                if (Object.getPrototypeOf(tmpObj1) === tmpObj2) return {
                     set: set,
                     level: 2
                 };
             }
-            x.__proto__ = y;
-            if (Object.getPrototypeOf(x) === y) return {
+            tmpObj1.__proto__ = tmpObj2;
+            if (Object.getPrototypeOf(tmpObj1) === tmpObj2) return {
                 level: 2
             };
-            x = {};
-            x.__proto__ = y;
-            return Object.getPrototypeOf(x) === y && {
+            tmpObj1 = {};
+            tmpObj1.__proto__ = tmpObj2;
+            return Object.getPrototypeOf(tmpObj1) === tmpObj2 && {
                 level: 1
             };
         }());
@@ -1233,8 +1596,9 @@
     },
     "./node_modules/es5-ext/object/valid-value.js": function(module, exports, __webpack_require__) {
         "use strict";
+        var isValue = __webpack_require__("./node_modules/es5-ext/object/is-value.js");
         module.exports = function(value) {
-            if (null == value) throw new TypeError("Cannot use null or undefined");
+            if (!isValue(value)) throw new TypeError("Cannot use null or undefined");
             return value;
         };
     },
@@ -1246,7 +1610,7 @@
         "use strict";
         var str = "razdwatrzy";
         module.exports = function() {
-            return "function" == typeof str.contains && (str.contains("dwa") === !0 && str.contains("foo") === !1);
+            return "function" == typeof str.contains && (!0 === str.contains("dwa") && !1 === str.contains("foo"));
         };
     },
     "./node_modules/es5-ext/string/#/contains/shim.js": function(module, exports, __webpack_require__) {
@@ -1256,31 +1620,40 @@
             return indexOf.call(this, searchString, arguments[1]) > -1;
         };
     },
+    "./node_modules/es5-ext/string/is-string.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, objToString = Object.prototype.toString, id = objToString.call("");
+        module.exports = function(value) {
+            return "string" == typeof value || value && "object" === (void 0 === value ? "undefined" : _typeof(value)) && (value instanceof String || objToString.call(value) === id) || !1;
+        };
+    },
     "./node_modules/es6-iterator/array.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var ArrayIterator, setPrototypeOf = __webpack_require__("./node_modules/es5-ext/object/set-prototype-of/index.js"), contains = __webpack_require__("./node_modules/es5-ext/string/#/contains/index.js"), d = __webpack_require__("./node_modules/d/index.js"), Iterator = __webpack_require__("./node_modules/es6-iterator/index.js"), defineProperty = Object.defineProperty;
+        var ArrayIterator, setPrototypeOf = __webpack_require__("./node_modules/es5-ext/object/set-prototype-of/index.js"), contains = __webpack_require__("./node_modules/es5-ext/string/#/contains/index.js"), d = __webpack_require__("./node_modules/d/index.js"), _Symbol = __webpack_require__("./node_modules/es6-symbol/index.js"), Iterator = __webpack_require__("./node_modules/es6-iterator/index.js"), defineProperty = Object.defineProperty;
         ArrayIterator = module.exports = function(arr, kind) {
-            if (!(this instanceof ArrayIterator)) return new ArrayIterator(arr, kind);
+            if (!(this instanceof ArrayIterator)) throw new TypeError("Constructor requires 'new'");
             Iterator.call(this, arr);
             kind = kind ? contains.call(kind, "key+value") ? "key+value" : contains.call(kind, "key") ? "key" : "value" : "value";
             defineProperty(this, "__kind__", d("", kind));
         };
         setPrototypeOf && setPrototypeOf(ArrayIterator, Iterator);
+        delete ArrayIterator.prototype.constructor;
         ArrayIterator.prototype = Object.create(Iterator.prototype, {
-            constructor: d(ArrayIterator),
             _resolve: d(function(i) {
                 return "value" === this.__kind__ ? this.__list__[i] : "key+value" === this.__kind__ ? [ i, this.__list__[i] ] : i;
-            }),
-            toString: d(function() {
-                return "[object Array Iterator]";
             })
         });
+        defineProperty(ArrayIterator.prototype, _Symbol.toStringTag, d("c", "Array Iterator"));
     },
     "./node_modules/es6-iterator/index.js": function(module, exports, __webpack_require__) {
         "use strict";
         var _Iterator, clear = __webpack_require__("./node_modules/es5-ext/array/#/clear.js"), assign = __webpack_require__("./node_modules/es5-ext/object/assign/index.js"), callable = __webpack_require__("./node_modules/es5-ext/object/valid-callable.js"), value = __webpack_require__("./node_modules/es5-ext/object/valid-value.js"), d = __webpack_require__("./node_modules/d/index.js"), autoBind = __webpack_require__("./node_modules/d/auto-bind.js"), _Symbol = __webpack_require__("./node_modules/es6-symbol/index.js"), defineProperty = Object.defineProperty, defineProperties = Object.defineProperties;
         module.exports = _Iterator = function(list, context) {
-            if (!(this instanceof _Iterator)) return new _Iterator(list, context);
+            if (!(this instanceof _Iterator)) throw new TypeError("Constructor requires 'new'");
             defineProperties(this, {
                 __list__: d("w", value(list)),
                 __context__: d("w", context),
@@ -1293,8 +1666,8 @@
                 context.on("_clear", this._onClear);
             }
         };
+        delete _Iterator.prototype.constructor;
         defineProperties(_Iterator.prototype, assign({
-            constructor: d(_Iterator),
             _next: d(function() {
                 var i;
                 if (this.__list__) {
@@ -1332,7 +1705,7 @@
                 }
             }),
             toString: d(function() {
-                return "[object Iterator]";
+                return "[object " + (this[_Symbol.toStringTag] || "Object") + "]";
             })
         }, autoBind({
             _onAdd: d(function(index) {
@@ -1352,9 +1725,9 @@
                     --this.__nextIndex__;
                     if (this.__redo__) {
                         i = this.__redo__.indexOf(index);
-                        i !== -1 && this.__redo__.splice(i, 1);
-                        this.__redo__.forEach(function(redo, i) {
-                            redo > index && (this.__redo__[i] = --redo);
+                        -1 !== i && this.__redo__.splice(i, 1);
+                        this.__redo__.forEach(function(redo, j) {
+                            redo > index && (this.__redo__[j] = --redo);
                         }, this);
                     }
                 }
@@ -1367,11 +1740,10 @@
         defineProperty(_Iterator.prototype, _Symbol.iterator, d(function() {
             return this;
         }));
-        defineProperty(_Iterator.prototype, _Symbol.toStringTag, d("", "Iterator"));
     },
     "./node_modules/es6-symbol/index.js": function(module, exports, __webpack_require__) {
         "use strict";
-        module.exports = __webpack_require__("./node_modules/es6-symbol/is-implemented.js")() ? Symbol : __webpack_require__("./node_modules/es6-symbol/polyfill.js");
+        module.exports = __webpack_require__("./node_modules/es6-symbol/is-implemented.js")() ? __webpack_require__("./node_modules/ext/global-this/index.js").Symbol : __webpack_require__("./node_modules/es6-symbol/polyfill.js");
     },
     "./node_modules/es6-symbol/is-implemented.js": function(module, exports, __webpack_require__) {
         "use strict";
@@ -1379,20 +1751,20 @@
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-        }, validTypes = {
+        }, global = __webpack_require__("./node_modules/ext/global-this/index.js"), validTypes = {
             object: !0,
             symbol: !0
         };
         module.exports = function() {
-            var symbol;
-            if ("function" != typeof Symbol) return !1;
-            symbol = Symbol("test symbol");
+            var symbol, _Symbol = global.Symbol;
+            if ("function" != typeof _Symbol) return !1;
+            symbol = _Symbol("test symbol");
             try {
                 String(symbol);
             } catch (e) {
                 return !1;
             }
-            return !!validTypes[_typeof(Symbol.iterator)] && (!!validTypes[_typeof(Symbol.toPrimitive)] && !!validTypes[_typeof(Symbol.toStringTag)]);
+            return !!validTypes[_typeof(_Symbol.iterator)] && (!!validTypes[_typeof(_Symbol.toPrimitive)] && !!validTypes[_typeof(_Symbol.toStringTag)]);
         };
     },
     "./node_modules/es6-symbol/is-symbol.js": function(module, exports, __webpack_require__) {
@@ -1402,41 +1774,74 @@
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
         };
-        module.exports = function(x) {
-            return !!x && ("symbol" === (void 0 === x ? "undefined" : _typeof(x)) || !!x.constructor && ("Symbol" === x.constructor.name && "Symbol" === x[x.constructor.toStringTag]));
+        module.exports = function(value) {
+            return !!value && ("symbol" === (void 0 === value ? "undefined" : _typeof(value)) || !!value.constructor && ("Symbol" === value.constructor.name && "Symbol" === value[value.constructor.toStringTag]));
+        };
+    },
+    "./node_modules/es6-symbol/lib/private/generate-name.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/d/index.js"), create = Object.create, defineProperty = Object.defineProperty, objPrototype = Object.prototype, created = create(null);
+        module.exports = function(desc) {
+            for (var name, ie11BugWorkaround, postfix = 0; created[desc + (postfix || "")]; ) ++postfix;
+            desc += postfix || "";
+            created[desc] = !0;
+            name = "@@" + desc;
+            defineProperty(objPrototype, name, d.gs(null, function(value) {
+                if (!ie11BugWorkaround) {
+                    ie11BugWorkaround = !0;
+                    defineProperty(this, name, d(value));
+                    ie11BugWorkaround = !1;
+                }
+            }));
+            return name;
+        };
+    },
+    "./node_modules/es6-symbol/lib/private/setup/standard-symbols.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/d/index.js"), NativeSymbol = __webpack_require__("./node_modules/ext/global-this/index.js").Symbol;
+        module.exports = function(SymbolPolyfill) {
+            return Object.defineProperties(SymbolPolyfill, {
+                hasInstance: d("", NativeSymbol && NativeSymbol.hasInstance || SymbolPolyfill("hasInstance")),
+                isConcatSpreadable: d("", NativeSymbol && NativeSymbol.isConcatSpreadable || SymbolPolyfill("isConcatSpreadable")),
+                iterator: d("", NativeSymbol && NativeSymbol.iterator || SymbolPolyfill("iterator")),
+                match: d("", NativeSymbol && NativeSymbol.match || SymbolPolyfill("match")),
+                replace: d("", NativeSymbol && NativeSymbol.replace || SymbolPolyfill("replace")),
+                search: d("", NativeSymbol && NativeSymbol.search || SymbolPolyfill("search")),
+                species: d("", NativeSymbol && NativeSymbol.species || SymbolPolyfill("species")),
+                split: d("", NativeSymbol && NativeSymbol.split || SymbolPolyfill("split")),
+                toPrimitive: d("", NativeSymbol && NativeSymbol.toPrimitive || SymbolPolyfill("toPrimitive")),
+                toStringTag: d("", NativeSymbol && NativeSymbol.toStringTag || SymbolPolyfill("toStringTag")),
+                unscopables: d("", NativeSymbol && NativeSymbol.unscopables || SymbolPolyfill("unscopables"))
+            });
+        };
+    },
+    "./node_modules/es6-symbol/lib/private/setup/symbol-registry.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var d = __webpack_require__("./node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es6-symbol/validate-symbol.js"), registry = Object.create(null);
+        module.exports = function(SymbolPolyfill) {
+            return Object.defineProperties(SymbolPolyfill, {
+                for: d(function(key) {
+                    return registry[key] ? registry[key] : registry[key] = SymbolPolyfill(String(key));
+                }),
+                keyFor: d(function(symbol) {
+                    var key;
+                    validateSymbol(symbol);
+                    for (key in registry) if (registry[key] === symbol) return key;
+                })
+            });
         };
     },
     "./node_modules/es6-symbol/polyfill.js": function(module, exports, __webpack_require__) {
         "use strict";
-        var NativeSymbol, SymbolPolyfill, HiddenSymbol, isNativeSafe, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+        var SymbolPolyfill, HiddenSymbol, isNativeSafe, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-        }, d = __webpack_require__("./node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es6-symbol/validate-symbol.js"), create = Object.create, defineProperties = Object.defineProperties, defineProperty = Object.defineProperty, objPrototype = Object.prototype, globalSymbols = create(null);
-        if ("function" == typeof Symbol) {
-            NativeSymbol = Symbol;
-            try {
-                String(NativeSymbol());
-                isNativeSafe = !0;
-            } catch (ignore) {}
-        }
-        var generateName = function() {
-            var created = create(null);
-            return function(desc) {
-                for (var name, ie11BugWorkaround, postfix = 0; created[desc + (postfix || "")]; ) ++postfix;
-                desc += postfix || "";
-                created[desc] = !0;
-                name = "@@" + desc;
-                defineProperty(objPrototype, name, d.gs(null, function(value) {
-                    if (!ie11BugWorkaround) {
-                        ie11BugWorkaround = !0;
-                        defineProperty(this, name, d(value));
-                        ie11BugWorkaround = !1;
-                    }
-                }));
-                return name;
-            };
-        }();
+        }, d = __webpack_require__("./node_modules/d/index.js"), validateSymbol = __webpack_require__("./node_modules/es6-symbol/validate-symbol.js"), NativeSymbol = __webpack_require__("./node_modules/ext/global-this/index.js").Symbol, generateName = __webpack_require__("./node_modules/es6-symbol/lib/private/generate-name.js"), setupStandardSymbols = __webpack_require__("./node_modules/es6-symbol/lib/private/setup/standard-symbols.js"), setupSymbolRegistry = __webpack_require__("./node_modules/es6-symbol/lib/private/setup/symbol-registry.js"), create = Object.create, defineProperties = Object.defineProperties, defineProperty = Object.defineProperty;
+        if ("function" == typeof NativeSymbol) try {
+            String(NativeSymbol());
+            isNativeSafe = !0;
+        } catch (ignore) {} else NativeSymbol = null;
         HiddenSymbol = function(description) {
             if (this instanceof HiddenSymbol) throw new TypeError("Symbol is not a constructor");
             return SymbolPolyfill(description);
@@ -1452,27 +1857,8 @@
                 __name__: d("", generateName(description))
             });
         };
-        defineProperties(SymbolPolyfill, {
-            for: d(function(key) {
-                return globalSymbols[key] ? globalSymbols[key] : globalSymbols[key] = SymbolPolyfill(String(key));
-            }),
-            keyFor: d(function(s) {
-                var key;
-                validateSymbol(s);
-                for (key in globalSymbols) if (globalSymbols[key] === s) return key;
-            }),
-            hasInstance: d("", NativeSymbol && NativeSymbol.hasInstance || SymbolPolyfill("hasInstance")),
-            isConcatSpreadable: d("", NativeSymbol && NativeSymbol.isConcatSpreadable || SymbolPolyfill("isConcatSpreadable")),
-            iterator: d("", NativeSymbol && NativeSymbol.iterator || SymbolPolyfill("iterator")),
-            match: d("", NativeSymbol && NativeSymbol.match || SymbolPolyfill("match")),
-            replace: d("", NativeSymbol && NativeSymbol.replace || SymbolPolyfill("replace")),
-            search: d("", NativeSymbol && NativeSymbol.search || SymbolPolyfill("search")),
-            species: d("", NativeSymbol && NativeSymbol.species || SymbolPolyfill("species")),
-            split: d("", NativeSymbol && NativeSymbol.split || SymbolPolyfill("split")),
-            toPrimitive: d("", NativeSymbol && NativeSymbol.toPrimitive || SymbolPolyfill("toPrimitive")),
-            toStringTag: d("", NativeSymbol && NativeSymbol.toStringTag || SymbolPolyfill("toStringTag")),
-            unscopables: d("", NativeSymbol && NativeSymbol.unscopables || SymbolPolyfill("unscopables"))
-        });
+        setupStandardSymbols(SymbolPolyfill);
+        setupSymbolRegistry(SymbolPolyfill);
         defineProperties(HiddenSymbol.prototype, {
             constructor: d(SymbolPolyfill),
             toString: d("", function() {
@@ -1501,6 +1887,50 @@
         module.exports = function(value) {
             if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
             return value;
+        };
+    },
+    "./node_modules/ext/global-this/implementation.js": function(module, exports) {
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, naiveFallback = function() {
+            if ("object" === ("undefined" == typeof self ? "undefined" : _typeof(self)) && self) return self;
+            if ("object" === ("undefined" == typeof window ? "undefined" : _typeof(window)) && window) return window;
+            throw new Error("Unable to resolve global `this`");
+        };
+        module.exports = function() {
+            if (this) return this;
+            try {
+                Object.defineProperty(Object.prototype, "__global__", {
+                    get: function() {
+                        return this;
+                    },
+                    configurable: !0
+                });
+            } catch (error) {
+                return naiveFallback();
+            }
+            try {
+                return __global__ || naiveFallback();
+            } finally {
+                delete Object.prototype.__global__;
+            }
+        }();
+    },
+    "./node_modules/ext/global-this/index.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = __webpack_require__("./node_modules/ext/global-this/is-implemented.js")() ? globalThis : __webpack_require__("./node_modules/ext/global-this/implementation.js");
+    },
+    "./node_modules/ext/global-this/is-implemented.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        };
+        module.exports = function() {
+            return "object" === ("undefined" == typeof globalThis ? "undefined" : _typeof(globalThis)) && (!!globalThis && globalThis.Array === Array);
         };
     },
     "./node_modules/hi-base32/src/base32.js": function(module, exports, __webpack_require__) {
@@ -1741,7 +2171,7 @@
                 }, decode = function(base32Str, asciiOnly) {
                     if (!asciiOnly) return toUtf8String(decodeAsBytes(base32Str));
                     var v1, v2, v3, v4, v5, v6, v7, v8, str = "", length = base32Str.indexOf("=");
-                    length == -1 && (length = base32Str.length);
+                    -1 == length && (length = base32Str.length);
                     for (var i = 0, count = length >> 3 << 3; i < count; ) {
                         v1 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
                         v2 = BASE32_DECODE_CHAR[base32Str.charAt(i++)];
@@ -2239,6 +2669,7 @@
             }
             domain && (domain = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.C)(domain));
             var win = windowOpen.call(this, url, name, options, last);
+            if (!win) return win;
             url && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__common__.h)(win);
             for (var _iterator = Object.keys(__WEBPACK_IMPORTED_MODULE_3__global__.a.popupWindowsByName), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                 var _ref2;
@@ -2295,7 +2726,7 @@
     "./node_modules/post-robot/src/compat/ie.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function emulateIERestrictions(sourceWindow, targetWindow) {
-            if (!__WEBPACK_IMPORTED_MODULE_0__conf__.b.ALLOW_POSTMESSAGE_POPUP && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.r)(sourceWindow, targetWindow) === !1) throw new Error("Can not send and receive post messages between two different windows (disabled to emulate IE)");
+            if (!__WEBPACK_IMPORTED_MODULE_0__conf__.b.ALLOW_POSTMESSAGE_POPUP && !1 === __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.r)(sourceWindow, targetWindow)) throw new Error("Can not send and receive post messages between two different windows (disabled to emulate IE)");
         }
         var __WEBPACK_IMPORTED_MODULE_0__conf__ = __webpack_require__("./node_modules/post-robot/src/conf/index.js"), __WEBPACK_IMPORTED_MODULE_1__lib__ = __webpack_require__("./node_modules/post-robot/src/lib/index.js");
         __webpack_exports__.a = emulateIERestrictions;
@@ -2582,10 +3013,10 @@
             var source = event.source, origin = event.origin, data = event.data, message = parseMessage(data);
             if (message) {
                 0 !== message.sourceDomain.indexOf(__WEBPACK_IMPORTED_MODULE_0__conf__.a.MOCK_PROTOCOL) && 0 !== message.sourceDomain.indexOf(__WEBPACK_IMPORTED_MODULE_0__conf__.a.FILE_PROTOCOL) || (origin = message.sourceDomain);
-                if (__WEBPACK_IMPORTED_MODULE_2__global__.a.receivedMessages.indexOf(message.id) === -1) {
+                if (-1 === __WEBPACK_IMPORTED_MODULE_2__global__.a.receivedMessages.indexOf(message.id)) {
                     __WEBPACK_IMPORTED_MODULE_2__global__.a.receivedMessages.push(message.id);
                     var level = void 0;
-                    level = __WEBPACK_IMPORTED_MODULE_0__conf__.c.indexOf(message.name) !== -1 || message.type === __WEBPACK_IMPORTED_MODULE_0__conf__.a.POST_MESSAGE_TYPE.ACK ? "debug" : "error" === message.ack ? "error" : "info";
+                    level = -1 !== __WEBPACK_IMPORTED_MODULE_0__conf__.c.indexOf(message.name) || message.type === __WEBPACK_IMPORTED_MODULE_0__conf__.a.POST_MESSAGE_TYPE.ACK ? "debug" : "error" === message.ack ? "error" : "info";
                     __WEBPACK_IMPORTED_MODULE_1__lib__.k.logLevel(level, [ "\n\n\t", "#receive", message.type.replace(/^postrobot_message_/, ""), "::", message.name, "::", origin, "\n\n", message ]);
                     if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.m)(source)) return __WEBPACK_IMPORTED_MODULE_1__lib__.k.debug("Source window is closed - can not send " + message.type + " " + message.name);
                     message.data && (message.data = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.t)(source, origin, message.data));
@@ -2728,7 +3159,7 @@
                     domain: domain
                 });
                 var level = void 0;
-                level = __WEBPACK_IMPORTED_MODULE_0__conf__.c.indexOf(message.name) !== -1 || message.type === __WEBPACK_IMPORTED_MODULE_0__conf__.a.POST_MESSAGE_TYPE.ACK ? "debug" : "error" === message.ack ? "error" : "info";
+                level = -1 !== __WEBPACK_IMPORTED_MODULE_0__conf__.c.indexOf(message.name) || message.type === __WEBPACK_IMPORTED_MODULE_0__conf__.a.POST_MESSAGE_TYPE.ACK ? "debug" : "error" === message.ack ? "error" : "info";
                 __WEBPACK_IMPORTED_MODULE_1__lib__.k.logLevel(level, [ "\n\n\t", "#send", message.type.replace(/^postrobot_message_/, ""), "::", message.name, "::", domain || __WEBPACK_IMPORTED_MODULE_0__conf__.a.WILDCARD, "\n\n", message ]);
                 if (__WEBPACK_IMPORTED_MODULE_0__conf__.b.MOCK_MODE) {
                     delete message.target;
@@ -2800,12 +3231,12 @@
         var sendBridgeMessage = __webpack_require__("./node_modules/post-robot/src/bridge/index.js").sendBridgeMessage;
         SEND_MESSAGE_STRATEGIES[__WEBPACK_IMPORTED_MODULE_0__conf__.a.SEND_STRATEGIES.BRIDGE] = function(win, serializedMessage, domain) {
             if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.q)(win)) throw new Error("Post message through bridge disabled between same domain windows");
-            if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.r)(window, win) !== !1) throw new Error("Can only use bridge to communicate between two different windows, not between frames");
-            sendBridgeMessage(win, serializedMessage, domain);
+            if (!1 !== __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.r)(window, win)) throw new Error("Can only use bridge to communicate between two different windows, not between frames");
+            return sendBridgeMessage(win, serializedMessage, domain);
         };
         SEND_MESSAGE_STRATEGIES[__WEBPACK_IMPORTED_MODULE_0__conf__.a.SEND_STRATEGIES.GLOBAL] = function(win, serializedMessage, domain) {
             if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.q)(win)) throw new Error("Post message through global disabled between different domain windows");
-            if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.r)(window, win) !== !1) throw new Error("Can only use global to communicate between two different windows, not between frames");
+            if (!1 !== __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.r)(window, win)) throw new Error("Can only use global to communicate between two different windows, not between frames");
             var foreignGlobal = win[__WEBPACK_IMPORTED_MODULE_0__conf__.a.WINDOW_PROPS.POSTROBOT];
             if (!foreignGlobal) throw new Error("Can not find postRobot global on foreign window");
             return foreignGlobal.receiveMessage({
@@ -2971,7 +3402,7 @@
     "./node_modules/post-robot/src/lib/domain.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function matchDomain(domain, origin) {
-            return "string" == typeof domain ? !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(origin) && (!Array.isArray(origin) && (domain === __WEBPACK_IMPORTED_MODULE_1__conf__.a.WILDCARD || origin === domain)) : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(domain) ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(origin) ? domain.toString() === origin.toString() : !Array.isArray(origin) && origin.match(domain) : !!Array.isArray(domain) && (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(origin) && (Array.isArray(origin) ? JSON.stringify(domain) === JSON.stringify(origin) : domain.indexOf(origin) !== -1));
+            return "string" == typeof domain ? !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(origin) && (!Array.isArray(origin) && (domain === __WEBPACK_IMPORTED_MODULE_1__conf__.a.WILDCARD || origin === domain)) : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(domain) ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(origin) ? domain.toString() === origin.toString() : !Array.isArray(origin) && origin.match(domain) : !!Array.isArray(domain) && (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__util__.a)(origin) && (Array.isArray(origin) ? JSON.stringify(domain) === JSON.stringify(origin) : -1 !== domain.indexOf(origin)));
         }
         var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__("./node_modules/post-robot/src/lib/util.js"), __WEBPACK_IMPORTED_MODULE_1__conf__ = __webpack_require__("./node_modules/post-robot/src/conf/index.js");
         __webpack_exports__.a = matchDomain;
@@ -3488,7 +3919,7 @@
         }
         function getDomainFromUrl(url) {
             var domain = void 0;
-            if (!url.match(/^(https?|mock|file):\/\//)) return this.getDomain();
+            if (!url.match(/^(https?|mock|file):\/\//)) return getDomain();
             domain = url;
             domain = domain.split("/").slice(0, 3).join("/");
             return domain;
@@ -3591,7 +4022,7 @@
         function isAncestorParent(parent, child) {
             if (!parent || !child) return !1;
             var childParent = getParent(child);
-            return childParent ? childParent === parent : getParents(child).indexOf(parent) !== -1;
+            return childParent ? childParent === parent : -1 !== getParents(child).indexOf(parent);
         }
         function getFrames(win) {
             var result = [], frames = void 0;
@@ -3684,7 +4115,7 @@
                         _ref4 = _i5.value;
                     }
                     var frame = _ref4;
-                    result.indexOf(frame) === -1 && result.push(frame);
+                    -1 === result.indexOf(frame) && result.push(frame);
                 }
             }
             return result;
@@ -3755,14 +4186,14 @@
                 }
                 var childFrame = _ref6;
                 try {
-                    if (isSameDomain(childFrame) && childFrame.name === name && winFrames.indexOf(childFrame) !== -1) return childFrame;
+                    if (isSameDomain(childFrame) && childFrame.name === name && -1 !== winFrames.indexOf(childFrame)) return childFrame;
                 } catch (err) {}
             }
             try {
-                if (winFrames.indexOf(win.frames[name]) !== -1) return win.frames[name];
+                if (-1 !== winFrames.indexOf(win.frames[name])) return win.frames[name];
             } catch (err) {}
             try {
-                if (winFrames.indexOf(win[name]) !== -1) return win[name];
+                if (-1 !== winFrames.indexOf(win[name])) return win[name];
             } catch (err) {}
         }
         function findChildFrameByName(win, name) {
@@ -4280,7 +4711,7 @@
             }
         }
         function dispatchError(err) {
-            if (dispatchedErrors.indexOf(err) === -1) {
+            if (-1 === dispatchedErrors.indexOf(err)) {
                 dispatchedErrors.push(err);
                 setTimeout(function() {
                     throw err;
@@ -4338,6 +4769,7 @@
         SyncPromise.prototype.reject = function(error) {
             if (this.resolved || this.rejected) return this;
             if (isPromise(error)) throw new Error("Can not reject promise with another promise");
+            error || (error = new Error("Expected reject to be called with Error, got " + error));
             this.rejected = !0;
             this.value = error;
             this.dispatch();
@@ -4351,15 +4783,19 @@
             var _this = this;
             if (this.resolved || this.rejected) for (;this.handlers.length; ) {
                 (function() {
-                    var handler = _this.handlers.shift(), result = void 0, error = void 0;
+                    var handler = _this.handlers.shift(), isError = !1, result = void 0, error = void 0;
                     try {
-                        _this.resolved ? result = handler.onSuccess ? handler.onSuccess(_this.value) : _this.value : _this.rejected && (handler.onError ? result = handler.onError(_this.value) : error = _this.value);
+                        if (_this.resolved) result = handler.onSuccess ? handler.onSuccess(_this.value) : _this.value; else if (_this.rejected) if (handler.onError) result = handler.onError(_this.value); else {
+                            isError = !0;
+                            error = _this.value;
+                        }
                     } catch (err) {
+                        isError = !0;
                         error = err;
                     }
                     if (result === _this) throw new Error("Can not return a promise from the the then handler of the same promise");
                     if (!handler.promise) return "continue";
-                    error ? handler.promise.reject(error) : isPromise(result) ? result.then(function(res) {
+                    isError ? handler.promise.reject(error) : isPromise(result) ? result.then(function(res) {
                         handler.promise.resolve(res);
                     }, function(err) {
                         handler.promise.reject(err);
@@ -4438,6 +4874,151 @@
                 });
                 return method.apply(null, args);
             });
+        };
+    },
+    "./node_modules/type/function/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isPrototype = __webpack_require__("./node_modules/type/prototype/is.js");
+        module.exports = function(value) {
+            if ("function" != typeof value) return !1;
+            if (!hasOwnProperty.call(value, "length")) return !1;
+            try {
+                if ("number" != typeof value.length) return !1;
+                if ("function" != typeof value.call) return !1;
+                if ("function" != typeof value.apply) return !1;
+            } catch (error) {
+                return !1;
+            }
+            return !isPrototype(value);
+        };
+    },
+    "./node_modules/type/lib/resolve-exception.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isValue = __webpack_require__("./node_modules/type/value/is.js"), isObject = __webpack_require__("./node_modules/type/object/is.js"), stringCoerce = __webpack_require__("./node_modules/type/string/coerce.js"), toShortString = __webpack_require__("./node_modules/type/lib/to-short-string.js"), resolveMessage = function(message, value) {
+            return message.replace("%v", toShortString(value));
+        };
+        module.exports = function(value, defaultMessage, inputOptions) {
+            if (!isObject(inputOptions)) throw new TypeError(resolveMessage(defaultMessage, value));
+            if (!isValue(value)) {
+                if ("default" in inputOptions) return inputOptions.default;
+                if (inputOptions.isOptional) return null;
+            }
+            var errorMessage = stringCoerce(inputOptions.errorMessage);
+            isValue(errorMessage) || (errorMessage = defaultMessage);
+            throw new TypeError(resolveMessage(errorMessage, value));
+        };
+    },
+    "./node_modules/type/lib/safe-to-string.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = function(value) {
+            try {
+                return value.toString();
+            } catch (error) {
+                try {
+                    return String(value);
+                } catch (error2) {
+                    return null;
+                }
+            }
+        };
+    },
+    "./node_modules/type/lib/to-short-string.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var safeToString = __webpack_require__("./node_modules/type/lib/safe-to-string.js");
+        module.exports = function(value) {
+            var string = safeToString(value);
+            if (null === string) return "<Non-coercible to string value>";
+            string.length > 100 && (string = string.slice(0, 99) + "…");
+            string = string.replace(/[\n\r\u2028\u2029]/g, function(char) {
+                switch (char) {
+                  case "\n":
+                    return "\\n";
+
+                  case "\r":
+                    return "\\r";
+
+                  case "\u2028":
+                    return "\\u2028";
+
+                  case "\u2029":
+                    return "\\u2029";
+
+                  default:
+                    throw new Error("Unexpected character");
+                }
+            });
+            return string;
+        };
+    },
+    "./node_modules/type/object/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+            return typeof obj;
+        } : function(obj) {
+            return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+        }, isValue = __webpack_require__("./node_modules/type/value/is.js"), possibleTypes = {
+            object: !0,
+            function: !0,
+            undefined: !0
+        };
+        module.exports = function(value) {
+            return !!isValue(value) && hasOwnProperty.call(possibleTypes, void 0 === value ? "undefined" : _typeof(value));
+        };
+    },
+    "./node_modules/type/plain-function/ensure.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var resolveException = __webpack_require__("./node_modules/type/lib/resolve-exception.js"), is = __webpack_require__("./node_modules/type/plain-function/is.js");
+        module.exports = function(value) {
+            return is(value) ? value : resolveException(value, "%v is not a plain function", arguments[1]);
+        };
+    },
+    "./node_modules/type/plain-function/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isFunction = __webpack_require__("./node_modules/type/function/is.js"), classRe = /^\s*class[\s{\/}]/, functionToString = Function.prototype.toString;
+        module.exports = function(value) {
+            return !!isFunction(value) && !classRe.test(functionToString.call(value));
+        };
+    },
+    "./node_modules/type/prototype/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isObject = __webpack_require__("./node_modules/type/object/is.js");
+        module.exports = function(value) {
+            if (!isObject(value)) return !1;
+            try {
+                return !!value.constructor && value.constructor.prototype === value;
+            } catch (error) {
+                return !1;
+            }
+        };
+    },
+    "./node_modules/type/string/coerce.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var isValue = __webpack_require__("./node_modules/type/value/is.js"), isObject = __webpack_require__("./node_modules/type/object/is.js"), objectToString = Object.prototype.toString;
+        module.exports = function(value) {
+            if (!isValue(value)) return null;
+            if (isObject(value)) {
+                var valueToString = value.toString;
+                if ("function" != typeof valueToString) return null;
+                if (valueToString === objectToString) return null;
+            }
+            try {
+                return "" + value;
+            } catch (error) {
+                return null;
+            }
+        };
+    },
+    "./node_modules/type/value/ensure.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        var resolveException = __webpack_require__("./node_modules/type/lib/resolve-exception.js"), is = __webpack_require__("./node_modules/type/value/is.js");
+        module.exports = function(value) {
+            return is(value) ? value : resolveException(value, "Cannot use %v", arguments[1]);
+        };
+    },
+    "./node_modules/type/value/is.js": function(module, exports, __webpack_require__) {
+        "use strict";
+        module.exports = function(value) {
+            return void 0 !== value && null !== value;
         };
     },
     "./node_modules/webpack/buildin/global.js": function(module, exports) {
@@ -4554,7 +5135,7 @@
                             return self.error(err);
                         }
                     };
-                    doOnce !== !1 && (wrapper = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.p)(wrapper));
+                    !1 !== doOnce && (wrapper = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.p)(wrapper));
                     return wrapper;
                 }
             }, {
@@ -5013,7 +5594,7 @@
                         window.console[level] = function() {
                             try {
                                 var logLevel = window.LOG_LEVEL;
-                                if (!logLevel || logLevels.indexOf(logLevel) === -1) return _original.apply(this, arguments);
+                                if (!logLevel || -1 === logLevels.indexOf(logLevel)) return _original.apply(this, arguments);
                                 if (logLevels.indexOf(level) > logLevels.indexOf(logLevel)) return;
                                 return _original.apply(this, arguments);
                             } catch (err2) {}
@@ -5597,7 +6178,7 @@
                 var key = _ref, prop = options.props[key];
                 if (!prop || "object" !== (void 0 === prop ? "undefined" : _typeof(prop))) throw component.error("Expected options.props." + key + " to be an object");
                 if (!prop.type) throw component.error("Expected prop.type");
-                if (__WEBPACK_IMPORTED_MODULE_0__constants__.PROP_TYPES_LIST.indexOf(prop.type) === -1) throw component.error("Expected prop.type to be one of " + __WEBPACK_IMPORTED_MODULE_0__constants__.PROP_TYPES_LIST.join(", "));
+                if (-1 === __WEBPACK_IMPORTED_MODULE_0__constants__.PROP_TYPES_LIST.indexOf(prop.type)) throw component.error("Expected prop.type to be one of " + __WEBPACK_IMPORTED_MODULE_0__constants__.PROP_TYPES_LIST.join(", "));
                 if (prop.required && prop.def) throw component.error("Required prop can not have a default value");
             }
         }
@@ -5621,13 +6202,13 @@
                         _ref2 = _i2.value;
                     }
                     var context = _ref2;
-                    if (__WEBPACK_IMPORTED_MODULE_0__constants__.CONTEXT_TYPES_LIST.indexOf(context) === -1) throw component.error("Unsupported context type: " + context);
+                    if (-1 === __WEBPACK_IMPORTED_MODULE_0__constants__.CONTEXT_TYPES_LIST.indexOf(context)) throw component.error("Unsupported context type: " + context);
                     (options.contexts[context] || void 0 === options.contexts[context]) && (anyEnabled = !0);
                 }
                 if (!anyEnabled) throw component.error("No context type is enabled");
             }
             if (options.defaultContext) {
-                if (__WEBPACK_IMPORTED_MODULE_0__constants__.CONTEXT_TYPES_LIST.indexOf(options.defaultContext) === -1) throw component.error("Unsupported context type: " + options.defaultContext);
+                if (-1 === __WEBPACK_IMPORTED_MODULE_0__constants__.CONTEXT_TYPES_LIST.indexOf(options.defaultContext)) throw component.error("Unsupported context type: " + options.defaultContext);
                 if (options.contexts && !options.contexts[options.defaultContext]) throw component.error("Disallowed default context type: " + options.defaultContext);
             }
             if (!options.url && !options.buildUrl) throw component.error("Expected options.url to be passed");
@@ -5831,7 +6412,7 @@
                 var options = {
                     attributes: {
                         name: this.childWindowName,
-                        scrolling: this.component.scrolling === !1 ? "no" : "yes"
+                        scrolling: !1 === this.component.scrolling ? "no" : "yes"
                     },
                     style: {
                         width: "100%",
@@ -6300,7 +6881,7 @@
                             _ref9 = _i.value;
                         }
                         var key = _ref9, prop = this.component.props[key];
-                        prop && prop.sendToChild === !1 || (result[key] = this.props[key]);
+                        prop && !1 === prop.sendToChild || (result[key] = this.props[key]);
                     }
                     return result;
                 }
@@ -6792,7 +7373,7 @@
                 value: function(err) {
                     var _this21 = this;
                     this.handledErrors = this.handledErrors || [];
-                    if (this.handledErrors.indexOf(err) === -1) {
+                    if (-1 === this.handledErrors.indexOf(err)) {
                         this.handledErrors.push(err);
                         return __WEBPACK_IMPORTED_MODULE_2_sync_browser_mocks_src_promise__.a.try(function() {
                             _this21.component.logError("error", {
@@ -6988,7 +7569,7 @@
                     } else if ("number" === prop.type && isNaN(parseInt(value, 10))) throw new Error("Prop is not a number: " + key);
                     "function" == typeof prop.validate && prop.validate(value, props);
                 }
-            } else if (required && prop.required !== !1 && !prop.hasOwnProperty("def")) throw new Error("Prop is required: " + key);
+            } else if (required && !1 !== prop.required && !prop.hasOwnProperty("def")) throw new Error("Prop is required: " + key);
         }
         function validateProps(component, props) {
             var required = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2];
@@ -7503,13 +8084,11 @@
             global: function() {
                 return !0;
             },
-            register: function register(component) {
+            register: function(component) {
                 function render(element) {
                     if (element && element.tagName && "script" === element.tagName.toLowerCase() && element.attributes.type && "application/x-component" === element.attributes.type.value && element.attributes["data-component"] && element.attributes["data-component"].value === component.tag) {
-                        component.log("instantiate_script_component");
-                        var props = eval("(" + element.innerText + ")"), container = document.createElement("div");
-                        element.parentNode.replaceChild(container, element);
-                        component.render(props, container);
+                        component.log("instantiate_script_component_error");
+                        throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                     }
                 }
                 function scan() {
@@ -8072,7 +8651,7 @@
             });
         }
         function addClass(element, name) {
-            element.classList ? element.classList.add(name) : element.className.split(/\s+/).indexOf(name) === -1 && (element.className += " " + name);
+            element.classList ? element.classList.add(name) : -1 === element.className.split(/\s+/).indexOf(name) && (element.className += " " + name);
         }
         function writeToWindow(win, html) {
             try {
@@ -8160,7 +8739,7 @@
         }), __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__fn__.c)(function(queryString) {
             var params = {};
             if (!queryString) return params;
-            if (queryString.indexOf("=") === -1) throw new Error("Can not parse query string params: " + queryString);
+            if (-1 === queryString.indexOf("=")) throw new Error("Can not parse query string params: " + queryString);
             for (var _iterator6 = queryString.split("&"), _isArray6 = Array.isArray(_iterator6), _i6 = 0, _iterator6 = _isArray6 ? _iterator6 : _iterator6[Symbol.iterator](); ;) {
                 var _ref8;
                 if (_isArray6) {
@@ -8546,9 +9125,6 @@
             for (var key in obj) void 0 !== obj[key] && null !== obj[key] && (obj[key] && "object" === _typeof(obj[key]) ? newobj = dotify(obj[key], "" + prefix + key, newobj) : newobj["" + prefix + key] = obj[key].toString());
             return newobj;
         }
-        function WeakMap() {
-            this.id = "__weakmap_" + uniqueID() + "__";
-        }
         function getObjectID(obj) {
             if (null === obj || void 0 === obj || "object" !== (void 0 === obj ? "undefined" : _typeof(obj)) && "function" != typeof obj) throw new Error("Invalid object");
             var uid = objectIDs.get(obj);
@@ -8558,6 +9134,7 @@
             }
             return uid;
         }
+        var __WEBPACK_IMPORTED_MODULE_0_cross_domain_safe_weakmap_src__ = __webpack_require__("./node_modules/cross-domain-safe-weakmap/src/index.js");
         __webpack_exports__.f = urlEncode;
         __webpack_exports__.l = dasherizeToCamel;
         __webpack_exports__.e = extend;
@@ -8574,30 +9151,7 @@
             return typeof obj;
         } : function(obj) {
             return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-        };
-        WeakMap.prototype = {
-            set: function(item, value) {
-                if (null === item || void 0 === item || "object" !== (void 0 === item ? "undefined" : _typeof(item)) && "function" != typeof item) throw new Error("Invalid key for WeakMap");
-                var entry = item[this.id];
-                entry && entry[0] === item ? entry[1] = value : Object.defineProperty(item, this.id, {
-                    value: [ item, value ],
-                    writable: !0
-                });
-            },
-            get: function(item) {
-                var entry = item[this.id];
-                if (entry && entry[0] === item) return entry[1];
-            },
-            delete: function(item) {
-                var entry = item[this.id];
-                entry && entry[0] === item && (entry[0] = entry[1] = void 0);
-            },
-            has: function(item) {
-                var entry = item[this.id];
-                return entry && entry[0] === item;
-            }
-        };
-        var objectIDs = new WeakMap();
+        }, objectIDs = new __WEBPACK_IMPORTED_MODULE_0_cross_domain_safe_weakmap_src__.a();
     },
     "./src/api/index.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
@@ -8681,7 +9235,7 @@
                 for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
             }
             return target;
-        }, proxyRest = {}, createAccessToken = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.A)(function(env, client) {
+        }, proxyRest = {}, createAccessToken = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.B)(function(env, client) {
             __WEBPACK_IMPORTED_MODULE_3_beaver_logger_client__.c("rest_api_create_access_token");
             env = env || __WEBPACK_IMPORTED_MODULE_4__config__.a.env;
             var clientID = client[env];
@@ -8704,7 +9258,7 @@
             });
         }, {
             time: 6e5
-        }), createExperienceProfile = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.A)(function(env, client) {
+        }), createExperienceProfile = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.B)(function(env, client) {
             var experienceDetails = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
             __WEBPACK_IMPORTED_MODULE_3_beaver_logger_client__.c("rest_api_create_experience_profile");
             env = env || __WEBPACK_IMPORTED_MODULE_4__config__.a.env;
@@ -8772,14 +9326,14 @@
                         method: method
                     }, {
                         domain: __WEBPACK_IMPORTED_MODULE_3__config__.a.paypalDomain
-                    }).then(__WEBPACK_IMPORTED_MODULE_2__lib__.r);
+                    }).then(__WEBPACK_IMPORTED_MODULE_2__lib__.s);
                 });
             });
         };
         window.watchForLegacyFallback = function(win) {
             var interval = setInterval(function() {
                 try {
-                    if (!(win.document.body.innerHTML.indexOf("merchantpaymentweb") !== -1 || win.document.body.innerHTML.indexOf("wapapp") !== -1) || win.ppxoWatching || win.closed) return;
+                    if (!(-1 !== win.document.body.innerHTML.indexOf("merchantpaymentweb") || -1 !== win.document.body.innerHTML.indexOf("wapapp")) || win.ppxoWatching || win.closed) return;
                     win.ppxoWatching = !0;
                     var send = win.XMLHttpRequest.prototype.send;
                     win.XMLHttpRequest.prototype.send = function() {
@@ -8801,7 +9355,7 @@
                                     win.PAYPAL && win.PAYPAL.Checkout && win.PAYPAL.Checkout.XhrResponse && win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES && Object.defineProperty(win.PAYPAL.Checkout.XhrResponse.RESPONSE_TYPES, "Redirect", {
                                         value: Math.random().toString()
                                     });
-                                    win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady && (win.mob.Xhr.prototype._xhrOnReady = __WEBPACK_IMPORTED_MODULE_2__lib__.r);
+                                    win.mob && win.mob.Xhr && win.mob.Xhr.prototype._xhrOnReady && (win.mob.Xhr.prototype._xhrOnReady = __WEBPACK_IMPORTED_MODULE_2__lib__.s);
                                 }
                             } catch (err) {
                                 return;
@@ -8875,7 +9429,7 @@
             __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.c(data.iframeEligible ? "lightbox_eligible_" + data.iframeEligibleReason : "lightbox_ineligible_" + data.iframeEligibleReason);
             if (__WEBPACK_IMPORTED_MODULE_4__config__.a.locales[data.locale.country] && !__WEBPACK_IMPORTED_MODULE_4__config__.a.customCountry) {
                 __WEBPACK_IMPORTED_MODULE_4__config__.a.locale.country = data.locale.country;
-                __WEBPACK_IMPORTED_MODULE_4__config__.a.locales[data.locale.country].indexOf(data.locale.lang) !== -1 ? __WEBPACK_IMPORTED_MODULE_4__config__.a.locale.lang = data.locale.lang : __WEBPACK_IMPORTED_MODULE_4__config__.a.locale.lang = __WEBPACK_IMPORTED_MODULE_4__config__.a.locales[data.locale.country][0];
+                -1 !== __WEBPACK_IMPORTED_MODULE_4__config__.a.locales[data.locale.country].indexOf(data.locale.lang) ? __WEBPACK_IMPORTED_MODULE_4__config__.a.locale.lang = data.locale.lang : __WEBPACK_IMPORTED_MODULE_4__config__.a.locale.lang = __WEBPACK_IMPORTED_MODULE_4__config__.a.locales[data.locale.country][0];
             }
         });
     },
@@ -9097,7 +9651,7 @@
                     validate: function(locale) {
                         if (!locale || !locale.match(/^[a-z]{2}[-_][A-Z]{2}$/)) throw new Error("Invalid locale: " + locale);
                         var _locale$split = locale.split("_"), _locale$split2 = _slicedToArray(_locale$split, 2), lang = _locale$split2[0], country = _locale$split2[1];
-                        if (!__WEBPACK_IMPORTED_MODULE_4__config__.a.locales[country] || __WEBPACK_IMPORTED_MODULE_4__config__.a.locales[country].indexOf(lang) === -1) throw new Error("Invalid locale: " + locale);
+                        if (!__WEBPACK_IMPORTED_MODULE_4__config__.a.locales[country] || -1 === __WEBPACK_IMPORTED_MODULE_4__config__.a.locales[country].indexOf(lang)) throw new Error("Invalid locale: " + locale);
                     }
                 },
                 style: {
@@ -9114,8 +9668,8 @@
                         };
                     },
                     validate: function(style) {
-                        if (style.size && __WEBPACK_IMPORTED_MODULE_4__config__.a.buttonStyles.size.indexOf(style.size) === -1) throw new Error("Invalid button size: " + style.size);
-                        if (style.label && __WEBPACK_IMPORTED_MODULE_4__config__.a.buttonStyles.label.indexOf(style.label) === -1) throw new Error("Invalid button label: " + style.label);
+                        if (style.size && -1 === __WEBPACK_IMPORTED_MODULE_4__config__.a.buttonStyles.size.indexOf(style.size)) throw new Error("Invalid button size: " + style.size);
+                        if (style.label && -1 === __WEBPACK_IMPORTED_MODULE_4__config__.a.buttonStyles.label.indexOf(style.label)) throw new Error("Invalid button label: " + style.label);
                         if ("credit" === style.label && "tiny" === style.size) throw new Error("Invalid " + style.label + " button size: " + style.size);
                         if ("credit" === style.label && style.color) throw new Error("Custom colors for " + style.label + " button are not supported");
                         if ("pay" === style.label && "tiny" === style.size) throw new Error("Invalid " + style.label + " button size: " + style.size);
@@ -9293,10 +9847,10 @@
             var _props$locale$split = props.locale.split("_"), _props$locale$split2 = _slicedToArray(_props$locale$split, 2), lang = _props$locale$split2[0], country = _props$locale$split2[1], content = componentContentJSON[country][lang], style = props.style || {}, label = style.label || defaultLabel, conf = buttonConfig[label];
             if (!conf) throw new Error("Unexpected button label: " + label);
             var _style$color = style.color, color = void 0 === _style$color ? conf.colors[0] : _style$color, _style$shape = style.shape, shape = void 0 === _style$shape ? conf.shapes[0] : _style$shape, _style$size = style.size, size = void 0 === _style$size ? conf.sizes[0] : _style$size;
-            if (conf.colors.indexOf(color) === -1) throw new Error("Unexpected color for " + label + " button: " + color);
-            if (conf.shapes.indexOf(shape) === -1) throw new Error("Unexpected shape for " + label + " button: " + shape);
-            if (conf.sizes.indexOf(size) === -1) throw new Error("Unexpected size for " + label + " button: " + size);
-            var logo = conf.logos && __WEBPACK_IMPORTED_MODULE_0__logos__.a[conf.logos[color]], hasLabel = Boolean(content[label]), hasLogo = hasLabel && content[label].indexOf("$wordmark$") !== -1;
+            if (-1 === conf.colors.indexOf(color)) throw new Error("Unexpected color for " + label + " button: " + color);
+            if (-1 === conf.shapes.indexOf(shape)) throw new Error("Unexpected shape for " + label + " button: " + shape);
+            if (-1 === conf.sizes.indexOf(size)) throw new Error("Unexpected size for " + label + " button: " + size);
+            var logo = conf.logos && __WEBPACK_IMPORTED_MODULE_0__logos__.a[conf.logos[color]], hasLabel = Boolean(content[label]), hasLogo = hasLabel && -1 !== content[label].indexOf("$wordmark$");
             if (conf.label && !hasLabel) throw new Error("Expected to have label for " + label + " button for " + lang + "_" + country);
             if (conf.label && !hasLogo) throw new Error("Expected to have logo placeholder for " + label + " button for " + lang + "_" + country);
             var labelText = void 0;
@@ -9307,7 +9861,7 @@
                 labelText = '<img src="data:image/svg+xml;base64,' + logo + '" alt="PayPal">';
             }
             var labelTag = conf.tagline && content[label + "_tag"] ? content[label + "_tag"] : "";
-            return '\n\n        <head>\n            <style type="text/css">\n                ' + __WEBPACK_IMPORTED_MODULE_1__style__.a + '\n            </style>\n        </head>\n\n        <body>\n            <div id="paypal-button-container">\n                <button class="paypal-button paypal-style-' + label + " paypal-color-" + color + " paypal-size-" + size + " paypal-shape-" + shape + '" type="submit">\n                    <div class="paypal-button-content">\n                        ' + labelText + '\n                    </div>\n                    <div class="paypal-button-tag-content">\n                        ' + labelTag + "\n                    </div>\n                </button>\n            </div>\n\n            <script>\n                (" + __WEBPACK_IMPORTED_MODULE_2__script__.a.toString() + ")();\n            </script>\n        </body>\n    ";
+            return '\n\n        <head>\n            <style type="text/css">\n                ' + __WEBPACK_IMPORTED_MODULE_1__style__.a + '\n            </style>\n        </head>\n\n        <body>\n            <div id="paypal-button-container">\n                <button class="paypal-button paypal-style-' + label + " paypal-color-" + color + " paypal-size-" + size + " paypal-shape-" + shape + '" type="submit">\n                    <div class="paypal-button-content">\n                        ' + labelText + '\n                    </div>\n                    <div class="paypal-button-tag-content">\n                        ' + labelTag + "\n                    </div>\n                </button>\n            </div>\n\n            <script>\n                (" + __WEBPACK_IMPORTED_MODULE_2__script__.a.toString() + ")();\n            <\/script>\n        </body>\n    ";
         }
         var __WEBPACK_IMPORTED_MODULE_0__logos__ = __webpack_require__("./src/components/button/templates/component/logos.js"), __WEBPACK_IMPORTED_MODULE_1__style__ = __webpack_require__("./src/components/button/templates/component/style.js"), __WEBPACK_IMPORTED_MODULE_2__script__ = __webpack_require__("./src/components/button/templates/component/script.js"), __WEBPACK_IMPORTED_MODULE_3__content_json__ = __webpack_require__("./src/components/button/templates/component/content.json"), __WEBPACK_IMPORTED_MODULE_3__content_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__content_json__);
         __webpack_exports__.a = componentTemplate;
@@ -9546,7 +10100,7 @@
                             };
                             return __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a.try(function() {
                                 try {
-                                    var isButton = window.location.href.indexOf("/webapps/hermes/button") !== -1, isGuest = _this.window.location.href.indexOf("/webapps/xoonboarding") !== -1;
+                                    var isButton = -1 !== window.location.href.indexOf("/webapps/hermes/button"), isGuest = -1 !== _this.window.location.href.indexOf("/webapps/xoonboarding");
                                     if (isButton && isGuest) return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.a)({
                                         win: _this.window,
                                         method: "get",
@@ -9618,7 +10172,7 @@
                     def: function() {
                         return function(reason) {
                             var CLOSE_REASONS = __WEBPACK_IMPORTED_MODULE_2_xcomponent_src__.d.CLOSE_REASONS;
-                            if (this.props.onCancel && [ CLOSE_REASONS.CLOSE_DETECTED, CLOSE_REASONS.USER_CLOSED ].indexOf(reason) !== -1) {
+                            if (this.props.onCancel && -1 !== [ CLOSE_REASONS.CLOSE_DETECTED, CLOSE_REASONS.USER_CLOSED ].indexOf(reason)) {
                                 if (this.paymentToken && this.cancelUrl) {
                                     __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.c("close_trigger_cancel");
                                     return this.props.onCancel({
@@ -9865,7 +10419,7 @@
         "use strict";
         function containerTemplate(_ref) {
             var id = _ref.id, CLASS = _ref.CLASS, ANIMATION = _ref.ANIMATION, content = componentContent[__WEBPACK_IMPORTED_MODULE_0__config__.a.locale.country][__WEBPACK_IMPORTED_MODULE_0__config__.a.locale.lang];
-            return '\n\n        <div class="paypal-checkout-overlay ' + CLASS.FOCUS + '">\n            <a href="#' + CLASS.CLOSE + '" class="' + CLASS.CLOSE + '"></a>\n            <div class="paypal-checkout-modal">\n                <div class="paypal-checkout-logo"></div>\n                <div class="paypal-checkout-message">\n                    ' + content.windowMessage + '\n                </div>\n                <div class="paypal-checkout-continue">\n                    <a href="#' + CLASS.FOCUS + '" class="' + CLASS.FOCUS + '">' + content.continue + '</a>\n                </div>\n                <div class="paypal-checkout-loading">\n                    <div class="paypal-spinner"></div>\n                </div>\n            </div>\n\n            <div class="' + CLASS.ELEMENT + ' paypal-checkout-iframe-element"></div>\n        </div>\n\n        <style>\n\n            #' + id + " {\n                position: fixed;\n                z-index: 2147483647;\n                top: 0;\n                left: 0;\n                width: 100%;\n                height: 100%;\n\n                -webkit-animation-duration: 1s;\n                animation-duration: 1s;\n\n                animation-fill-mode:forwards;\n                animation-iteration-count: 1;\n\n                -webkit-animation-fill-mode:forwards;\n                -webkit-animation-iteration-count: 1;\n            }\n\n            #" + id + " .paypal-checkout-overlay {\n\n                position: absolute;\n\n                top: 0;\n                left: 0;\n                width: 100%;\n                height: 100%;\n\n                background-color: black;\n\n                background-color: rgba(0, 0, 0, 0.8);\n\n                background: -webkit-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n                background: -moz-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n                background: -ms-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n                background: radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n\n                -webkit-transform: translate3d(0, 0, 0);\n                -moz-transform: translate3d(0, 0, 0);\n                -ms-transform: translate3d(0, 0, 0);\n                -o-transform: translate3d(0, 0, 0);\n                transform: translate3d(0, 0, 0);\n            }\n\n            #" + id + "." + CLASS.POPUP + " .paypal-checkout-overlay {\n                cursor: pointer;\n            }\n\n            #" + id + "." + CLASS.POPUP + " .paypal-checkout-overlay {\n                cursor: pointer;\n            }\n\n            #" + id + ' .paypal-checkout-overlay .paypal-checkout-modal {\n                font-family: "HelveticaNeue", "HelveticaNeue-Light", "Helvetica Neue Light", helvetica, arial, sans-serif;\n                font-size: 14px;\n                text-align: center;\n                color: #fff;\n                -webkit-box-sizing: border-box;\n                -moz-box-sizing: border-box;\n                -ms-box-sizing: border-box;\n                box-sizing: border-box;\n                width: 350px;\n                top: 50%;\n                left: 50%;\n                position: fixed;\n                margin-left: -165px;\n                margin-top: -80px;\n                cursor: pointer;\n                text-align: center;\n            }\n\n            #' + id + "." + CLASS.LOADING + " .paypal-checkout-message, #" + id + "." + CLASS.LOADING + " .paypal-checkout-continue {\n                display: none;\n            }\n\n            .paypal-checkout-loading {\n                display: none;\n            }\n\n            #" + id + "." + CLASS.LOADING + " .paypal-checkout-loading {\n                display: block;\n            }\n\n            #" + id + ' .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-logo {\n                background: url("https://www.paypalobjects.com/images/checkout/incontext/incontext_mask_sprite.png") no-repeat -18px -16px;\n                width: 132px;\n                height: 36px;\n                cursor: pointer;\n                margin-bottom: 30px;\n                display: inline-block;\n            }\n\n            @media only screen and (-webkit-min-device-pixel-ratio: 2), not all, not all, only screen and (min-resolution: 2dppx), only screen and (min-resolution: 192dpi) {\n                #' + id + ' .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-logo {\n                    background-image: url("https://www.paypalobjects.com/images/checkout/incontext/incontext_mask_sprite_2x.png");\n                    background-size: 200px 200px;\n                }\n            }\n\n            #' + id + " .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-message {\n                font-size: 15px;\n                line-height: 1.5;\n                padding: 10px 0;\n            }\n\n            #" + id + "." + CLASS.IFRAME + " .paypal-checkout-message, #" + id + "." + CLASS.IFRAME + " .paypal-checkout-continue {\n                display: none;\n            }\n\n            #" + id + " .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-continue {\n                font-size: 15px;\n                line-height: 1.35;\n                padding: 10px 0;\n                text-decoration: underline;\n                font-weight: bold;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + " {\n                position: absolute;\n                right: 16px;\n                top: 16px;\n                width: 16px;\n                height: 16px;\n                opacity: 0.6;\n            }\n\n            #" + id + "." + CLASS.LOADING + " ." + CLASS.CLOSE + " {\n                display: none;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":hover {\n                opacity: 1;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":before, ." + CLASS.CLOSE + ":after {\n                position: absolute;\n                left: 8px;\n                content: ' ';\n                height: 16px;\n                width: 2px;\n                background-color: white;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":before {\n                transform: rotate(45deg);\n                -webkit-transform: rotate(45deg);\n                -moz-transform: rotate(45deg);\n                -o-transform: rotate(45deg);\n                -ms-transform: rotate(45deg);\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":after {\n                transform: rotate(-45deg);\n                -webkit-transform: rotate(-45deg);\n                -moz-transform: rotate(-45deg);\n                -o-transform: rotate(-45deg);\n                -ms-transform: rotate(-45deg);\n            }\n\n            #" + id + " a {\n                color: white;\n            }\n\n            #" + id + " .paypal-checkout-iframe-element {\n                display: none;\n            }\n\n            #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n\n                display: block;\n\n                -webkit-transition: all 0.6s ease;\n                -moz-transition: all 0.6s ease;\n                -ms-transition: all 0.6s ease;\n                -o-transition: all 0.6 ease;\n                transition: all 0.6s ease;\n\n                -webkit-animation-duration: 1s;\n                animation-duration: 1s;\n                -webkit-animation-fill-mode: both;\n                animation-fill-mode: both;\n\n                position: fixed;\n\n                top: 50%;\n                left: 50%;\n\n                transform: translate3d(-50%, -50%, 0);\n                -webkit-transform: translate3d(-50%, -50%, 0);\n                -moz-transform: translate3d(-50%, -50%, 0);\n                -o-transform: translate3d(-50%, -50%, 0);\n                -ms-transform: translate3d(-50%, -50%, 0);\n\n                max-height: calc(100% - 20px);\n                max-height: -webkit-calc(100% - 20px);\n                max-height: -moz-calc(100% - 20px);\n                max-height: -o-calc(100% - 20px);\n                max-height: -ms-calc(100% - 20px);\n\n                max-width: calc(100% - 20px);\n                max-width: -webkit-calc(100% - 20px);\n                max-width: -moz-calc(100% - 20px);\n                max-width: -o-calc(100% - 20px);\n                max-width: -ms-calc(100% - 20px);\n\n                width: 450px;\n                height: 535px;\n\n                min-width: 450px;\n\n                background-color: white;\n                border-radius: 10px;\n\n                overflow: auto;\n                -webkit-overflow-scrolling:touch;\n\n            }\n\n            @media screen and (max-width: 450px) {\n\n                #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n                    min-width: calc(100% - 20px);\n                    min-width: -webkit-calc(100% - 20px);\n                    min-width: -moz-calc(100% - 20px);\n                    min-width: -o-calc(100% - 20px);\n                    min-width: -ms-calc(100% - 20px);\n                }\n            }\n\n            @media screen and (min-width: 490px) {\n\n                #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n                    max-width: 450px;\n                    max-width: 450px;\n                    max-width: 450px;\n                    max-width: 450px;\n\n                    max-width: 450px;\n                }\n            }\n\n            #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element iframe {\n\n                width: 100%;\n                height: 100%;\n            }\n\n\n            /*!\n             * animate.css -http://daneden.me/animate\n             * Version - 3.5.1\n             * Licensed under the MIT license - http://opensource.org/licenses/MIT\n             *\n             * Copyright (c) 2016 Daniel Eden\n             */\n\n            @-webkit-keyframes " + ANIMATION.SHOW_COMPONENT + " {\n                from, 60%, 75%, 90%, to {\n                    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                }\n\n                from {\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                60% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                75% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                90% {\n                    -webkit-transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    -webkit-transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @keyframes " + ANIMATION.SHOW_COMPONENT + " {\n                from, 60%, 75%, 90%, to {\n                    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                }\n\n                from {\n                    display: block;\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                60% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                75% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                90% {\n                    -webkit-transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    -webkit-transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @-webkit-keyframes " + ANIMATION.HIDE_COMPONENT + " {\n                20% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                40%, 45% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @keyframes " + ANIMATION.HIDE_COMPONENT + " {\n                20% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                40%, 45% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @-webkit-keyframes " + ANIMATION.SHOW_CONTAINER + " {\n                from {\n                    opacity: 0;\n                }\n\n                to {\n                    opacity: 1;\n                }\n            }\n\n            @keyframes " + ANIMATION.SHOW_CONTAINER + " {\n                from {\n                    opacity: 0;\n                }\n\n                to {\n                    opacity: 1;\n                }\n            }\n\n            @-webkit-keyframes " + ANIMATION.HIDE_CONTAINER + " {\n                from {\n                    opacity: 1;\n                }\n\n                50% {\n                    opacity: 1;\n                }\n\n                to {\n                    opacity: 0;\n                }\n            }\n\n            @keyframes " + ANIMATION.HIDE_CONTAINER + " {\n                from {\n                    opacity: 1;\n                }\n\n                50% {\n                    opacity: 1;\n                }\n\n                to {\n                    opacity: 0;\n                }\n            }\n\n\n\n            .paypal-spinner {\n                height: 30px;\n                width: 30px;\n                display: inline-block;\n                box-sizing: content-box;\n                opacity: 1;\n                filter: alpha(opacity=100);\n                -webkit-animation: rotation .7s infinite linear;\n                -moz-animation: rotation .7s infinite linear;\n                -o-animation: rotation .7s infinite linear;\n                animation: rotation .7s infinite linear;\n                border-left: 8px solid rgba(0, 0, 0, .2);\n                border-right: 8px solid rgba(0, 0, 0, .2);\n                border-bottom: 8px solid rgba(0, 0, 0, .2);\n                border-top: 8px solid #fff;\n                border-radius: 100%\n            }\n\n            @-webkit-keyframes rotation {\n                from {\n                    -webkit-transform: rotate(0deg)\n                }\n                to {\n                    -webkit-transform: rotate(359deg)\n                }\n            }\n            @-moz-keyframes rotation {\n                from {\n                    -moz-transform: rotate(0deg)\n                }\n                to {\n                    -moz-transform: rotate(359deg)\n                }\n            }\n            @-o-keyframes rotation {\n                from {\n                    -o-transform: rotate(0deg)\n                }\n                to {\n                    -o-transform: rotate(359deg)\n                }\n            }\n            @keyframes rotation {\n                from {\n                    transform: rotate(0deg)\n                }\n                to {\n                    transform: rotate(359deg)\n                }\n            }\n        </style>\n\n        <!--[if IE 9 ]>\n            <style>\n                #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n\n                    transform: none;\n                    -ms-transform: none;\n\n                    transform: translateX(-50%) translateY(-50%);\n                    -ms-transform:  translateX(-50%) translateY(-50%);\n                }\n            </style>\n        <![endif]-->\n\n    ";
+            return '\n\n        <div class="paypal-checkout-overlay ' + CLASS.FOCUS + '">\n            <a href="#' + CLASS.CLOSE + '" class="' + CLASS.CLOSE + '"></a>\n            <div class="paypal-checkout-modal">\n                <div class="paypal-checkout-logo"></div>\n                <div class="paypal-checkout-message">\n                    ' + content.windowMessage + '\n                </div>\n                <div class="paypal-checkout-continue">\n                    <a href="#' + CLASS.FOCUS + '" class="' + CLASS.FOCUS + '">' + content.continue + '</a>\n                </div>\n                <div class="paypal-checkout-loading">\n                    <div class="paypal-spinner"></div>\n                </div>\n            </div>\n\n            <div class="' + CLASS.ELEMENT + ' paypal-checkout-iframe-element"></div>\n        </div>\n\n        <style>\n\n            #' + id + " {\n                position: fixed;\n                z-index: 2147483647;\n                top: 0;\n                left: 0;\n                width: 100%;\n                height: 100%;\n\n                -webkit-animation-duration: 1s;\n                animation-duration: 1s;\n\n                animation-fill-mode:forwards;\n                animation-iteration-count: 1;\n\n                -webkit-animation-fill-mode:forwards;\n                -webkit-animation-iteration-count: 1;\n            }\n\n            #" + id + " .paypal-checkout-overlay {\n\n                position: absolute;\n\n                top: 0;\n                left: 0;\n                width: 100%;\n                height: 100%;\n\n                background-color: black;\n\n                background-color: rgba(0, 0, 0, 0.8);\n\n                background: -webkit-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n                background: -moz-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n                background: -ms-radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n                background: radial-gradient(50% 50%, ellipse closest-corner, rgba(0,0,0,0.6) 1%, rgba(0,0,0,0.8) 100%);\n\n                -webkit-transform: translate3d(0, 0, 0);\n                -moz-transform: translate3d(0, 0, 0);\n                -ms-transform: translate3d(0, 0, 0);\n                -o-transform: translate3d(0, 0, 0);\n                transform: translate3d(0, 0, 0);\n            }\n\n            #" + id + "." + CLASS.POPUP + " .paypal-checkout-overlay {\n                cursor: pointer;\n            }\n\n            #" + id + "." + CLASS.POPUP + " .paypal-checkout-overlay {\n                cursor: pointer;\n            }\n\n            #" + id + ' .paypal-checkout-overlay .paypal-checkout-modal {\n                font-family: "HelveticaNeue", "HelveticaNeue-Light", "Helvetica Neue Light", helvetica, arial, sans-serif;\n                font-size: 14px;\n                text-align: center;\n                color: #fff;\n                -webkit-box-sizing: border-box;\n                -moz-box-sizing: border-box;\n                -ms-box-sizing: border-box;\n                box-sizing: border-box;\n                width: 350px;\n                top: 50%;\n                left: 50%;\n                position: fixed;\n                margin-left: -165px;\n                margin-top: -80px;\n                cursor: pointer;\n                text-align: center;\n            }\n\n            #' + id + "." + CLASS.LOADING + " .paypal-checkout-message, #" + id + "." + CLASS.LOADING + " .paypal-checkout-continue {\n                display: none;\n            }\n\n            .paypal-checkout-loading {\n                display: none;\n            }\n\n            #" + id + "." + CLASS.LOADING + " .paypal-checkout-loading {\n                display: block;\n            }\n\n            #" + id + ' .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-logo {\n                background: url("https://www.paypalobjects.com/images/checkout/incontext/incontext_mask_sprite.png") no-repeat -18px -16px;\n                width: 132px;\n                height: 36px;\n                cursor: pointer;\n                margin-bottom: 30px;\n                display: inline-block;\n            }\n\n            @media only screen and (-webkit-min-device-pixel-ratio: 2), not all, not all, only screen and (min-resolution: 2dppx), only screen and (min-resolution: 192dpi) {\n                #' + id + ' .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-logo {\n                    background-image: url("https://www.paypalobjects.com/images/checkout/incontext/incontext_mask_sprite_2x.png");\n                    background-size: 200px 200px;\n                }\n            }\n\n            #' + id + " .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-message {\n                font-size: 15px;\n                line-height: 1.5;\n                padding: 10px 0;\n            }\n\n            #" + id + "." + CLASS.IFRAME + " .paypal-checkout-message, #" + id + "." + CLASS.IFRAME + " .paypal-checkout-continue {\n                display: none;\n            }\n\n            #" + id + " .paypal-checkout-overlay .paypal-checkout-modal .paypal-checkout-continue {\n                font-size: 15px;\n                line-height: 1.35;\n                padding: 10px 0;\n                text-decoration: underline;\n                font-weight: bold;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + " {\n                position: absolute;\n                right: 16px;\n                top: 16px;\n                width: 16px;\n                height: 16px;\n                opacity: 0.6;\n            }\n\n            #" + id + "." + CLASS.LOADING + " ." + CLASS.CLOSE + " {\n                display: none;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":hover {\n                opacity: 1;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":before, ." + CLASS.CLOSE + ":after {\n                position: absolute;\n                left: 8px;\n                content: ' ';\n                height: 16px;\n                width: 2px;\n                background-color: white;\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":before {\n                transform: rotate(45deg);\n                -webkit-transform: rotate(45deg);\n                -moz-transform: rotate(45deg);\n                -o-transform: rotate(45deg);\n                -ms-transform: rotate(45deg);\n            }\n\n            #" + id + " ." + CLASS.CLOSE + ":after {\n                transform: rotate(-45deg);\n                -webkit-transform: rotate(-45deg);\n                -moz-transform: rotate(-45deg);\n                -o-transform: rotate(-45deg);\n                -ms-transform: rotate(-45deg);\n            }\n\n            #" + id + " a {\n                color: white;\n            }\n\n            #" + id + " .paypal-checkout-iframe-element {\n                display: none;\n            }\n\n            #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n\n                display: block;\n\n                -webkit-transition: all 0.6s ease;\n                -moz-transition: all 0.6s ease;\n                -ms-transition: all 0.6s ease;\n                -o-transition: all 0.6 ease;\n                transition: all 0.6s ease;\n\n                -webkit-animation-duration: 1s;\n                animation-duration: 1s;\n                -webkit-animation-fill-mode: both;\n                animation-fill-mode: both;\n\n                position: fixed;\n\n                top: 50%;\n                left: 50%;\n\n                transform: translate3d(-50%, -50%, 0);\n                -webkit-transform: translate3d(-50%, -50%, 0);\n                -moz-transform: translate3d(-50%, -50%, 0);\n                -o-transform: translate3d(-50%, -50%, 0);\n                -ms-transform: translate3d(-50%, -50%, 0);\n\n                max-height: calc(100% - 20px);\n                max-height: -webkit-calc(100% - 20px);\n                max-height: -moz-calc(100% - 20px);\n                max-height: -o-calc(100% - 20px);\n                max-height: -ms-calc(100% - 20px);\n\n                max-width: calc(100% - 20px);\n                max-width: -webkit-calc(100% - 20px);\n                max-width: -moz-calc(100% - 20px);\n                max-width: -o-calc(100% - 20px);\n                max-width: -ms-calc(100% - 20px);\n\n                width: 450px;\n                height: 535px;\n\n                min-width: 450px;\n\n                background-color: white;\n                border-radius: 10px;\n\n                overflow: auto;\n                -webkit-overflow-scrolling:touch;\n\n            }\n\n            @media screen and (max-width: 450px) {\n\n                #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n                    min-width: calc(100% - 20px);\n                    min-width: -webkit-calc(100% - 20px);\n                    min-width: -moz-calc(100% - 20px);\n                    min-width: -o-calc(100% - 20px);\n                    min-width: -ms-calc(100% - 20px);\n                }\n            }\n\n            @media screen and (min-width: 490px) {\n\n                #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n                    max-width: 450px;\n                    max-width: 450px;\n                    max-width: 450px;\n                    max-width: 450px;\n\n                    max-width: 450px;\n                }\n            }\n\n            #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element iframe {\n\n                width: 100%;\n                height: 100%;\n            }\n\n\n            /*!\n             * animate.css -http://daneden.me/animate\n             * Version - 3.5.1\n             * Licensed under the MIT license - http://opensource.org/licenses/MIT\n             *\n             * Copyright (c) 2016 Daniel Eden\n             */\n\n            @-webkit-keyframes " + ANIMATION.SHOW_COMPONENT + " {\n                from, 60%, 75%, 90%, to {\n                    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                }\n\n                from {\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                60% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                75% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                90% {\n                    -webkit-transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    -webkit-transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @keyframes " + ANIMATION.SHOW_COMPONENT + " {\n                from, 60%, 75%, 90%, to {\n                    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n                }\n\n                from {\n                    display: block;\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 3000px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                60% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                75% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                90% {\n                    -webkit-transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -5px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    -webkit-transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 0, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @-webkit-keyframes " + ANIMATION.HIDE_COMPONENT + " {\n                20% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                40%, 45% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @keyframes " + ANIMATION.HIDE_COMPONENT + " {\n                20% {\n                    -webkit-transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 10px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                40%, 45% {\n                    opacity: 1;\n                    -webkit-transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, -20px, 0) translate3d(-50%, -50%, 0);\n                }\n\n                to {\n                    opacity: 0;\n                    -webkit-transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                    transform: translate3d(0, 2000px, 0) translate3d(-50%, -50%, 0);\n                }\n            }\n\n            @-webkit-keyframes " + ANIMATION.SHOW_CONTAINER + " {\n                from {\n                    opacity: 0;\n                }\n\n                to {\n                    opacity: 1;\n                }\n            }\n\n            @keyframes " + ANIMATION.SHOW_CONTAINER + " {\n                from {\n                    opacity: 0;\n                }\n\n                to {\n                    opacity: 1;\n                }\n            }\n\n            @-webkit-keyframes " + ANIMATION.HIDE_CONTAINER + " {\n                from {\n                    opacity: 1;\n                }\n\n                50% {\n                    opacity: 1;\n                }\n\n                to {\n                    opacity: 0;\n                }\n            }\n\n            @keyframes " + ANIMATION.HIDE_CONTAINER + " {\n                from {\n                    opacity: 1;\n                }\n\n                50% {\n                    opacity: 1;\n                }\n\n                to {\n                    opacity: 0;\n                }\n            }\n\n\n\n            .paypal-spinner {\n                height: 30px;\n                width: 30px;\n                display: inline-block;\n                box-sizing: content-box;\n                opacity: 1;\n                filter: alpha(opacity=100);\n                -webkit-animation: rotation .7s infinite linear;\n                -moz-animation: rotation .7s infinite linear;\n                -o-animation: rotation .7s infinite linear;\n                animation: rotation .7s infinite linear;\n                border-left: 8px solid rgba(0, 0, 0, .2);\n                border-right: 8px solid rgba(0, 0, 0, .2);\n                border-bottom: 8px solid rgba(0, 0, 0, .2);\n                border-top: 8px solid #fff;\n                border-radius: 100%\n            }\n\n            @-webkit-keyframes rotation {\n                from {\n                    -webkit-transform: rotate(0deg)\n                }\n                to {\n                    -webkit-transform: rotate(359deg)\n                }\n            }\n            @-moz-keyframes rotation {\n                from {\n                    -moz-transform: rotate(0deg)\n                }\n                to {\n                    -moz-transform: rotate(359deg)\n                }\n            }\n            @-o-keyframes rotation {\n                from {\n                    -o-transform: rotate(0deg)\n                }\n                to {\n                    -o-transform: rotate(359deg)\n                }\n            }\n            @keyframes rotation {\n                from {\n                    transform: rotate(0deg)\n                }\n                to {\n                    transform: rotate(359deg)\n                }\n            }\n        </style>\n\n        \x3c!--[if IE 9 ]>\n            <style>\n                #" + id + "." + CLASS.IFRAME + " .paypal-checkout-iframe-element {\n\n                    transform: none;\n                    -ms-transform: none;\n\n                    transform: translateX(-50%) translateY(-50%);\n                    -ms-transform:  translateX(-50%) translateY(-50%);\n                }\n            </style>\n        <![endif]--\x3e\n\n    ";
         }
         var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__("./src/config/index.js"), __WEBPACK_IMPORTED_MODULE_1__content_json__ = __webpack_require__("./src/components/checkout/templates/content.json"), __WEBPACK_IMPORTED_MODULE_1__content_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__content_json__);
         __webpack_exports__.a = containerTemplate;
@@ -10687,7 +11241,7 @@
                                 button.click = button.click || options.click;
                                 button.condition = button.condition || options.condition;
                                 if (button.button) {
-                                    var buttonEl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.C)(button.button);
+                                    var buttonEl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.D)(button.button);
                                     if (!buttonEl) {
                                         $logger.warn("button_custom_element_not_found", {
                                             button: button.button
@@ -10701,7 +11255,7 @@
                                         condition: button.condition
                                     });
                                 } else if (button.container && 0 !== button.container.length) {
-                                    var buttonContainerElements = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.y)(button.container);
+                                    var buttonContainerElements = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.z)(button.container);
                                     buttonContainerElements.length ? buttonContainerElements.forEach(function(container) {
                                         container.tagName && "a" === container.tagName.toLowerCase() && $logger.warn("container_a_tag");
                                         var buttonEl = renderButton(id, container, button, button.type);
@@ -10730,7 +11284,7 @@
                 } else if (options.container && 0 !== options.container.length) {
                     var labels = void 0;
                     labels = "string" == typeof options.type ? [ options.type ] : options.type instanceof Array ? options.type : [];
-                    var containerElements = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.y)(options.container);
+                    var containerElements = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.z)(options.container);
                     containerElements.length ? containerElements.forEach(function(container, i) {
                         container.tagName && "a" === container.tagName.toLowerCase() && $logger.warn("container_a_tag");
                         var buttonEl = renderButton(id, container, options, labels[i]);
@@ -10773,13 +11327,13 @@
         __webpack_require__("./src/config/index.js")), __WEBPACK_IMPORTED_MODULE_3__lib__ = __webpack_require__("./src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_4__constants__ = __webpack_require__("./src/legacy/constants.js"), __WEBPACK_IMPORTED_MODULE_5__common__ = __webpack_require__("./src/legacy/common.js");
         __webpack_exports__.b = renderButtons;
         __webpack_exports__.a = getHijackTargetElement;
-        var $logger = __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.k(__WEBPACK_IMPORTED_MODULE_4__constants__.a), loadButtonJS = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.A)(function() {
+        var $logger = __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.k(__WEBPACK_IMPORTED_MODULE_4__constants__.a), loadButtonJS = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.B)(function() {
             $logger.debug("buttonjs_load");
-            return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.B)(__WEBPACK_IMPORTED_MODULE_2__config__.a.buttonJSUrl).catch(function(err) {
+            return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.C)(__WEBPACK_IMPORTED_MODULE_2__config__.a.buttonJSUrl).catch(function(err) {
                 $logger.info("buttonjs_load_error_retry", {
                     error: err.stack || err.toString()
                 });
-                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.B)(__WEBPACK_IMPORTED_MODULE_2__config__.a.buttonJSUrl);
+                return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.C)(__WEBPACK_IMPORTED_MODULE_2__config__.a.buttonJSUrl);
             }).then(function(result) {
                 $logger.debug("buttonjs_load_success");
                 return result;
@@ -10806,11 +11360,11 @@
                 country = DEFAULT_COUNTRY;
             }
             lang || (lang = DEFAULT_LANG);
-            if (__WEBPACK_IMPORTED_MODULE_1__config__.a.locales[country].indexOf(lang) === -1) {
+            if (-1 === __WEBPACK_IMPORTED_MODULE_1__config__.a.locales[country].indexOf(lang)) {
                 $logger.warn("invalid_user_lang", {
                     lang: lang
                 });
-                lang = __WEBPACK_IMPORTED_MODULE_1__config__.a.locales[country].indexOf(DEFAULT_LANG) !== -1 ? DEFAULT_LANG : __WEBPACK_IMPORTED_MODULE_1__config__.a.locales[country][0];
+                lang = -1 !== __WEBPACK_IMPORTED_MODULE_1__config__.a.locales[country].indexOf(DEFAULT_LANG) ? DEFAULT_LANG : __WEBPACK_IMPORTED_MODULE_1__config__.a.locales[country][0];
             }
             return {
                 country: country,
@@ -10870,7 +11424,7 @@
         "use strict";
         function isLegacyEligible() {
             if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.b)()) return !1;
-            if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.w)()) return !1;
+            if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.x)()) return !1;
             if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.h)()) {
                 throttle.logStart();
                 return throttle.isEnabled();
@@ -10879,7 +11433,7 @@
         }
         var __WEBPACK_IMPORTED_MODULE_0__config__ = __webpack_require__("./src/config/index.js"), __WEBPACK_IMPORTED_MODULE_1__lib__ = __webpack_require__("./src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_2__listener__ = __webpack_require__("./src/legacy/listener.js");
         __webpack_exports__.a = isLegacyEligible;
-        var throttle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.D)("v4_mobile_device", __WEBPACK_IMPORTED_MODULE_0__config__.a.throttles.v4_mobile_device);
+        var throttle = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.E)("v4_mobile_device", __WEBPACK_IMPORTED_MODULE_0__config__.a.throttles.v4_mobile_device);
         !function() {
             if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.h)()) {
                 __WEBPACK_IMPORTED_MODULE_2__listener__.a.once(function(token) {
@@ -10887,7 +11441,7 @@
                         fltk: token
                     });
                 });
-                var token = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.E)();
+                var token = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.F)();
                 token && throttle.logComplete({
                     fltk: token
                 });
@@ -10922,7 +11476,7 @@
                 throw new Error("startflow_no_url_or_token");
             }
             var paymentToken = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_10__util__.a)(item), url = paymentToken && paymentToken === item ? "" : item;
-            if (url) if (url.match(/^https?:\/\/|^\//)) paymentToken ? url.indexOf(".paypal.com") !== -1 ? $logger.debug("startflow_paypalurl_with_token", {
+            if (url) if (url.match(/^https?:\/\/|^\//)) paymentToken ? -1 !== url.indexOf(".paypal.com") ? $logger.debug("startflow_paypalurl_with_token", {
                 url: url
             }) : $logger.debug("startflow_url_with_token", {
                 url: url
@@ -10981,7 +11535,7 @@
                 checkout.initXO = function() {
                     $logger.warn("gettoken_initxo");
                 };
-                checkout.startFlow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.u)(function(item, opts) {
+                checkout.startFlow = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.v)(function(item, opts) {
                     $logger.debug("gettoken_startflow", {
                         item: item
                     });
@@ -11008,7 +11562,7 @@
             paypalCheckoutInited && __WEBPACK_IMPORTED_MODULE_4__config__.a.env !== __WEBPACK_IMPORTED_MODULE_4__config__.b.TEST && $logger.warn("multiple_init_paypal_checkout");
             closeFlowCalled && $logger.debug("init_after_closeflow");
             paypalCheckoutInited = !0;
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.v)("flow_start");
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.w)("flow_start");
             var paypalCheckout = __WEBPACK_IMPORTED_MODULE_2__components__.b.init(_extends({
                 uid: window.pp_uid,
                 onAuthorize: function(data, actions) {
@@ -11049,7 +11603,7 @@
                 props.init = function(data) {
                     resolve(data.paymentToken);
                 };
-            }), errorHandler = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.u)(function(err) {
+            }), errorHandler = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.v)(function(err) {
                 $logger.error("component_error", {
                     error: err.stack || err.toString()
                 });
@@ -11111,15 +11665,15 @@
         }
         function listenClick(container, button, clickHandler, condition) {
             var element = "a" === container.tagName.toLowerCase() ? container : button;
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.v)("flow_listenclick");
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.w)("flow_listenclick");
             var isClick = clickHandler instanceof Function;
             if (element.hasAttribute("data-paypal-click-listener")) return $logger.warn("button_already_has_paypal_click_listener");
             element.setAttribute("data-paypal-click-listener", "");
             __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__button__.a)(element) && isClick && $logger.info("button_link_or_form");
             element.addEventListener("click", function(event) {
-                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.v)("flow_buttonclick");
+                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.w)("flow_buttonclick");
                 var eligible = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__eligibility__.a)();
-                if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.w)()) {
+                if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.x)()) {
                     $logger.debug("click_popups_supported");
                     eligible || $logger.debug("click_popups_supported_but_ineligible");
                 } else {
@@ -11137,12 +11691,12 @@
         }
         function setup(id) {
             var options = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.v)("flow_setup");
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.w)("flow_setup");
             id = id || "merchant";
             $logger.info("setup", {
                 id: id,
                 env: options.environment,
-                options: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.x)(options)
+                options: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.y)(options)
             });
             setupCalled && $logger.debug("setup_called_multiple_times");
             setupCalled = !0;
@@ -11159,7 +11713,7 @@
                 __WEBPACK_IMPORTED_MODULE_4__config__.a.locale = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__common__.a)(options.locale);
                 __WEBPACK_IMPORTED_MODULE_4__config__.a.customCountry = !0;
             }
-            if (options.buttons && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.y)(options.buttons).length) {
+            if (options.buttons && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.z)(options.buttons).length) {
                 options.button = options.buttons;
                 delete options.buttons;
             }
@@ -11172,7 +11726,7 @@
                     Array.isArray(options.button) ? options.button = options.button.concat(options.container) : options.button = [ options.button ].concat(options.container);
                     delete options.container;
                 }
-                var buttonElements = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.y)(options.button);
+                var buttonElements = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.z)(options.button);
                 buttonElements.length ? buttonElements.forEach(function(el) {
                     $logger.info("listen_click_custom_button");
                     listenClick(el, el, options.click, options.condition);
@@ -11180,7 +11734,7 @@
                     element: JSON.stringify(options.button)
                 });
             }
-            return __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a.all([ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.z)() ? null : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__compat__.setupPostBridge)(__WEBPACK_IMPORTED_MODULE_4__config__.a.env), __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__button__.b)(id, options).then(function(buttons) {
+            return __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a.all([ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.A)() ? null : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__compat__.setupPostBridge)(__WEBPACK_IMPORTED_MODULE_4__config__.a.env), __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__button__.b)(id, options).then(function(buttons) {
                 buttons.forEach(function(button) {
                     $logger.info("listen_click_paypal_button");
                     listenClick(button.container, button.button, button.click, button.condition);
@@ -11246,7 +11800,7 @@
         checkout.reset = reset;
         Object.defineProperty(checkout, "urlPrefix", {
             get: function() {
-                return __WEBPACK_IMPORTED_MODULE_4__config__.a.checkoutUrl + (__WEBPACK_IMPORTED_MODULE_4__config__.a.checkoutUrl.indexOf("?") === -1 ? "?" : "&") + "token=";
+                return __WEBPACK_IMPORTED_MODULE_4__config__.a.checkoutUrl + (-1 === __WEBPACK_IMPORTED_MODULE_4__config__.a.checkoutUrl.indexOf("?") ? "?" : "&") + "token=";
             }
         });
         window.xchild && !window.paypalCheckout && (window.paypalCheckout = window.xchild);
@@ -11262,12 +11816,12 @@
         __webpack_require__.d(__webpack_exports__, "a", function() {
             return onAuthorizeListener;
         });
-        var onAuthorizeListener = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__lib__.G)();
+        var onAuthorizeListener = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__lib__.H)();
     },
     "./src/legacy/ready.js": function(module, __webpack_exports__, __webpack_require__) {
         "use strict";
         function invokeReady(method) {
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.s)(function() {
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.t)(function() {
                 $logger.debug("paypal_checkout_ready");
                 setTimeout(function() {
                     window.paypal || $logger.error("paypal_checkout_ready_no_window_paypal");
@@ -11276,7 +11830,7 @@
             });
         }
         var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1__lib__ = __webpack_require__("./src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_2__config__ = __webpack_require__("./src/config/index.js"), __WEBPACK_IMPORTED_MODULE_3__constants__ = __webpack_require__("./src/legacy/constants.js"), __WEBPACK_IMPORTED_MODULE_4__interface__ = __webpack_require__("./src/legacy/interface.js"), $logger = __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.k(__WEBPACK_IMPORTED_MODULE_3__constants__.a);
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.t)(window, "paypalCheckoutReady", function(method) {
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.u)(window, "paypalCheckoutReady", function(method) {
             if ("function" == typeof method) {
                 var oneTimeReady = function() {
                     if (!method.called) {
@@ -11288,7 +11842,7 @@
                 return oneTimeReady;
             }
         });
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.s)(function() {
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__lib__.t)(function() {
             var buttons = Array.prototype.slice.call(document.querySelectorAll("[" + __WEBPACK_IMPORTED_MODULE_3__constants__.b.BUTTON + "]"));
             if (buttons && buttons.length) {
                 $logger.debug("data_paypal_button", {
@@ -11321,14 +11875,14 @@
         "use strict";
         function logRedirect(location) {
             redirected && $logger.warn("multiple_redirects");
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.F)(location) && (redirected = !0);
-            location && (location.match(/PayerID=/) || location.match(/ba_token=/)) && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.v)("flow_complete");
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.G)(location) && (redirected = !0);
+            location && (location.match(/PayerID=/) || location.match(/ba_token=/)) && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.w)("flow_complete");
             $logger.flush();
         }
         function redirect(url) {
             return __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a.try(function() {
                 if (!url) throw new Error("Redirect url undefined");
-                if (__WEBPACK_IMPORTED_MODULE_2__config__.a.env === __WEBPACK_IMPORTED_MODULE_2__config__.b.TEST && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.F)(url)) return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.g)(window, "#fullpageRedirect?url=" + url);
+                if (__WEBPACK_IMPORTED_MODULE_2__config__.a.env === __WEBPACK_IMPORTED_MODULE_2__config__.b.TEST && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.G)(url)) return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.g)(window, "#fullpageRedirect?url=" + url);
                 logRedirect(url);
                 return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib__.g)(window, url);
             });
@@ -11370,7 +11924,7 @@
         function checkpoint(name) {
             var payload = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
             try {
-                var version = "4.0.55".replace(/[^0-9]+/g, "_"), checkpointName = version + "_" + name, logged = loggedCheckpoints.indexOf(checkpointName) !== -1;
+                var version = "4.0.55".replace(/[^0-9]+/g, "_"), checkpointName = version + "_" + name, logged = -1 !== loggedCheckpoints.indexOf(checkpointName);
                 loggedCheckpoints.push(checkpointName);
                 logged && (checkpointName += "_dupe");
                 return beacon(checkpointName, payload);
@@ -11441,23 +11995,19 @@
             return M;
         }
         function isFirefoxIOS() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /FxiOS/i.test(ua);
+            return /FxiOS/i.test(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent());
         }
         function isOperaMini() {
             return (arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent()).indexOf("Opera Mini") > -1;
         }
         function isAndroid() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /Android/.test(ua);
+            return /Android/.test(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent());
         }
         function isIos() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /iPhone|iPod|iPad/.test(ua);
+            return /iPhone|iPod|iPad/.test(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent());
         }
         function isGoogleSearchApp() {
-            var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
-            return /\bGSA\b/.test(ua);
+            return /\bGSA\b/.test(arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent());
         }
         function isIosWebview() {
             var ua = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : getUserAgent();
@@ -11563,7 +12113,7 @@
             return parseQuery(window.location.search.slice(1))[name];
         }
         function urlWillRedirectPage(url) {
-            return url.indexOf("#") === -1 || 0 !== url.indexOf("#") && url.split("#")[0] !== window.location.href.split("#")[0];
+            return -1 === url.indexOf("#") || 0 !== url.indexOf("#") && url.split("#")[0] !== window.location.href.split("#")[0];
         }
         function extendUrl(url) {
             var params = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}, hasHash = url.indexOf("#") > 0, _url$split = url.split("#"), _url$split2 = _slicedToArray(_url$split, 2), serverUrl = _url$split2[0], hash = _url$split2[1];
@@ -11603,12 +12153,12 @@
         function normalizeLocale(locale) {
             if (locale && locale.match(/^[a-z]{2}[-_][A-Z]{2}$/)) {
                 var _locale$split = locale.split(/[-_]/), _locale$split2 = _slicedToArray(_locale$split, 2), _lang = _locale$split2[0], _country = _locale$split2[1];
-                if (__WEBPACK_IMPORTED_MODULE_2__config__.a.locales[_country] && __WEBPACK_IMPORTED_MODULE_2__config__.a.locales[_country].indexOf(_lang) !== -1) return {
+                if (__WEBPACK_IMPORTED_MODULE_2__config__.a.locales[_country] && -1 !== __WEBPACK_IMPORTED_MODULE_2__config__.a.locales[_country].indexOf(_lang)) return {
                     country: _country,
                     lang: _lang
                 };
             }
-            if (locale && locale.match(/^[a-z]{2}$/) && __WEBPACK_IMPORTED_MODULE_2__config__.a.locales[__WEBPACK_IMPORTED_MODULE_2__config__.a.defaultLocale.country].indexOf(locale) !== -1) return {
+            if (locale && locale.match(/^[a-z]{2}$/) && -1 !== __WEBPACK_IMPORTED_MODULE_2__config__.a.locales[__WEBPACK_IMPORTED_MODULE_2__config__.a.defaultLocale.country].indexOf(locale)) return {
                 country: __WEBPACK_IMPORTED_MODULE_2__config__.a.defaultLocale.country,
                 lang: locale
             };
@@ -11686,7 +12236,7 @@
         }), parseQuery = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__util__.memoize)(function(queryString) {
             var params = {};
             if (!queryString) return params;
-            if (queryString.indexOf("=") === -1) throw new Error("Can not parse query string params: " + queryString);
+            if (-1 === queryString.indexOf("=")) throw new Error("Can not parse query string params: " + queryString);
             for (var _iterator = queryString.split("&"), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                 var _ref;
                 if (_isArray) {
@@ -11734,6 +12284,24 @@
                 if (window.console.log) return window.console.log(err);
             }
         }
+        function checkForDeprecatedIntegration() {
+            for (var scripts = Array.prototype.slice.call(document.getElementsByTagName("script")), _iterator = scripts, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
+                var _ref;
+                if (_isArray) {
+                    if (_i >= _iterator.length) break;
+                    _ref = _iterator[_i++];
+                } else {
+                    _i = _iterator.next();
+                    if (_i.done) break;
+                    _ref = _i.value;
+                }
+                var script = _ref;
+                if (script.attributes.type && "application/x-component" === script.attributes.type.value) {
+                    warn("deprecated_integration_application_xcomponent");
+                    console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
+                }
+            }
+        }
         function checkForCommonErrors() {
             function foo(bar, baz, zomg) {}
             if ("[]" !== JSON.stringify([])) {
@@ -11753,6 +12321,7 @@
             }).length && __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.d("function_bind_arrity_overwritten");
         }
         var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1__device__ = __webpack_require__("./src/lib/device.js");
+        __webpack_exports__.b = checkForDeprecatedIntegration;
         __webpack_exports__.a = checkForCommonErrors;
     },
     "./src/lib/http.js": function(module, __webpack_exports__, __webpack_require__) {
@@ -11862,10 +12431,10 @@
         __webpack_require__.d(__webpack_exports__, "h", function() {
             return __WEBPACK_IMPORTED_MODULE_0__device__.b;
         });
-        __webpack_require__.d(__webpack_exports__, "w", function() {
+        __webpack_require__.d(__webpack_exports__, "x", function() {
             return __WEBPACK_IMPORTED_MODULE_0__device__.h;
         });
-        __webpack_require__.d(__webpack_exports__, "z", function() {
+        __webpack_require__.d(__webpack_exports__, "A", function() {
             return __WEBPACK_IMPORTED_MODULE_0__device__.c;
         });
         var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__("./src/lib/util.js");
@@ -11878,22 +12447,22 @@
         __webpack_require__.d(__webpack_exports__, "m", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.match;
         });
-        __webpack_require__.d(__webpack_exports__, "r", function() {
+        __webpack_require__.d(__webpack_exports__, "s", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.noop;
         });
-        __webpack_require__.d(__webpack_exports__, "t", function() {
+        __webpack_require__.d(__webpack_exports__, "u", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.onKey;
         });
-        __webpack_require__.d(__webpack_exports__, "u", function() {
+        __webpack_require__.d(__webpack_exports__, "v", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.once;
         });
-        __webpack_require__.d(__webpack_exports__, "x", function() {
+        __webpack_require__.d(__webpack_exports__, "y", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.safeJSON;
         });
-        __webpack_require__.d(__webpack_exports__, "A", function() {
+        __webpack_require__.d(__webpack_exports__, "B", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.memoize;
         });
-        __webpack_require__.d(__webpack_exports__, "G", function() {
+        __webpack_require__.d(__webpack_exports__, "H", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.eventEmitter;
         });
         var __WEBPACK_IMPORTED_MODULE_2__logger__ = __webpack_require__("./src/lib/logger.js");
@@ -11914,6 +12483,9 @@
         __webpack_require__.d(__webpack_exports__, "q", function() {
             return __WEBPACK_IMPORTED_MODULE_4__errors__.a;
         });
+        __webpack_require__.d(__webpack_exports__, "r", function() {
+            return __WEBPACK_IMPORTED_MODULE_4__errors__.b;
+        });
         var __WEBPACK_IMPORTED_MODULE_5__dom__ = __webpack_require__("./src/lib/dom.js");
         __webpack_require__.d(__webpack_exports__, "f", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.a;
@@ -11930,19 +12502,19 @@
         __webpack_require__.d(__webpack_exports__, "n", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.e;
         });
-        __webpack_require__.d(__webpack_exports__, "s", function() {
+        __webpack_require__.d(__webpack_exports__, "t", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.f;
         });
-        __webpack_require__.d(__webpack_exports__, "y", function() {
+        __webpack_require__.d(__webpack_exports__, "z", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.g;
         });
-        __webpack_require__.d(__webpack_exports__, "B", function() {
+        __webpack_require__.d(__webpack_exports__, "C", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.h;
         });
-        __webpack_require__.d(__webpack_exports__, "C", function() {
+        __webpack_require__.d(__webpack_exports__, "D", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.i;
         });
-        __webpack_require__.d(__webpack_exports__, "F", function() {
+        __webpack_require__.d(__webpack_exports__, "G", function() {
             return __WEBPACK_IMPORTED_MODULE_5__dom__.j;
         });
         var __WEBPACK_IMPORTED_MODULE_6__http__ = __webpack_require__("./src/lib/http.js");
@@ -11953,14 +12525,14 @@
         __webpack_require__.d(__webpack_exports__, "p", function() {
             return __WEBPACK_IMPORTED_MODULE_7__beacon__.beacon;
         });
-        __webpack_require__.d(__webpack_exports__, "v", function() {
+        __webpack_require__.d(__webpack_exports__, "w", function() {
             return __WEBPACK_IMPORTED_MODULE_7__beacon__.checkpoint;
         });
         var __WEBPACK_IMPORTED_MODULE_8__throttle__ = __webpack_require__("./src/lib/throttle.js");
-        __webpack_require__.d(__webpack_exports__, "D", function() {
+        __webpack_require__.d(__webpack_exports__, "E", function() {
             return __WEBPACK_IMPORTED_MODULE_8__throttle__.a;
         });
-        __webpack_require__.d(__webpack_exports__, "E", function() {
+        __webpack_require__.d(__webpack_exports__, "F", function() {
             return __WEBPACK_IMPORTED_MODULE_8__throttle__.b;
         });
         __webpack_require__("./src/lib/namespace.js");
@@ -11993,7 +12565,7 @@
             });
         }
         function setLogLevel(logLevel) {
-            if (__WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.b.indexOf(logLevel) === -1) throw new Error("Invalid logLevel: " + logLevel);
+            if (-1 === __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.b.indexOf(logLevel)) throw new Error("Invalid logLevel: " + logLevel);
             __WEBPACK_IMPORTED_MODULE_2__config__.a.logLevel = logLevel;
             __WEBPACK_IMPORTED_MODULE_1_beaver_logger_client__.i.logLevel = logLevel;
             __WEBPACK_IMPORTED_MODULE_0_post_robot_src__.CONFIG.LOG_LEVEL = logLevel;
@@ -12350,6 +12922,7 @@
             postBridge && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__compat__.setupPostBridge)(__WEBPACK_IMPORTED_MODULE_1__config__.a.env);
             logLevel ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.j)(logLevel) : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.j)(__WEBPACK_IMPORTED_MODULE_1__config__.a.logLevel);
             __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.c("setup_" + __WEBPACK_IMPORTED_MODULE_1__config__.a.env);
+            window.addEventListener("load", __WEBPACK_IMPORTED_MODULE_2__lib__.r);
             __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.j("current_protocol_" + currentProtocol);
         }
         var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__("./src/config/index.js"), __WEBPACK_IMPORTED_MODULE_2__lib__ = __webpack_require__("./src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_3__components__ = __webpack_require__("./src/components/index.js"), __WEBPACK_IMPORTED_MODULE_4__compat__ = __webpack_require__("./src/compat/index.js"), __WEBPACK_IMPORTED_MODULE_5_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
@@ -12376,7 +12949,7 @@
                 }
                 var script = _ref2;
                 if (script.src && script.src.replace(/^https?:/, "").split("?")[0] === __WEBPACK_IMPORTED_MODULE_1__config__.a.scriptUrl || script.hasAttribute("data-paypal-checkout")) return script;
-                if (script.src && script.src.indexOf("paypal.checkout.v4.js") !== -1) return script;
+                if (script.src && -1 !== script.src.indexOf("paypal.checkout.v4.js")) return script;
             }
             document.currentScript && __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.j("current_script_not_recognized", {
                 src: document.currentScript.src

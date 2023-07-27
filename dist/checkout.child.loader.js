@@ -285,7 +285,7 @@
             var queryString = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : window.location.search, params = {};
             queryString && 0 === queryString.indexOf("?") && (queryString = queryString.slice(1));
             if (!queryString) return params;
-            if (queryString.indexOf("=") === -1) throw new Error("Can not parse query string params: " + queryString);
+            if (-1 === queryString.indexOf("=")) throw new Error("Can not parse query string params: " + queryString);
             for (var _iterator2 = queryString.split("&"), _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ;) {
                 var _ref2;
                 if (_isArray2) {
