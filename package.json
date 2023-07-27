@@ -93,6 +93,6 @@
     "Base64": "^1.0.0",
     "beaver-logger": "^3",
     "post-robot": "^5.0.0",
-    "xcomponent": "^2.0.0"
+    "xcomponent": "2.0.30-patch1"
   }
 }
