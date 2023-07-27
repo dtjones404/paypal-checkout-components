@@ -3102,6 +3102,7 @@
         SyncPromise.prototype.reject = function(error) {
             if (this.resolved || this.rejected) return this;
             if (isPromise(error)) throw new Error("Can not reject promise with another promise");
+            error || (error = new Error("Expected reject to be called with Error, got " + error));
             this.rejected = !0;
             this.value = error;
             this.dispatch();
@@ -3115,15 +3116,19 @@
             var _this = this;
             if (this.resolved || this.rejected) for (;this.handlers.length; ) {
                 (function() {
-                    var handler = _this.handlers.shift(), result = void 0, error = void 0;
+                    var handler = _this.handlers.shift(), isError = !1, result = void 0, error = void 0;
                     try {
-                        _this.resolved ? result = handler.onSuccess ? handler.onSuccess(_this.value) : _this.value : _this.rejected && (handler.onError ? result = handler.onError(_this.value) : error = _this.value);
+                        if (_this.resolved) result = handler.onSuccess ? handler.onSuccess(_this.value) : _this.value; else if (_this.rejected) if (handler.onError) result = handler.onError(_this.value); else {
+                            isError = !0;
+                            error = _this.value;
+                        }
                     } catch (err) {
+                        isError = !0;
                         error = err;
                     }
                     if (result === _this) throw new Error("Can not return a promise from the the then handler of the same promise");
                     if (!handler.promise) return "continue";
-                    error ? handler.promise.reject(error) : isPromise(result) ? result.then(function(res) {
+                    isError ? handler.promise.reject(error) : isPromise(result) ? result.then(function(res) {
                         handler.promise.resolve(res);
                     }, function(err) {
                         handler.promise.reject(err);
@@ -3226,16 +3231,19 @@
             if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function");
         }
         function cleanup(obj) {
-            var tasks = [];
+            var tasks = [], cleaned = !1;
             return {
                 set: function(name, item) {
-                    obj[name] = item;
-                    this.register(function() {
-                        delete obj[name];
-                    });
-                    return item;
+                    if (!cleaned) {
+                        obj[name] = item;
+                        this.register(function() {
+                            delete obj[name];
+                        });
+                        return item;
+                    }
                 },
                 register: function(name, method) {
+                    if (cleaned) return method();
                     if (!method) {
                         method = name;
                         name = void 0;
@@ -3257,7 +3265,9 @@
                     }).length);
                 },
                 all: function() {
-                    for (var results = []; tasks.length; ) results.push(tasks.pop().run());
+                    var results = [];
+                    cleaned = !0;
+                    for (;tasks.length; ) results.push(tasks.pop().run());
                     return __WEBPACK_IMPORTED_MODULE_0_sync_browser_mocks_src_promise__.a.all(results).then(function() {});
                 },
                 run: function(name) {
@@ -3443,12 +3453,9 @@
                 }
             };
             ChildComponent.prototype.setProps = function() {
-                var props = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, _this3 = this, origin = arguments[1], required = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2];
+                var props = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}, origin = arguments[1], required = !(arguments.length > 2 && void 0 !== arguments[2]) || arguments[2];
                 window.xprops = this.props = this.props || {};
                 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.h)(this.props, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__props__.a)(this.component, props, origin, required));
-                this.props.onError = function(err) {
-                    return _this3.error(err);
-                };
                 for (var _iterator = this.onPropHandlers, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                     var _ref3;
                     if (_isArray) {
@@ -3525,10 +3532,10 @@
                 } catch (err) {}
             };
             ChildComponent.prototype.watchForClose = function() {
-                var _this4 = this;
+                var _this3 = this;
                 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.i)(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__window__.b)(), function() {
-                    _this4.component.log("parent_window_closed");
-                    if (_this4.context === __WEBPACK_IMPORTED_MODULE_7__constants__.CONTEXT_TYPES.POPUP) return _this4.destroy();
+                    _this3.component.log("parent_window_closed");
+                    if (_this3.context === __WEBPACK_IMPORTED_MODULE_7__constants__.CONTEXT_TYPES.POPUP) return _this3.destroy();
                 });
             };
             ChildComponent.prototype.enableAutoResize = function() {
@@ -3554,7 +3561,7 @@
                 };
             };
             ChildComponent.prototype.watchForResize = function() {
-                var _this5 = this, _getAutoResize = this.getAutoResize(), width = _getAutoResize.width, height = _getAutoResize.height;
+                var _this4 = this, _getAutoResize = this.getAutoResize(), width = _getAutoResize.width, height = _getAutoResize.height;
                 if ((width || height) && this.component.dimensions && this.context !== __WEBPACK_IMPORTED_MODULE_7__constants__.CONTEXT_TYPES.POPUP) {
                     var el = document.documentElement;
                     window.navigator.userAgent.match(/MSIE (9|10)\./) && (el = document.body);
@@ -3564,7 +3571,7 @@
                             if (!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.j)(el, {
                                 width: width,
                                 height: height
-                            })) return _this5.resizeToElement(el, {
+                            })) return _this4.resizeToElement(el, {
                                 width: width,
                                 height: height
                             });
@@ -3574,7 +3581,7 @@
                                     width: width,
                                     height: height
                                 }).then(function(dimensions) {
-                                    return _this5.resizeToElement(el, {
+                                    return _this4.resizeToElement(el, {
                                         width: width,
                                         height: height
                                     });
@@ -3596,20 +3603,20 @@
                 };
             };
             ChildComponent.prototype.resize = function(width, height) {
-                var _this6 = this;
+                var _this5 = this;
                 return __WEBPACK_IMPORTED_MODULE_3_sync_browser_mocks_src_promise__.a.resolve().then(function() {
-                    _this6.component.log("resize", {
+                    _this5.component.log("resize", {
                         width: width,
                         height: height
                     });
-                    if (_this6.context !== __WEBPACK_IMPORTED_MODULE_7__constants__.CONTEXT_TYPES.POPUP) return _this6.sendToParent(__WEBPACK_IMPORTED_MODULE_7__constants__.POST_MESSAGE.RESIZE, {
+                    if (_this5.context !== __WEBPACK_IMPORTED_MODULE_7__constants__.CONTEXT_TYPES.POPUP) return _this5.sendToParent(__WEBPACK_IMPORTED_MODULE_7__constants__.POST_MESSAGE.RESIZE, {
                         width: width,
                         height: height
                     });
                 });
             };
             ChildComponent.prototype.resizeToElement = function(el, _ref6) {
-                var _this7 = this, width = _ref6.width, height = _ref6.height, history = [];
+                var _this6 = this, width = _ref6.width, height = _ref6.height, history = [];
                 return function resize() {
                     return __WEBPACK_IMPORTED_MODULE_3_sync_browser_mocks_src_promise__.a.try(function() {
                         for (var tracker = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__lib__.m)(el, {
@@ -3632,7 +3639,7 @@
                             width: dimensions.width,
                             height: dimensions.height
                         });
-                        return _this7.resize(width ? dimensions.width : null, height ? dimensions.height : null).then(function() {
+                        return _this6.resize(width ? dimensions.width : null, height ? dimensions.height : null).then(function() {
                             if (tracker.check().changed) return resize();
                         });
                     });
@@ -4158,7 +4165,7 @@
                 type: "function",
                 required: !1,
                 promisify: !0,
-                sendToChild: !1,
+                sendToChild: !0,
                 def: function() {
                     return function() {};
                 },
@@ -5342,7 +5349,7 @@
             var prop = component.props[key];
             prop.value ? value = prop.value : props.hasOwnProperty(key) && isDefined(value) || (value = getDefault(component, prop, props));
             !value && prop.alias && props[prop.alias] && (value = props[prop.alias]);
-            prop.decorate && (!isDefined(value) && prop.required || (value = prop.decorate(value)));
+            prop.decorate && (!isDefined(value) && prop.required || (value = prop.decorate(value, props)));
             if (prop.getter) {
                 if (!value) return;
                 if (value instanceof Function) value = value.bind(instance); else {
@@ -5959,13 +5966,11 @@
             global: function() {
                 return !0;
             },
-            register: function register(component) {
+            register: function(component) {
                 function render(element) {
                     if (element && element.tagName && "script" === element.tagName.toLowerCase() && element.attributes.type && "application/x-component" === element.attributes.type.value && element.attributes["data-component"] && element.attributes["data-component"].value === component.tag) {
-                        component.log("instantiate_script_component");
-                        var props = eval("(" + element.innerText + ")"), container = document.createElement("div");
-                        element.parentNode.replaceChild(container, element);
-                        component.render(props, container);
+                        component.log("instantiate_script_component_error");
+                        throw new Error("\n               'x-component' script type is no longer supported.  \n               Please migrate to another integration pattern.\n            ");
                     }
                 }
                 function scan() {
@@ -7122,7 +7127,7 @@
                 for (var key in source) Object.prototype.hasOwnProperty.call(source, key) && (target[key] = source[key]);
             }
             return target;
-        }, proxyRest = {}, createAccessToken = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.t)(function(env, client) {
+        }, proxyRest = {}, createAccessToken = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.u)(function(env, client) {
             __WEBPACK_IMPORTED_MODULE_3_beaver_logger_client__.c("rest_api_create_access_token");
             env = env || __WEBPACK_IMPORTED_MODULE_4__config__.a.env;
             var clientID = client[env];
@@ -7145,7 +7150,7 @@
             });
         }, {
             time: 6e5
-        }), createExperienceProfile = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.t)(function(env, client) {
+        }), createExperienceProfile = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib__.u)(function(env, client) {
             var experienceDetails = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
             __WEBPACK_IMPORTED_MODULE_3_beaver_logger_client__.c("rest_api_create_experience_profile");
             env = env || __WEBPACK_IMPORTED_MODULE_4__config__.a.env;
@@ -9325,6 +9330,24 @@
                 if (window.console.log) return window.console.log(err);
             }
         }
+        function checkForDeprecatedIntegration() {
+            for (var scripts = Array.prototype.slice.call(document.getElementsByTagName("script")), _iterator = scripts, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
+                var _ref;
+                if (_isArray) {
+                    if (_i >= _iterator.length) break;
+                    _ref = _iterator[_i++];
+                } else {
+                    _i = _iterator.next();
+                    if (_i.done) break;
+                    _ref = _i.value;
+                }
+                var script = _ref;
+                if (script.attributes.type && "application/x-component" === script.attributes.type.value) {
+                    warn("deprecated_integration_application_xcomponent");
+                    console.error("\n                This integration pattern using '<script type=\"application/x-component\">' is no longer supported.\n                Please visit https://developer.paypal.com/demo/checkout-v4/\n                for an example of the new recommended integration pattern.\n            ");
+                }
+            }
+        }
         function checkForCommonErrors() {
             function foo(bar, baz, zomg) {}
             if ("[]" !== JSON.stringify([])) {
@@ -9345,6 +9368,7 @@
             window.opener && window.parent !== window && __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.d("window_has_opener_and_parent");
         }
         var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1__device__ = __webpack_require__("./src/lib/device.js");
+        __webpack_exports__.b = checkForDeprecatedIntegration;
         __webpack_exports__.a = checkForCommonErrors;
     },
     "./src/lib/http.js": function(module, __webpack_exports__, __webpack_require__) {
@@ -9470,7 +9494,7 @@
         __webpack_require__.d(__webpack_exports__, "o", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.e;
         });
-        __webpack_require__.d(__webpack_exports__, "t", function() {
+        __webpack_require__.d(__webpack_exports__, "u", function() {
             return __WEBPACK_IMPORTED_MODULE_1__util__.f;
         });
         var __WEBPACK_IMPORTED_MODULE_2__logger__ = __webpack_require__("./src/lib/logger.js");
@@ -9490,6 +9514,9 @@
         var __WEBPACK_IMPORTED_MODULE_4__errors__ = __webpack_require__("./src/lib/errors.js");
         __webpack_require__.d(__webpack_exports__, "s", function() {
             return __WEBPACK_IMPORTED_MODULE_4__errors__.a;
+        });
+        __webpack_require__.d(__webpack_exports__, "t", function() {
+            return __WEBPACK_IMPORTED_MODULE_4__errors__.b;
         });
         var __WEBPACK_IMPORTED_MODULE_5__dom__ = __webpack_require__("./src/lib/dom.js");
         __webpack_require__.d(__webpack_exports__, "g", function() {
@@ -9778,6 +9805,7 @@
             lightbox && __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__components__.c)();
             logLevel ? __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.k)(logLevel) : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib__.k)(__WEBPACK_IMPORTED_MODULE_1__config__.a.logLevel);
             __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.c("setup_" + __WEBPACK_IMPORTED_MODULE_1__config__.a.env);
+            window.addEventListener("load", __WEBPACK_IMPORTED_MODULE_2__lib__.t);
             __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__.l("current_protocol_" + currentProtocol);
         }
         var __WEBPACK_IMPORTED_MODULE_0_beaver_logger_client__ = __webpack_require__("./node_modules/beaver-logger/client/index.js"), __WEBPACK_IMPORTED_MODULE_1__config__ = __webpack_require__("./src/config/index.js"), __WEBPACK_IMPORTED_MODULE_2__lib__ = __webpack_require__("./src/lib/index.js"), __WEBPACK_IMPORTED_MODULE_3__components__ = __webpack_require__("./src/components/index.js"), __WEBPACK_IMPORTED_MODULE_4_sync_browser_mocks_src_promise__ = __webpack_require__("./node_modules/sync-browser-mocks/src/promise.js");
